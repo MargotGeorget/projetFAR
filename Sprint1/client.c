@@ -25,20 +25,28 @@ int main(int argc, char *argv[]) {
 	}
 
 	/*Communication*/
-	char * m = "Bonjour !";
+
+    /*Saisie du message au clavier*/
+	char * m = (char *) malloc(sizeof(char)*32);
+    printf("Rentrez votre message (max 32 char): ");
+    fgets(m, 32, stdin);
+
+    /*Envoi du message*/
 	int sendR = send(dS, m, strlen(m)+1, 0);
-	if (sendR == -1){
+	if (sendR == -1){ /*vérification de la valeur de retour*/
 		perror("erreur au send");
 		exit(-1);
 	}
 
-	int r;
-	int recvR = recv(dS, &r, sizeof(int), 0);
-	if (recvR == -1){
+    /*Reception du message*/
+    
+	char * r = (char *) malloc(sizeof(char)*32);
+	int recvR = recv(dS, r, sizeof(r), 0);
+	if (recvR == -1){ /*vérification de la valeur de retour*/
 		perror("erreur au recv");
 		exit(-1);
 	}
-	printf("reponse : %d \n", r);
+	printf("reponse : %s \n", r);
 	shutdown(dS,2);
 
 }

@@ -29,31 +29,60 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-	/*Accepter une connexion*/
+	/*Accepter une premiere connexion*/
 	struct sockaddr_in aC;
 	socklen_t lg = sizeof(struct sockaddr_in);
-	int dSC = accept(dS, (struct sockaddr*) &aC,&lg);
-	if (dSC == -1){
+	int dSC1 = accept(dS, (struct sockaddr*) &aC,&lg);
+	if (dSC1 == -1){
+		perror("erreur au accept");
+		exit(-1);
+	}
+
+    /*Accepter une deuxieme connexion*/
+	int dSC2 = accept(dS, (struct sockaddr*) &aC,&lg);
+	if (dSC2 == -1){
 		perror("erreur au accept");
 		exit(-1);
 	}
 
 	/*Communication*/
-	char msg [20];
-	int recvR = recv(dSC, msg, sizeof(msg), 0);
+    /*Reception du message du client1*/
+	char * msg = (char *) malloc(sizeof(char)*32);
+	int recvR = recv(dSC1, msg, sizeof(msg), 0);
 	if (recvR == -1){
 		perror("erreur au recv");
 		exit(-1);
 	}
 
-	printf("recu : %s \n", msg);
-	int r = 10;
-	int sendR = send(dSC, &r, sizeof(int), 0);
+	printf("Message recu du client1: %s \n", msg);
+    /*Envoi du message au client2*/
+	int sendR = send(dSC2, msg, strlen(msg), 0);
 	if (sendR == -1){
 		perror("erreur au send");
 		exit(-1);
 	}
-	shutdown(dSC, 2); 
+
+    printf("Message envoyé");
+
+    /*Reception de la réponse du client2*/
+    char * rep = (char *) malloc(sizeof(char)*32);
+	int recvR2 = recv(dSC2, rep, sizeof(rep), 0);
+	if (recvR2 == -1){
+		perror("erreur au recv");
+		exit(-1);
+	}
+
+	printf("Reponse recu du client2 : %s \n", rep);
+    /*Envoi de la reponse au client1*/
+	int sendR2 = send(dSC1, rep, strlen(rep), 0);
+	if (sendR2 == -1){
+		perror("erreur au send");
+		exit(-1);
+	}
+    printf("Reponse envoye");
+
+	shutdown(dSC1, 2); 
+    shutdown(dSC2, 2);
 	shutdown(dS, 2);
 
 }
