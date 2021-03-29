@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
+    printf("Client 1 connecté\n");
+
     /*Accepter une deuxieme connexion*/
 	int dSC2 = accept(dS, (struct sockaddr*) &aC,&lg);
 	if (dSC2 == -1){
@@ -45,41 +47,46 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
+    printf("Client 2 connecté\n");
+
 	/*Communication*/
-    /*Reception du message du client1*/
-	char * msg = (char *) malloc(sizeof(char)*32);
-	int recvR = recv(dSC1, msg, sizeof(msg), 0);
-	if (recvR == -1){
-		perror("erreur au recv");
-		exit(-1);
-	}
+    
+    while(1){
 
-	printf("Message recu du client1: %s \n", msg);
-    /*Envoi du message au client2*/
-	int sendR = send(dSC2, msg, strlen(msg), 0);
-	if (sendR == -1){
-		perror("erreur au send");
-		exit(-1);
-	}
+        /*Reception du message du client1*/
+        char * msg = (char *) malloc(sizeof(char)*32);
+        int recvR = recv(dSC1, msg, sizeof(msg), 0);
+        if (recvR == -1){
+            perror("erreur au recv");
+            exit(-1);
+        }
+        printf("Message recu du client1: %s \n", msg);
 
-    printf("Message envoyé");
+        /*Envoi du message au client2*/
+        int sendR = send(dSC2, msg, strlen(msg), 0);
+        if (sendR == -1){
+            perror("erreur au send");
+            exit(-1);
+        }
+        printf("Message envoye\n");
 
-    /*Reception de la réponse du client2*/
-    char * rep = (char *) malloc(sizeof(char)*32);
-	int recvR2 = recv(dSC2, rep, sizeof(rep), 0);
-	if (recvR2 == -1){
-		perror("erreur au recv");
-		exit(-1);
-	}
-
-	printf("Reponse recu du client2 : %s \n", rep);
-    /*Envoi de la reponse au client1*/
-	int sendR2 = send(dSC1, rep, strlen(rep), 0);
-	if (sendR2 == -1){
-		perror("erreur au send");
-		exit(-1);
-	}
-    printf("Reponse envoye");
+        /*Reception de la réponse du client2*/
+        char * rep = (char *) malloc(sizeof(char)*32);
+        int recvR2 = recv(dSC2, rep, sizeof(rep), 0);
+        if (recvR2 == -1){
+            perror("erreur au recv");
+            exit(-1);
+        }
+        printf("Reponse recu du client2 : %s \n", rep);
+        
+        /*Envoi de la reponse au client1*/
+        int sendR2 = send(dSC1, rep, strlen(rep), 0);
+        if (sendR2 == -1){
+            perror("erreur au send");
+            exit(-1);
+        }
+        printf("Reponse envoye\n");
+    }
 
 	shutdown(dSC1, 2); 
     shutdown(dSC2, 2);

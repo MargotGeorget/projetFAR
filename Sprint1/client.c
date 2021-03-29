@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
 	aS.sin_family = AF_INET;
 	inet_pton(AF_INET, argv[1], &(aS.sin_addr));
 	aS.sin_port = htons(atoi(argv[2]));
+    int numClient = atoi(argv[3]);
 
 	/*Demander une connexion*/
 	socklen_t lgA = sizeof(struct sockaddr_in);
@@ -26,27 +27,52 @@ int main(int argc, char *argv[]) {
 
 	/*Communication*/
 
-    /*Saisie du message au clavier*/
-	char * m = (char *) malloc(sizeof(char)*32);
-    printf("Rentrez votre message (max 32 char): ");
-    fgets(m, 32, stdin);
+    /*Envoi du premier message par le client1*/
 
-    /*Envoi du message*/
-	int sendR = send(dS, m, strlen(m)+1, 0);
-	if (sendR == -1){ /*vérification de la valeur de retour*/
-		perror("erreur au send");
-		exit(-1);
-	}
+    if(numClient==0){
+        
+        /*Saisie du message au clavier*/
+        char * m = (char *) malloc(sizeof(char)*32);
+        printf("Rentrez votre message (max 32 char): ");
+        fgets(m, 32, stdin); 
 
-    /*Reception du message*/
-    
-	char * r = (char *) malloc(sizeof(char)*32);
-	int recvR = recv(dS, r, sizeof(r), 0);
-	if (recvR == -1){ /*vérification de la valeur de retour*/
-		perror("erreur au recv");
-		exit(-1);
-	}
-	printf("reponse : %s \n", r);
+        /*Envoi du message*/        
+        int sendR = send(dS, m, strlen(m)+1, 0);
+	    if (sendR == -1){ /*vérification de la valeur de retour*/
+	    	perror("erreur au send");
+		    exit(-1);
+	    }
+    }
+
+    /*Echange des messages*/
+    int i = 0;
+    while(i<5){
+
+        /*Reception du message*/
+        char * r = (char *) malloc(sizeof(char)*32);
+        int recvR = recv(dS, r, sizeof(r), 0);
+        if (recvR == -1){ /*vérification de la valeur de retour*/
+            perror("erreur au recv");
+            exit(-1);
+        }
+        printf("reponse : %s \n", r);
+
+        
+        /*Saisie du message au clavier*/
+	    char * m = (char *) malloc(sizeof(char)*32);
+        printf("Rentrez votre message (max 32 char): ");
+        fgets(m, 32, stdin);
+
+        /*Envoi du message*/
+        int sendR = send(dS, m, strlen(m)+1, 0);
+	    if (sendR == -1){ /*vérification de la valeur de retour*/
+	    	perror("erreur au send");
+		    exit(-1);
+	    }
+
+        i++;
+    }
+
 	shutdown(dS,2);
 
 }
