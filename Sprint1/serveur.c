@@ -38,11 +38,12 @@ int main(int argc, char *argv[]) {
             exit(-1);
         }
 
-        /*char msg = 0;
-        if (send(dSC2, msg, strlen(msg), 0) == -1){
-            perror("erreur au send");
+        /*Affectation du numéro au client en fonction de l'ordre de connexion*/
+        int numClient = 1;
+        if (send(dSC1, &numClient, sizeof(int), 0) == -1){
+            perror("erreur au send du numClient");
             exit(-1);
-        }*/
+        }
 
         printf("Client 1 connecté\n");
 
@@ -50,6 +51,13 @@ int main(int argc, char *argv[]) {
         int dSC2 = accept(dS, (struct sockaddr*) &aC,&lg);
         if (dSC2 == -1){
             perror("erreur au accept");
+            exit(-1);
+        }
+
+        /*Affectation du numéro au client en fonction de l'ordre de connexion*/
+        numClient = 2;
+        if (send(dSC2, &numClient, sizeof(int), 0) == -1){
+            perror("erreur au send du numClient");
             exit(-1);
         }
 

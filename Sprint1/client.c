@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 	aS.sin_family = AF_INET;
 	inet_pton(AF_INET, argv[1], &(aS.sin_addr));
 	aS.sin_port = htons(atoi(argv[2]));
-    int numClient = atoi(argv[3]);
+    /*int numClient = atoi(argv[3]);*/
 
 	/*Demander une connexion*/
 	socklen_t lgA = sizeof(struct sockaddr_in);
@@ -25,11 +25,22 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-	/*Communication*/
+	/*Reception du numéro du client*/
+    int numClient = 0;
+    if (recv(dS, &numClient, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au recv du numClient");
+        exit(-1);
+    }
+    
+    printf("Vous êtes le client numéro %d. \n", numClient);
+
+    /*Attente à mettre en place*/
+
+    /*Communication*/
 
     /*Envoi du premier message par le client1*/
 
-    if(numClient==0){
+    if(numClient==1){
         
         /*Saisie du message au clavier*/
         char * m = (char *) malloc(sizeof(char)*100);
@@ -45,6 +56,7 @@ int main(int argc, char *argv[]) {
 
         free(m);
     }
+
 
     /*Echange des messages*/
 
@@ -85,7 +97,7 @@ int main(int argc, char *argv[]) {
 	    }
 
         /*On verifie si le client veut fermer sa connexion*/
-        if (strcmp(m, "L'autre client a quitté la communication")==0){
+        if (strcmp(m, "fin\n")==0){
             communication = 1;
             free(m);
             break;
