@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
     if(numClient==0){
         
         /*Saisie du message au clavier*/
-        char * m = (char *) malloc(sizeof(char)*32);
-        printf("Rentrez votre message (max 32 char): ");
-        fgets(m, 32, stdin); 
+        char * m = (char *) malloc(sizeof(char)*100);
+        printf("Rentrez votre message (max 100 char): ");
+        fgets(m, 100, stdin); 
 
         /*Envoi du message*/        
         int sendR = send(dS, m, strlen(m)+1, 0);
@@ -42,26 +42,40 @@ int main(int argc, char *argv[]) {
 	    	perror("erreur au send");
 		    exit(-1);
 	    }
+
+        free(m);
     }
 
     /*Echange des messages*/
-    int i = 0;
-    while(i<5){
+
+    int communication = 1;
+
+    while(communication){
 
         /*Reception du message*/
-        char * r = (char *) malloc(sizeof(char)*32);
-        int recvR = recv(dS, r, sizeof(r), 0);
+        char * r = (char *) malloc(sizeof(char)*100);
+        int recvR = recv(dS, r, sizeof(char)*100, 0);
         if (recvR == -1){ /*vérification de la valeur de retour*/
             perror("erreur au recv");
             exit(-1);
         }
         printf("reponse : %s \n", r);
 
+        /*On regarde si l'autre client veut mettre fin à la connexion*/
+
+        if (strcmp(r, "L'autre client a quitté la communication")==0){
+            communication = 1;
+            free(r);
+            break;
+        }
+        
+        free(r);
+
         
         /*Saisie du message au clavier*/
-	    char * m = (char *) malloc(sizeof(char)*32);
-        printf("Rentrez votre message (max 32 char): ");
-        fgets(m, 32, stdin);
+	    char * m = (char *) malloc(sizeof(char)*100);
+        printf("Rentrez votre message (max 100 char): ");
+        fgets(m, 100, stdin);
 
         /*Envoi du message*/
         int sendR = send(dS, m, strlen(m)+1, 0);
@@ -70,9 +84,16 @@ int main(int argc, char *argv[]) {
 		    exit(-1);
 	    }
 
-        i++;
+        /*On verifie si le client veut fermer sa connexion*/
+        if (strcmp(m, "L'autre client a quitté la communication")==0){
+            communication = 1;
+            free(m);
+            break;
+        }
+
+        free(m);
     }
 
-	shutdown(dS,2);
+	close(dS);
 
 }

@@ -5,7 +5,7 @@
 #include <string.h>
 
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
-/*Lancer avec ./serveur 8000*/
+/*Lancer avec ./serveur 8000 pseudo*/
 
 int main(int argc, char *argv[]) {
 	/*Création de la socket*/
@@ -28,68 +28,92 @@ int main(int argc, char *argv[]) {
 		perror("erreur au listen");
 		exit(-1);
 	}
-
-	/*Accepter une premiere connexion*/
-	struct sockaddr_in aC;
-	socklen_t lg = sizeof(struct sockaddr_in);
-	int dSC1 = accept(dS, (struct sockaddr*) &aC,&lg);
-	if (dSC1 == -1){
-		perror("erreur au accept");
-		exit(-1);
-	}
-
-    printf("Client 1 connecté\n");
-
-    /*Accepter une deuxieme connexion*/
-	int dSC2 = accept(dS, (struct sockaddr*) &aC,&lg);
-	if (dSC2 == -1){
-		perror("erreur au accept");
-		exit(-1);
-	}
-
-    printf("Client 2 connecté\n");
-
-	/*Communication*/
-    
     while(1){
-
-        /*Reception du message du client1*/
-        char * msg = (char *) malloc(sizeof(char)*32);
-        int recvR = recv(dSC1, msg, sizeof(msg), 0);
-        if (recvR == -1){
-            perror("erreur au recv");
+        /*Accepter une premiere connexion*/
+        struct sockaddr_in aC;
+        socklen_t lg = sizeof(struct sockaddr_in);
+        int dSC1 = accept(dS, (struct sockaddr*) &aC,&lg);
+        if (dSC1 == -1){
+            perror("erreur au accept");
             exit(-1);
         }
-        printf("Message recu du client1: %s \n", msg);
 
-        /*Envoi du message au client2*/
-        int sendR = send(dSC2, msg, strlen(msg), 0);
-        if (sendR == -1){
+        /*char msg = 0;
+        if (send(dSC2, msg, strlen(msg), 0) == -1){
             perror("erreur au send");
             exit(-1);
-        }
-        printf("Message envoye\n");
+        }*/
 
-        /*Reception de la réponse du client2*/
-        char * rep = (char *) malloc(sizeof(char)*32);
-        int recvR2 = recv(dSC2, rep, sizeof(rep), 0);
-        if (recvR2 == -1){
-            perror("erreur au recv");
+        printf("Client 1 connecté\n");
+
+        /*Accepter une deuxieme connexion*/
+        int dSC2 = accept(dS, (struct sockaddr*) &aC,&lg);
+        if (dSC2 == -1){
+            perror("erreur au accept");
             exit(-1);
         }
-        printf("Reponse recu du client2 : %s \n", rep);
+
+        printf("Client 2 connecté\n");
+
+        /*Communication*/
         
-        /*Envoi de la reponse au client1*/
-        int sendR2 = send(dSC1, rep, strlen(rep), 0);
-        if (sendR2 == -1){
-            perror("erreur au send");
-            exit(-1);
-        }
-        printf("Reponse envoye\n");
-    }
+        int communication = 1;
 
-	shutdown(dSC1, 2); 
-    shutdown(dSC2, 2);
-	shutdown(dS, 2);
+        while(communication){
+
+            /*Reception du message du client1*/
+            char * msg = (char *) malloc(sizeof(char)*100);
+            int recvR = recv(dSC1, msg, sizeof(char)*100, 0);
+            if (recvR == -1){
+                perror("erreur au recv");
+                exit(-1);
+            }
+            printf("Message recu du client1: %s \n", msg);
+
+            /*On verifie si le client 1 veut terminer la communication*/
+            if (strcmp(msg, "fin\n")==0){
+                communication = 0;
+                msg = "L'autre client a quitté la communication";
+            }
+
+            /*Envoi du message au client2*/
+            printf("strlen: %d\n", (int)strlen(msg));
+            int sendR = send(dSC2, msg, strlen(msg), 0);
+            if (sendR == -1){
+                perror("erreur au send");
+                exit(-1);
+            }
+            /*free(msg);*/
+            printf("Message envoye\n");
+
+            /*Reception de la réponse du client2*/
+            char * rep = (char *) malloc(sizeof(char)*100);
+            int recvR2 = recv(dSC2, rep, sizeof(char)*100, 0);
+            if (recvR2 == -1){
+                perror("erreur au recv");
+                exit(-1);
+            }
+            printf("Reponse recu du client2 : %s \n", rep);
+            
+            /*On verifie si le client 2 veut terminer la communication*/
+            if (strcmp(rep, "fin\n")==0){
+                communication = 0;
+                rep = "L'autre client a quitté la communication";
+            }
+
+            /*Envoi de la reponse au client1*/
+            int sendR2 = send(dSC1, rep, strlen(rep), 0);
+            if (sendR2 == -1){
+                perror("erreur au send");
+                exit(-1);
+            }
+            /*free(rep);*/
+            printf("Reponse envoye\n");
+        }
+
+	    close(dSC1); 
+        close(dSC2);
+    }
+	close(dS);
 
 }
