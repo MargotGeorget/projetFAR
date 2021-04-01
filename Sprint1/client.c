@@ -7,6 +7,12 @@
 /*Compiler gcc -Wall -ansi -o client client.c*/
 /*Lancer avec ./client 162.38.111.181 8000*/
 
+/*
+Envoi un message à une socket et teste que tout se passe bien
+Paramètres : int dS : la socket
+             char * msg : message à envoyer   
+Retour : pas de retour
+*/
 void sending(int dS, char * msg){
     int sendR = send(dS, msg, strlen(msg)+1, 0);
     if (sendR == -1){ /*vérification de la valeur de retour*/
@@ -15,6 +21,13 @@ void sending(int dS, char * msg){
     }
 }
 
+/*
+Receptionne un message d'une socket et teste que tout se passe bien
+Paramètres : int dS : la socket
+             char * msg : message à recevoir
+             ssize_t size : taille maximum du message à recevoir   
+Retour : pas de retour
+*/
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/

@@ -7,6 +7,35 @@
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur 8000 pseudo*/
 
+/*
+Envoi un message à une socket et teste que tout se passe bien
+Paramètres : int dS : la socket
+             char * msg : message à envoyer   
+Retour : pas de retour
+*/
+void sending(int dS, char * msg){
+    int sendR = send(dS, msg, strlen(msg)+1, 0);
+    if (sendR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au send");
+        exit(-1);
+    }
+}
+
+/*
+Receptionne un message d'une socket et teste que tout se passe bien
+Paramètres : int dS : la socket
+             char * msg : message à recevoir
+             ssize_t size : taille maximum du message à recevoir   
+Retour : pas de retour
+*/
+void receiving(int dS, char * rep, ssize_t size){
+    int recvR = recv(dS, rep, size, 0);
+    if (recvR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au recv");
+        exit(-1);
+    }
+}
+
 int main(int argc, char *argv[]) {
 	/*Création de la socket*/
 	int dS = socket(PF_INET, SOCK_STREAM, 0);
@@ -71,11 +100,7 @@ int main(int argc, char *argv[]) {
 
             /*Reception du message du client1*/
             char * msg = (char *) malloc(sizeof(char)*100);
-            int recvR = recv(dSC1, msg, sizeof(char)*100, 0);
-            if (recvR == -1){
-                perror("erreur au recv");
-                exit(-1);
-            }
+            receiving(dSC1, msg, sizeof(char)*100);
             printf("Message recu du client1: %s \n", msg);
 
             /*On verifie si le client 1 veut terminer la communication*/
@@ -86,21 +111,12 @@ int main(int argc, char *argv[]) {
 
             /*Envoi du message au client2*/
             printf("strlen: %d\n", (int)strlen(msg));
-            int sendR = send(dSC2, msg, strlen(msg), 0);
-            if (sendR == -1){
-                perror("erreur au send");
-                exit(-1);
-            }
-            /*free(msg);*/
+            sending(dSC2, msg);
             printf("Message envoye\n");
 
             /*Reception de la réponse du client2*/
             char * rep = (char *) malloc(sizeof(char)*100);
-            int recvR2 = recv(dSC2, rep, sizeof(char)*100, 0);
-            if (recvR2 == -1){
-                perror("erreur au recv");
-                exit(-1);
-            }
+            receiving(dSC2, rep, sizeof(char)*100);
             printf("Reponse recu du client2 : %s \n", rep);
             
             /*On verifie si le client 2 veut terminer la communication*/
@@ -110,12 +126,7 @@ int main(int argc, char *argv[]) {
             }
 
             /*Envoi de la reponse au client1*/
-            int sendR2 = send(dSC1, rep, strlen(rep), 0);
-            if (sendR2 == -1){
-                perror("erreur au send");
-                exit(-1);
-            }
-            /*free(rep);*/
+            sending(dSC1, rep);
             printf("Reponse envoye\n");
         }
 
