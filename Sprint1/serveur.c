@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
             /*On verifie si le client 1 veut terminer la communication*/
             if (strcmp(msg, "fin\n")==0){
                 communication = 0;
-                msg = "L'autre client a quitté la communication";
+                msg = "** A quitté la communication **\n";
             }
 
             /*Envoi du message au client2*/
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
             /*On verifie si le client 2 veut terminer la communication*/
             if (strcmp(rep, "fin\n")==0){
                 communication = 0;
-                rep = "L'autre client a quitté la communication";
+                rep = "** A quitté la communication **\n";
             }
 
             /*Envoi de la reponse au client1*/
