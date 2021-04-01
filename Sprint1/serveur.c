@@ -36,7 +36,22 @@ void receiving(int dS, char * rep, ssize_t size){
     }
 }
 
+int endOfCommunication(char ** msg){
+    if (strcmp(*msg, "fin\n")==0){
+        *msg = "** A quitté la communication **\n";
+        printf("%s",*msg);
+        return 0;
+    }
+    return 1;
+}
+
 int main(int argc, char *argv[]) {
+
+    /*Verification des paramètres*/
+    if(argc<2){
+        printf("Erreur : Lancez avec ./serveur <votre_port> ");
+    }
+
 	/*Création de la socket*/
 	int dS = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in ad;
@@ -104,10 +119,8 @@ int main(int argc, char *argv[]) {
             printf("Message recu du client1: %s \n", msg);
 
             /*On verifie si le client 1 veut terminer la communication*/
-            if (strcmp(msg, "fin\n")==0){
-                communication = 0;
-                msg = "** A quitté la communication **\n";
-            }
+            communication = endOfCommunication(&msg);
+            printf("%s",msg);
 
             /*Envoi du message au client2*/
             printf("strlen: %d\n", (int)strlen(msg));
@@ -120,11 +133,8 @@ int main(int argc, char *argv[]) {
             printf("Reponse recu du client2 : %s \n", rep);
             
             /*On verifie si le client 2 veut terminer la communication*/
-            if (strcmp(rep, "fin\n")==0){
-                communication = 0;
-                rep = "** A quitté la communication **\n";
-            }
-
+            communication = endOfCommunication(&rep);
+            printf("%s",rep);
             /*Envoi de la reponse au client1*/
             sending(dSC1, rep);
             printf("Reponse envoye\n");

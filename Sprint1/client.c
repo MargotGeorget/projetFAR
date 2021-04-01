@@ -38,6 +38,11 @@ void receiving(int dS, char * rep, ssize_t size){
 
 int main(int argc, char *argv[]) {
 
+    /*Verification des paramètres*/
+    if(argc<3){
+        printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> ");
+    }
+
 	/*Création de la socket*/
 	int dS = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in aS;
