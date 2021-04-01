@@ -5,14 +5,14 @@
 #include <string.h>
 
 /*Compiler gcc -Wall -ansi -o client client.c*/
-/*Lancer avec ./client 162.38.111.181 8000*/
+/*Lancer avec ./client votre_ip votre_port*/
 
 /*
-Envoi un message à une socket et teste que tout se passe bien
-Paramètres : int dS : la socket
-             char * msg : message à envoyer   
-Retour : pas de retour
-*/
+ * Envoi un message à une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à envoyer
+ * Retour : pas de retour
+ * */
 void sending(int dS, char * msg){
     int sendR = send(dS, msg, strlen(msg)+1, 0);
     if (sendR == -1){ /*vérification de la valeur de retour*/
@@ -22,12 +22,12 @@ void sending(int dS, char * msg){
 }
 
 /*
-Receptionne un message d'une socket et teste que tout se passe bien
-Paramètres : int dS : la socket
-             char * msg : message à recevoir
-             ssize_t size : taille maximum du message à recevoir   
-Retour : pas de retour
-*/
+ * Receptionne un message d'une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à recevoir
+ *              ssize_t size : taille maximum du message à recevoir
+ * Retour : pas de retour
+ * */
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/
@@ -36,6 +36,9 @@ void receiving(int dS, char * rep, ssize_t size){
     }
 }
 
+/*
+ * _____________________ MAIN _____________________
+ * */
 int main(int argc, char *argv[]) {
 
     /*Verification des paramètres*/
@@ -85,7 +88,9 @@ int main(int argc, char *argv[]) {
     receiving(dS,hisPseudo,sizeof(char)*12);
     hisPseudo = strtok(hisPseudo, "\n");
     printf("\n--------- Vous communiquez avec %s ---------\n", hisPseudo);
-    printf("\nVos messages peuvent faire jusqu'à 100 caractères.\nPour quitter la conversation envoyez 'fin'.\nBonne communication !\n\n");
+    printf("\nVos messages peuvent faire jusqu'à 100 caractères.\n"
+           "Pour quitter la conversation envoyez 'fin'.\n"
+           "Bonne communication !\n\n");
 
 
     /*_____________________ Communication _____________________*/
@@ -117,7 +122,7 @@ int main(int argc, char *argv[]) {
         printf("%s : %s", hisPseudo, r);
 
         /*On verifie si l'autre client veut mettre fin à la connexion*/
-        if (strcmp(r, "** A quitté la communication **\n")==0){
+        if (strcmp(r, "** a quitté la communication **\n")==0){
             communication = 1;
             free(r);
             break;
@@ -128,7 +133,7 @@ int main(int argc, char *argv[]) {
         /*Saisie du message au clavier*/
 	    char * m = (char *) malloc(sizeof(char)*100);
         printf("Vous : ");
-        fgets(m, 100, stdin);
+        /*fgets(m, 100, stdin);*/
 
         /*Envoi du message*/
         sending(dS, m);	    

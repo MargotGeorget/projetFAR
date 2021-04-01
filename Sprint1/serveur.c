@@ -5,13 +5,13 @@
 #include <string.h>
 
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
-/*Lancer avec ./serveur 8000 pseudo*/
+/*Lancer avec ./serveur votre_port */
 
 /*
-Envoi un message à une socket et teste que tout se passe bien
-Paramètres : int dS : la socket
-             char * msg : message à envoyer   
-Retour : pas de retour
+ * Envoi un message à une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à envoyer
+ * Retour : pas de retour
 */
 void sending(int dS, char * msg){
     int sendR = send(dS, msg, strlen(msg)+1, 0);
@@ -22,11 +22,11 @@ void sending(int dS, char * msg){
 }
 
 /*
-Receptionne un message d'une socket et teste que tout se passe bien
-Paramètres : int dS : la socket
-             char * msg : message à recevoir
-             ssize_t size : taille maximum du message à recevoir   
-Retour : pas de retour
+ * Receptionne un message d'une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à recevoir
+ *              ssize_t size : taille maximum du message à recevoir
+ * Retour : pas de retour
 */
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
@@ -36,6 +36,11 @@ void receiving(int dS, char * rep, ssize_t size){
     }
 }
 
+/*
+ * Vérifie si un client souhaite quitter la communication
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 0 (faux) si le client veut quitter, 1 (vrai) sinon
+*/
 int endOfCommunication(char ** msg){
     if (strcmp(*msg, "fin\n")==0){
         *msg = "** A quitté la communication **\n";
@@ -45,6 +50,9 @@ int endOfCommunication(char ** msg){
     return 1;
 }
 
+/*
+ * _____________________ MAIN _____________________
+ * */
 int main(int argc, char *argv[]) {
 
     /*Verification des paramètres*/
@@ -72,6 +80,7 @@ int main(int argc, char *argv[]) {
 		perror("erreur au listen");
 		exit(-1);
 	}
+
     while(1){
         /*Accepter une premiere connexion*/
         struct sockaddr_in aC;
@@ -107,7 +116,7 @@ int main(int argc, char *argv[]) {
 
         printf("Client 2 connecté\n");
 
-        /*Communication*/
+        /*_____________________ Communication _____________________*/
         
         int communication = 1;
 
@@ -123,9 +132,8 @@ int main(int argc, char *argv[]) {
             printf("%s",msg);
 
             /*Envoi du message au client2*/
-            printf("strlen: %d\n", (int)strlen(msg));
             sending(dSC2, msg);
-            printf("Message envoye\n");
+            printf(" -- Message envoye\n");
 
             /*Reception de la réponse du client2*/
             char * rep = (char *) malloc(sizeof(char)*100);
@@ -135,9 +143,10 @@ int main(int argc, char *argv[]) {
             /*On verifie si le client 2 veut terminer la communication*/
             communication = endOfCommunication(&rep);
             printf("%s",rep);
+
             /*Envoi de la reponse au client1*/
             sending(dSC1, rep);
-            printf("Reponse envoye\n");
+            printf(" -- Reponse envoye\n");
         }
 
 	    close(dSC1); 
