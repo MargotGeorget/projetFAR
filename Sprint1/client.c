@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
         /*Saisie du message au clavier*/
 	    char * m = (char *) malloc(sizeof(char)*100);
         printf("Vous : ");
-        /*fgets(m, 100, stdin);*/
+        fgets(m, 100, stdin);
 
         /*Envoi du message*/
         sending(dS, m);	    

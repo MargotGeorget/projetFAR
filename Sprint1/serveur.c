@@ -43,7 +43,7 @@ void receiving(int dS, char * rep, ssize_t size){
 */
 int endOfCommunication(char ** msg){
     if (strcmp(*msg, "fin\n")==0){
-        *msg = "** A quitté la communication **\n";
+        *msg = "** a quitté la communication **\n";
         printf("%s",*msg);
         return 0;
     }
@@ -125,28 +125,28 @@ int main(int argc, char *argv[]) {
             /*Reception du message du client1*/
             char * msg = (char *) malloc(sizeof(char)*100);
             receiving(dSC1, msg, sizeof(char)*100);
-            printf("Message recu du client1: %s \n", msg);
+            printf("\nMessage recu du client1: %s \n", msg);
 
             /*On verifie si le client 1 veut terminer la communication*/
             communication = endOfCommunication(&msg);
-            printf("%s",msg);
 
             /*Envoi du message au client2*/
             sending(dSC2, msg);
             printf(" -- Message envoye\n");
 
-            /*Reception de la réponse du client2*/
-            char * rep = (char *) malloc(sizeof(char)*100);
-            receiving(dSC2, rep, sizeof(char)*100);
-            printf("Reponse recu du client2 : %s \n", rep);
-            
-            /*On verifie si le client 2 veut terminer la communication*/
-            communication = endOfCommunication(&rep);
-            printf("%s",rep);
+            if(communication){
+                /*Reception de la réponse du client2*/
+                char * rep = (char *) malloc(sizeof(char)*100);
+                receiving(dSC2, rep, sizeof(char)*100);
+                printf("\nReponse recu du client2 : %s \n", rep);
+                
+                /*On verifie si le client 2 veut terminer la communication*/
+                communication = endOfCommunication(&rep);
 
-            /*Envoi de la reponse au client1*/
-            sending(dSC1, rep);
-            printf(" -- Reponse envoye\n");
+                /*Envoi de la reponse au client1*/
+                sending(dSC1, rep);
+                printf(" -- Reponse envoye\n");
+            }
         }
 
 	    close(dSC1); 
