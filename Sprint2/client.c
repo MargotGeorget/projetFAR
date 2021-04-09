@@ -11,7 +11,8 @@
 
 int isEnd = 0;
 char * hisPseudo;
-/* Structure stockant les informations des threads d'envoi et de reception */
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int endOfCommunication(char * msg, char * msgToCmp){
     if (strcmp(msg, msgToCmp)==0){
@@ -42,13 +43,13 @@ void * sending_th(void * dSparam){
 
         /*Saisie du message au clavier*/
         char * m = (char *) malloc(sizeof(char)*100);
+
         printf(">");
         fgets(m, 100, stdin);
-
-        isEnd = endOfCommunication(m,"fin\n"); 
+        isEnd = endOfCommunication(m,"fin\n");
         /*Envoi*/
         sending(dS, m);
-      
+
         
         free(m);
     }
@@ -75,12 +76,11 @@ void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
     while(!isEnd){
 
+
         char * r = (char *) malloc(sizeof(char)*100);
         receiving(dS, r, sizeof(char)*100);
         printf("%s : %s",hisPseudo,r);
-
         isEnd = endOfCommunication(r, "** a quitté la communication **\n");
-         
         free(r);
     }
     return NULL;
@@ -119,15 +119,15 @@ int main(int argc, char *argv[]) {
         perror("erreur au recv du numClient");
         exit(-1);
     }
-    
+
     printf("Vous êtes le client numéro %d. \n", numClient);
 
     /*Saisie du pseudo du client au clavier*/
     char * myPseudo = (char *) malloc(sizeof(char)*12);
     printf("Votre pseudo (maximum 12 caractères): ");
-    fgets(myPseudo, 12, stdin); 
+    fgets(myPseudo, 12, stdin);
 
-    /*Envoi du message*/        
+    /*Envoi du message*/
     sending(dS, myPseudo);
 
     /*En attente du client 2*/

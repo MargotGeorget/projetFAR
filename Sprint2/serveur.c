@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <signal.h>
+#include <unistd.h>
 
 
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur votre_port */
 
-int tabClient[2];
+long tabClient[2];
 
 /*
  * Envoi un message à une socket et teste que tout se passe bien
@@ -24,6 +26,39 @@ void sending(int dS, char * msg){
         exit(-1);
     }
 }
+
+
+/*
+ * Receptionne un message d'une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à recevoir
+ *              ssize_t size : taille maximum du message à recevoir
+ * Retour : pas de retour
+*/
+void receiving(int dS, char * rep, ssize_t size){
+    int recvR = recv(dS, rep, size, 0);
+    if (recvR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au recv");
+        exit(-1);
+    }
+}
+
+
+/*
+ * Vérifie si un client souhaite quitter la communication
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 0 (faux) si le client veut quitter, 1 (vrai) sinon
+*/
+int endOfCommunication(char ** msg){
+    if (strcmp(*msg, "fin\n")==0){
+        *msg = "** a quitté la communication **\n";
+        printf("%s",*msg);
+        return 1;
+    }
+    return 0;
+}
+
+
 
 void * client1ToClient2(void * dSCparam){
     int dSC = (long)dSCparam;
@@ -41,7 +76,9 @@ void * client1ToClient2(void * dSCparam){
         sending(tabClient[1], msg);
         printf(" -- Message envoye\n");
     }
-    return NULL;
+    close(tabClient[1]);
+    kill(getpid(),SIGKILL);
+    return EXIT_SUCCESS;
 }
 
 void * client2ToClient1(void * dSCparam){
@@ -60,37 +97,12 @@ void * client2ToClient1(void * dSCparam){
         sending(tabClient[0], msg);
         printf(" -- Message envoye\n");
     }
-    return NULL;
+    close(tabClient[0]);
+    printf("%d", getpid());
+    kill(getpid(),SIGKILL);
+    return EXIT_SUCCESS;
 }
 
-/*
- * Receptionne un message d'une socket et teste que tout se passe bien
- * Paramètres : int dS : la socket
- *              char * msg : message à recevoir
- *              ssize_t size : taille maximum du message à recevoir
- * Retour : pas de retour
-*/
-void receiving(int dS, char * rep, ssize_t size){
-    int recvR = recv(dS, rep, size, 0);
-    if (recvR == -1){ /*vérification de la valeur de retour*/
-        perror("erreur au recv");
-        exit(-1);
-    }
-}
-
-/*
- * Vérifie si un client souhaite quitter la communication
- * Paramètres : char ** msg : message du client à vérifier
- * Retour : 0 (faux) si le client veut quitter, 1 (vrai) sinon
-*/
-int endOfCommunication(char ** msg){
-    if (strcmp(*msg, "fin\n")==0){
-        *msg = "** a quitté la communication **\n";
-        printf("%s",*msg);
-        return 1;
-    }
-    return 0;
-}
 
 /*
  * _____________________ MAIN _____________________
