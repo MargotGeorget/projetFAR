@@ -77,7 +77,8 @@ void * client1ToClient2(void * dSCparam){
         printf(" -- Message envoye\n");
     }
     close(tabClient[1]);
-    kill(getpid(),SIGKILL);
+    /*kill(getpid(),SIGKILL);*/
+    pthread_exit(dSCparam);
     return EXIT_SUCCESS;
 }
 
@@ -99,7 +100,8 @@ void * client2ToClient1(void * dSCparam){
     }
     close(tabClient[0]);
     printf("%d", getpid());
-    kill(getpid(),SIGKILL);
+    /*kill(getpid(),SIGKILL);*/
+    pthread_exit(dSCparam);
     return EXIT_SUCCESS;
 }
 
@@ -181,13 +183,11 @@ int main(int argc, char *argv[]) {
         int thread1 = pthread_create(&thread_client1ToClient2, NULL, client1ToClient2, (void *)tabClient[0]);
         if(thread1==-1){
             perror("error thread 1");
-            
         }
 
         int thread2 = pthread_create(&thread_client2ToClient1, NULL, client2ToClient1,  (void *)tabClient[1]);
         if(thread1==-1){
             perror("error thread 1");
-            
         }
 
         /*Attente de la fin des threads*/
