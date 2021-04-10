@@ -52,6 +52,7 @@ void * sending_th(void * dSparam){
 
         free(m);
     }
+    close(dS);
     return NULL;
 }
 
@@ -65,7 +66,7 @@ void * sending_th(void * dSparam){
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/
-        perror("erreur au recv");
+        printf("** fin de la communication **\n");
         exit(-1);
     }
 }
@@ -80,6 +81,7 @@ void * receiving_th(void * dSparam){
         isEnd = endOfCommunication(r, "** a quitté la communication **\n");
         free(r);
     }
+    close(dS);
     return NULL;
 }
 
@@ -110,14 +112,14 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 
-    /*Reception du numéro du client*/
-    int numClient = 0;
-    if (recv(dS, &numClient, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
+    /*Reception du nombre de client*/
+    int nbClient;
+    if (recv(dS, &nbClient, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
         perror("erreur au recv du numClient");
         exit(-1);
     }
-    if(numClient==-1){
-        printf("Connexion échouée\n");
+    if(nbClient==5){
+        printf("Connexion échouée, nombre maximum de clients atteint pour cette conversation\n");
     }else {
         printf("Connexion réussie\n");
         
@@ -130,7 +132,7 @@ int main(int argc, char *argv[]) {
         sending(dS, myPseudo);
 
         /*En attente d'un autre client*/
-        if(numClient==0){
+        if(nbClient==0){
             printf("En attente d'un autre client\n");
 
             /*Reception du premier message informant de l'arrivée d'un autre client*/
@@ -168,6 +170,6 @@ int main(int argc, char *argv[]) {
         pthread_join(thread_receiving, NULL);
     }
     /*Fin de la communication*/
-	close(dS);
+	
     return 0;
 }

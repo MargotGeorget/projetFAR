@@ -38,7 +38,9 @@ int giveNumClient(){
         if(!tabClient[i].occupied){
             return i;
         }
+        i+=1;
     }
+    
     return -1;
 }
 
@@ -51,9 +53,9 @@ int giveNumClient(){
 */
 void sending(int dS, char * msg){
     int i;
-    for (i = 0; i<nbClient ; i++) {
+    for (i = 0; i<MAX_CLIENT ; i++) {
         /*On n'envoie pas au client qui a écrit le message*/
-        if(dS != tabClient[i].dSC){
+        if(tabClient[i].occupied && dS != tabClient[i].dSC){
             int sendR = send(tabClient[i].dSC, msg, strlen(msg)+1, 0);
             if (sendR == -1){ /*vérification de la valeur de retour*/
                 perror("erreur au send");
@@ -86,9 +88,9 @@ void receiving(int dS, char * rep, ssize_t size){
  * Retour : 0 (faux) si le client veut quitter, 1 (vrai) sinon
 */
 int endOfCommunication(char ** msg){
-    if (strcmp(*msg, "fin\n")==0){
-        *msg = "** a quitté la communication **\n";
-        printf("%s",*msg);
+    if (strcmp(*msg, "** a quitté la communication **\n")==0){
+        /**msg = "** a quitté la communication **\n";
+        printf("%s",*msg);*/
         return 1;
     }
     return 0;
@@ -101,7 +103,6 @@ void * broadcast(void * clientParam){
     int isEnd = 0;
     int numClient = (long) clientParam;
     char * pseudoSender = tabClient[numClient].pseudo;
-    printf("pseudo: %s",tabClient[numClient].pseudo);
 
     while(!isEnd){
         /*Réception du message*/
@@ -112,16 +113,20 @@ void * broadcast(void * clientParam){
         /*On verifie si le client veut terminer la communication*/
         isEnd = endOfCommunication(&msgReceived);
 
-        char * msgToSend = (char *) malloc(sizeof(char)*112);
+        char * msgToSend = (char *) malloc(sizeof(char)*115);
         strcat(msgToSend, pseudoSender);
+        strcat(msgToSend, " : ");
         strcat(msgToSend, msgReceived);
-        printf("%s",msgToSend);
-        printf("pseudo de la personne : %s",pseudoSender);
 
         printf("Envoi du message aux %ld clients. \n", nbClient);
         sending(tabClient[numClient].dSC, msgToSend);
         
     }
+
+    /*Fermeture du socket client*/
+    nbClient= nbClient-1;
+    tabClient[numClient].occupied=0;
+    close(tabClient[numClient].dSC);
 
     return NULL;
 }
@@ -152,7 +157,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	/*Passer la socket en mode écoute*/
-	int listenR = listen(dS, 7);
+	int listenR = listen(dS, MAX_CLIENT);
 	if (listenR == -1){
 		perror("erreur au listen");
 		exit(-1);
@@ -162,9 +167,7 @@ int main(int argc, char *argv[]) {
     while(1){
         int dSC;
         /*Tant qu'on peut accepter des clients */
-        printf("%ld / %d",nbClient,MAX_CLIENT);
         if(nbClient < MAX_CLIENT){
-            printf("je rentre dans la boucle bg");
 
             /*Accepter une connexion*/
             struct sockaddr_in aC;
@@ -177,7 +180,7 @@ int main(int argc, char *argv[]) {
 
             /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
             long numClient = giveNumClient();
-            if (send(dSC, &numClient, sizeof(int), 0) == -1){
+            if (send(dSC, &nbClient, sizeof(int), 0) == -1){
                 perror("erreur au send du numClient");
                 exit(-1);
             }
@@ -189,23 +192,22 @@ int main(int argc, char *argv[]) {
 
             /*Réception du pseudo*/
             char * pseudo = (char *) malloc(sizeof(char)*100);
-            receiving(dSC, pseudo, sizeof(char)*100);
+            receiving(dSC, pseudo, sizeof(char)*12);
 
             /*On enregistre le pseudo du client*/
             pseudo = strtok(pseudo, "\n");
-            tabClient[numClient].pseudo = pseudo;
+            tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
+            strcpy(tabClient[numClient].pseudo,pseudo);
 
             /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
-            printf("\nPseudo recu: %s \n", pseudo);
             strcat(pseudo," à rejoint la communication\n");
-            printf("%s",pseudo);
-            printf("Envoi du message aux %ld autres clients. \n", nbClient);
+
             sending(dSC, pseudo);
 
             free(pseudo);
 
             /*_____________________ Communication _____________________*/
-            int threadReturn = pthread_create(&tabThread[nbClient],NULL,broadcast,(void *)numClient);
+            int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);
             if(threadReturn == -1){
                 perror("erreur thread create");
             }
@@ -214,7 +216,7 @@ int main(int argc, char *argv[]) {
             nbClient += 1;
             
             printf("Clients connectés : %ld\n", nbClient);
-            printf("%ld / %d",nbClient,MAX_CLIENT);
+            
         }
 
     }
