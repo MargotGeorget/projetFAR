@@ -12,15 +12,20 @@
 /*Lancer avec ./serveur votre_port */
 
 
+typedef struct Client Client;
+struct Client{
+    char * pseudo;
+    long dSC;
+};
 
 /* - MAX_CLIENT = nombre maximum de client accepté sur le serveur
  * - tabClient = tableau répertoriant les sockets des clients connectés
  * - tabThread = tableau des threads associés au traitement de chaque client
  * - nbClient = nombre de clients actuellement connectés*/
 #define MAX_CLIENT 5
-long tabClient[MAX_CLIENT];
+Client tabClient[MAX_CLIENT];
 pthread_t tabThread[MAX_CLIENT];
-int nbClient = 0;
+long nbClient = 0;
 
 
 
@@ -35,8 +40,8 @@ void sending(int dS, char * msg){
     int i;
     for (i = 0; i<nbClient ; i++) {
         /*On n'envoie pas au client qui a écrit le message*/
-        if(dS != tabClient[i]){
-            int sendR = send(tabClient[i], msg, strlen(msg)+1, 0);
+        if(dS != tabClient[i].dSC){
+            int sendR = send(tabClient[i].dSC, msg, strlen(msg)+1, 0);
             if (sendR == -1){ /*vérification de la valeur de retour*/
                 perror("erreur au send");
                 exit(-1);
@@ -81,19 +86,28 @@ int endOfCommunication(char ** msg){
  * */
 void * broadcast(void * clientParam){
     int isEnd = 0;
-    int dSC = (long) clientParam;
+    int numClient = (long) clientParam;
+    char * pseudoSender = tabClient[numClient].pseudo;
+    printf("pseudo: %s",tabClient[numClient].pseudo);
 
     while(!isEnd){
         /*Réception du message*/
-        char * msg = (char *) malloc(sizeof(char)*100);
-        receiving(dSC, msg, sizeof(char)*100);
-        printf("\nMessage recu: %s \n", msg);
+        char * msgReceived = (char *) malloc(sizeof(char)*100);
+        receiving(tabClient[numClient].dSC, msgReceived, sizeof(char)*100);
+        printf("\nMessage recu: %s \n", msgReceived);
 
         /*On verifie si le client veut terminer la communication*/
-        isEnd = endOfCommunication(&msg);
+        isEnd = endOfCommunication(&msgReceived);
 
-        printf("Envoi du message aux %d clients. \n", nbClient);
-        sending(dSC, msg);
+        char * msgToSend = (char *) malloc(sizeof(char)*112);
+        strcat(msgToSend, pseudoSender);
+        strcat(msgToSend, msgReceived);
+        printf("%s",msgToSend);
+        printf("pseudo de la personne : %s",pseudoSender);
+
+        printf("Envoi du message aux %ld clients. \n", nbClient);
+        sending(tabClient[numClient].dSC, msgToSend);
+        
     }
 
     return NULL;
@@ -135,7 +149,7 @@ int main(int argc, char *argv[]) {
     while(1){
         int dSC;
         /*Tant qu'on peut accepter des clients */
-        while(nbClient < MAX_CLIENT){
+        if(nbClient < MAX_CLIENT){
             /*Accepter une connexion*/
             struct sockaddr_in aC;
             socklen_t lg = sizeof(struct sockaddr_in);
@@ -153,23 +167,39 @@ int main(int argc, char *argv[]) {
             }
 
             printf("Client %d connecté\n", numClient);
+            /*On enregistre la socket du client*/
+            tabClient[nbClient].dSC = dSC;
 
-            /*TO DO : RECV ICI POUR LES PSEUDOS*/
+            /*Réception du pseudo*/
+            char * pseudo = (char *) malloc(sizeof(char)*100);
+            receiving(dSC, pseudo, sizeof(char)*100);
 
-            /*On remplit le tableau avec le client*/
-            tabClient[nbClient] = dSC;
+            /*On enregistre le pseudo du client*/
+            pseudo = strtok(pseudo, "\n");
+            tabClient[nbClient].pseudo = pseudo;
+
+            /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
+            printf("\nPseudo recu: %s \n", pseudo);
+            strcat(pseudo," à rejoint la communication\n");
+            printf("%s",pseudo);
+            printf("Envoi du message aux %ld autres clients. \n", nbClient);
+            sending(dSC, pseudo);
+
+            free(pseudo);
 
             /*_____________________ Communication _____________________*/
-            int threadReturn = pthread_create(&tabThread[nbClient],NULL,broadcast,(void *)tabClient[nbClient]);
+            int threadReturn = pthread_create(&tabThread[nbClient],NULL,broadcast,(void *)nbClient);
             if(threadReturn == -1){
                 perror("erreur thread create");
             }
-            /*On a un client sur le serveur, on incrémente*/
+
+            /*On a un client en plus sur le serveur, on incrémente*/
             nbClient += 1;
-            printf("Clients connectés : %d\n", nbClient);
+            
+            printf("Clients connectés : %ld\n", nbClient);
+            
 
         }
-        close(dSC);
 
     }
 	close(dS);

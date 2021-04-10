@@ -10,7 +10,6 @@
 /*Lancer avec ./client votre_ip votre_port*/
 
 int isEnd = 0;
-char * hisPseudo;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -47,10 +46,10 @@ void * sending_th(void * dSparam){
         printf(">");
         fgets(m, 100, stdin);
         isEnd = endOfCommunication(m,"fin\n");
+        
         /*Envoi*/
         sending(dS, m);
 
-        
         free(m);
     }
     return NULL;
@@ -75,11 +74,9 @@ void receiving(int dS, char * rep, ssize_t size){
 void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
     while(!isEnd){
-
-
         char * r = (char *) malloc(sizeof(char)*100);
         receiving(dS, r, sizeof(char)*100);
-        printf("%s : %s",hisPseudo,r);
+        printf(">%s",r);
         isEnd = endOfCommunication(r, "** a quitté la communication **\n");
         free(r);
     }
@@ -130,20 +127,18 @@ int main(int argc, char *argv[]) {
     /*Envoi du message*/
     sending(dS, myPseudo);
 
-    /*En attente du client 2*/
+    /*En attente d'un autre client*/
     if(numClient==1){
         printf("En attente d'un autre client\n");
+
+        /*Reception du premier message informant de l'arrivée d'un autre client*/
+        char * msg = (char *) malloc(sizeof(char)*100);
+        receiving(dS, msg, sizeof(char)*100);
+        printf("%s",msg);
+
+        free(msg);
+        
     }
-
-    /*Reception du pseudo du client avec lequel on communique*/
-    hisPseudo = (char *) malloc(sizeof(char)*12);
-    receiving(dS, hisPseudo, sizeof(char)*12);
-    hisPseudo = strtok(hisPseudo, "\n");
-    printf("\n--------- Vous communiquez avec %s ---------\n", hisPseudo);
-    printf("\nVos messages peuvent faire jusqu'à 100 caractères.\n"
-           "Pour quitter la conversation envoyez 'fin'.\n"
-           "Bonne communication !\n\n");
-
 
     /*_____________________ Communication _____________________*/
 
