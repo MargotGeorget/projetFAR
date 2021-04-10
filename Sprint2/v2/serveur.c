@@ -11,15 +11,15 @@
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur votre_port */
 
-
 typedef struct Client Client;
 struct Client{
+    int occupied;
     char * pseudo;
     long dSC;
 };
 
 /* - MAX_CLIENT = nombre maximum de client accepté sur le serveur
- * - tabClient = tableau répertoriant les sockets des clients connectés
+ * - tabClient = tableau répertoriant les clients connectés
  * - tabThread = tableau des threads associés au traitement de chaque client
  * - nbClient = nombre de clients actuellement connectés*/
 #define MAX_CLIENT 5
@@ -27,7 +27,20 @@ Client tabClient[MAX_CLIENT];
 pthread_t tabThread[MAX_CLIENT];
 long nbClient = 0;
 
+/*Fonctions pour gérer les tableaux de clients*/
 
+/*
+* Retourne le premier emplacement disponible dans le tableau de client. Retourne -1 si tout les emplacements sont occupés
+*/
+int giveNumClient(){
+    int i = 0;
+    while (i<MAX_CLIENT){
+        if(!tabClient[i].occupied){
+            return i;
+        }
+    }
+    return -1;
+}
 
 /*
  * Envoi un message à toutes les sockets présentent dans le tableau des clients
@@ -149,7 +162,10 @@ int main(int argc, char *argv[]) {
     while(1){
         int dSC;
         /*Tant qu'on peut accepter des clients */
+        printf("%ld / %d",nbClient,MAX_CLIENT);
         if(nbClient < MAX_CLIENT){
+            printf("je rentre dans la boucle bg");
+
             /*Accepter une connexion*/
             struct sockaddr_in aC;
             socklen_t lg = sizeof(struct sockaddr_in);
@@ -159,16 +175,17 @@ int main(int argc, char *argv[]) {
                 exit(-1);
             }
 
-            /*Affectation du numéro au client en fonction de l'ordre de connexion*/
-            int numClient = nbClient + 1;
+            /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
+            long numClient = giveNumClient();
             if (send(dSC, &numClient, sizeof(int), 0) == -1){
                 perror("erreur au send du numClient");
                 exit(-1);
             }
 
-            printf("Client %d connecté\n", numClient);
+            printf("Client %ld connecté\n", numClient);
             /*On enregistre la socket du client*/
-            tabClient[nbClient].dSC = dSC;
+            tabClient[numClient].occupied = 1;
+            tabClient[numClient].dSC = dSC;
 
             /*Réception du pseudo*/
             char * pseudo = (char *) malloc(sizeof(char)*100);
@@ -176,7 +193,7 @@ int main(int argc, char *argv[]) {
 
             /*On enregistre le pseudo du client*/
             pseudo = strtok(pseudo, "\n");
-            tabClient[nbClient].pseudo = pseudo;
+            tabClient[numClient].pseudo = pseudo;
 
             /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
             printf("\nPseudo recu: %s \n", pseudo);
@@ -188,7 +205,7 @@ int main(int argc, char *argv[]) {
             free(pseudo);
 
             /*_____________________ Communication _____________________*/
-            int threadReturn = pthread_create(&tabThread[nbClient],NULL,broadcast,(void *)nbClient);
+            int threadReturn = pthread_create(&tabThread[nbClient],NULL,broadcast,(void *)numClient);
             if(threadReturn == -1){
                 perror("erreur thread create");
             }
@@ -197,8 +214,7 @@ int main(int argc, char *argv[]) {
             nbClient += 1;
             
             printf("Clients connectés : %ld\n", nbClient);
-            
-
+            printf("%ld / %d",nbClient,MAX_CLIENT);
         }
 
     }
