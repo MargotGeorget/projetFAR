@@ -11,6 +11,9 @@
 /*Compiler gcc -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur votre_port */
 
+/*
+* Définition d'une structure Client pour regrouper toutes les informations du client
+*/
 typedef struct Client Client;
 struct Client{
     int occupied;
@@ -27,10 +30,10 @@ Client tabClient[MAX_CLIENT];
 pthread_t tabThread[MAX_CLIENT];
 long nbClient = 0;
 
-/*Fonctions pour gérer les tableaux de clients*/
-
 /*
-* Retourne le premier emplacement disponible dans le tableau de client. Retourne -1 si tout les emplacements sont occupés
+* Fonctions pour gérer les indices du tableaux de clients 
+* Retour : un entier, indice du premier emplacement disponible
+*          -1 si tout les emplecements sont occupés. 
 */
 int giveNumClient(){
     int i = 0;
@@ -85,12 +88,10 @@ void receiving(int dS, char * rep, ssize_t size){
 /*
  * Vérifie si un client souhaite quitter la communication
  * Paramètres : char ** msg : message du client à vérifier
- * Retour : 0 (faux) si le client veut quitter, 1 (vrai) sinon
+ * Retour : 1 (vrai) si le client veut quitter, 0 (faux) sinon
 */
-int endOfCommunication(char ** msg){
-    if (strcmp(*msg, "** a quitté la communication **\n")==0){
-        /**msg = "** a quitté la communication **\n";
-        printf("%s",*msg);*/
+int endOfCommunication(char * msg){
+    if (strcmp(msg, "** a quitté la communication **\n")==0){
         return 1;
     }
     return 0;
@@ -111,13 +112,15 @@ void * broadcast(void * clientParam){
         printf("\nMessage recu: %s \n", msgReceived);
 
         /*On verifie si le client veut terminer la communication*/
-        isEnd = endOfCommunication(&msgReceived);
+        isEnd = endOfCommunication(msgReceived);
 
+        /*Ajout du pseudo de l'expéditeur devant le message à envoyer*/
         char * msgToSend = (char *) malloc(sizeof(char)*115);
         strcat(msgToSend, pseudoSender);
         strcat(msgToSend, " : ");
         strcat(msgToSend, msgReceived);
 
+        /*Envoi du message aux autres clients*/
         printf("Envoi du message aux %ld clients. \n", nbClient);
         sending(tabClient[numClient].dSC, msgToSend);
         
@@ -166,6 +169,7 @@ int main(int argc, char *argv[]) {
 
     while(1){
         int dSC;
+
         /*Tant qu'on peut accepter des clients */
         if(nbClient < MAX_CLIENT){
 
@@ -178,14 +182,19 @@ int main(int argc, char *argv[]) {
                 exit(-1);
             }
 
+        /*On gère l'arrivée du client avant de créer son thread*/
+
             /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
             long numClient = giveNumClient();
+
+            /*Envoi du nombre de client présent au nouveau client*/
             if (send(dSC, &nbClient, sizeof(int), 0) == -1){
                 perror("erreur au send du numClient");
                 exit(-1);
             }
 
             printf("Client %ld connecté\n", numClient);
+
             /*On enregistre la socket du client*/
             tabClient[numClient].occupied = 1;
             tabClient[numClient].dSC = dSC;
@@ -201,7 +210,6 @@ int main(int argc, char *argv[]) {
 
             /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
             strcat(pseudo," à rejoint la communication\n");
-
             sending(dSC, pseudo);
 
             free(pseudo);

@@ -13,8 +13,13 @@ int isEnd = 0;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int endOfCommunication(char * msg, char * msgToCmp){
-    if (strcmp(msg, msgToCmp)==0){
+/*
+ * Vérifie si un client souhaite quitter la communication
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 1 (vrai) si le client veut quitter, 0 (faux) sinon
+*/
+int endOfCommunication(char * msg){
+    if (strcmp(msg, "fin\n")==0){
         strcpy(msg, "** a quitté la communication **\n");
         return 1;
     }
@@ -45,7 +50,9 @@ void * sending_th(void * dSparam){
 
         printf(">");
         fgets(m, 100, stdin);
-        isEnd = endOfCommunication(m,"fin\n");
+
+        /*On vérifie si le client veut quitter la communication*/
+        isEnd = endOfCommunication(m);
         
         /*Envoi*/
         sending(dS, m);
@@ -75,16 +82,16 @@ void receiving(int dS, char * rep, ssize_t size){
 void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
     while(!isEnd){
+
         char * r = (char *) malloc(sizeof(char)*100);
         receiving(dS, r, sizeof(char)*100);
         printf(">%s",r);
-        isEnd = endOfCommunication(r, "** a quitté la communication **\n");
+
         free(r);
     }
     close(dS);
     return NULL;
 }
-
 
 
 /*
@@ -118,58 +125,50 @@ int main(int argc, char *argv[]) {
         perror("erreur au recv du numClient");
         exit(-1);
     }
-    if(nbClient==5){
-        printf("Connexion échouée, nombre maximum de clients atteint pour cette conversation\n");
-    }else {
-        printf("Connexion réussie\n");
         
-        /*Saisie du pseudo du client au clavier*/
-        char * myPseudo = (char *) malloc(sizeof(char)*12);
-        printf("Votre pseudo (maximum 12 caractères): ");
-        fgets(myPseudo, 12, stdin);
+    /*Saisie du pseudo du client au clavier*/
+    char * myPseudo = (char *) malloc(sizeof(char)*12);
+    printf("Votre pseudo (maximum 12 caractères): ");
+    fgets(myPseudo, 12, stdin);
 
-        /*Envoi du message*/
-        sending(dS, myPseudo);
+    /*Envoi du message*/
+    sending(dS, myPseudo);
 
-        /*En attente d'un autre client*/
-        if(nbClient==0){
-            printf("En attente d'un autre client\n");
+    /*En attente d'un autre client*/
+    if(nbClient==0){
+        printf("En attente d'un autre client\n");
 
-            /*Reception du premier message informant de l'arrivée d'un autre client*/
-            char * msg = (char *) malloc(sizeof(char)*100);
-            receiving(dS, msg, sizeof(char)*100);
-            printf("%s",msg);
+        /*Reception du premier message informant de l'arrivée d'un autre client*/
+        char * msg = (char *) malloc(sizeof(char)*100);
+        receiving(dS, msg, sizeof(char)*100);
+        printf("%s",msg);
 
-            free(msg);
-            
-        }
-
-        /*_____________________ Communication _____________________*/
-
-        /*Echange des messages*/
-
-        /*Création d'un thread d'envoi*/
-        pthread_t thread_sendind;
-        pthread_t thread_receiving;
-
-        int thread1 = pthread_create(&thread_sendind, NULL, sending_th, (void *)dS);
-        if(thread1==-1){
-            perror("error thread 1");
-        }
-
-
-        /*Création d'un thread de reception*/
-        int thread2 = pthread_create(&thread_receiving, NULL, receiving_th, (void *)dS);
-        if(thread2==-1){
-            perror("error thread 2");
-        }
-
-
-        /*Attente de la fin des threads*/
-        pthread_join(thread_sendind, NULL);
-        pthread_join(thread_receiving, NULL);
+        free(msg);
     }
-    /*Fin de la communication*/
-	
+
+    /*_____________________ Communication _____________________*/
+
+    /*Echange des messages*/
+
+    /*Création d'un thread d'envoi*/
+    pthread_t thread_sendind;
+    pthread_t thread_receiving;
+
+    int thread1 = pthread_create(&thread_sendind, NULL, sending_th, (void *)dS);
+    if(thread1==-1){
+        perror("error thread 1");
+    }
+
+    /*Création d'un thread de reception*/
+    int thread2 = pthread_create(&thread_receiving, NULL, receiving_th, (void *)dS);
+    if(thread2==-1){
+        perror("error thread 2");
+    }
+
+    /*Attente de la fin des threads*/
+    pthread_join(thread_sendind, NULL);
+    pthread_join(thread_receiving, NULL);
+    
+    /*Fin de la communication**/
     return 0;
 }
