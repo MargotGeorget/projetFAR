@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-/*Compiler gcc -Wall -ansi -o client client.c*/
+/*Compiler gcc -pthread -Wall -ansi -o client client.c*/
 /*Lancer avec ./client votre_ip votre_port*/
 
 int isEnd = 0;

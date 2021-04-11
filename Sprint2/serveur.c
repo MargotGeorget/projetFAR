@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 
-/*Compiler gcc -Wall -ansi -o serveur serveur.c*/
+/*Compiler gcc -pthread -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur votre_port */
 
 /*
