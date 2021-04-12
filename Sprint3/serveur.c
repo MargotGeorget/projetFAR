@@ -157,6 +157,23 @@ void killThread(){
     pthread_mutex_unlock(&lock);
 }
 
+/* 
+ * Fonction qui vérifie si le pseudo saisie n'est pas déjà utilisé 
+ * Retour: 1 si le pseudo n'est pas encore utilisé, 0 sinon 
+ */
+int avalablePseudo(char * pseudo){
+    int i;
+    for (i=0; i<MAX_CLIENT; i++){
+        printf("%d\n",tabClient[i].occupied);
+        if(tabClient[i].occupied){
+            printf("%s",tabClient[i].pseudo);
+            if(strcmp(tabClient[i].pseudo,pseudo)==0){
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 /*
  * _____________________ MAIN _____________________
@@ -229,22 +246,34 @@ int main(int argc, char *argv[]) {
         
         printf("Client %ld connecté\n", numClient);
 
-        /*On enregistre la socket du client*/
+        /*Réception du pseudo*/
+
+        char * pseudo = (char *) malloc(sizeof(char)*100);
+        int avalableP = 0;
+        do {
+            if(send(dSC,&avalableP, sizeof(int),0)==-1){
+                perror("erreur au send du nbClient");
+                exit(-1);
+            }
+            receiving(dSC, pseudo, sizeof(char)*12);
+            pseudo = strtok(pseudo, "\n");
+            avalableP=avalablePseudo(pseudo);
+        } while(!avalableP);
+        send(dSC,&avalableP, sizeof(int),0);
+
+
+        /*On enregistre le pseudo du client*/
+        
         pthread_mutex_lock(&lock);
+        tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
+        printf("%s",pseudo);
+        strcpy(tabClient[numClient].pseudo,pseudo);
+        printf("%s",tabClient[numClient].pseudo);
+        /*On enregistre la socket du client*/
         tabClient[numClient].occupied = 1;
         tabClient[numClient].dSC = dSC;
         pthread_mutex_unlock(&lock);
-
-        /*Réception du pseudo*/
-        char * pseudo = (char *) malloc(sizeof(char)*100);
-        receiving(dSC, pseudo, sizeof(char)*12);
-
-        /*On enregistre le pseudo du client*/
-        pseudo = strtok(pseudo, "\n");
-        pthread_mutex_lock(&lock);
-        tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
-        strcpy(tabClient[numClient].pseudo,pseudo);
-        pthread_mutex_unlock(&lock);
+        printf("%s",tabClient[numClient].pseudo);
 
         /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
         strcat(pseudo," à rejoint la communication\n");
