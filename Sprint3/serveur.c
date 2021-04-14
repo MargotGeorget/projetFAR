@@ -62,7 +62,7 @@ int giveNumClient(){
  *              char * msg : message à envoyer
  * Retour : pas de retour
 */
-void sending(int dS, char * msg){
+void sendingAll(int dS, char * msg){
     int i;
     for (i = 0; i<MAX_CLIENT ; i++) {
         /*On n'envoie pas au client qui a écrit le message*/
@@ -74,6 +74,49 @@ void sending(int dS, char * msg){
             }
         }
     }
+}
+
+int findClient(char * pseudo){
+    int i;
+    for (i=0;i<MAX_CLIENT;i++){
+        if (tabClient[i].occupied){
+            if (strcmp(pseudo, tabClient[i].pseudo)==0){
+                return tabClient[i].dSC;
+            }
+        }
+    }
+    return -1;
+}
+
+void sendingPrivate(int mydSC, char * msg){
+    char * copyMsg = (char *) malloc(sizeof(char)*100);
+    strcpy(copyMsg, msg);
+    char * pseudo = (char *) malloc(sizeof(char)*13);
+    pseudo = strtok(copyMsg," ");
+    strcpy(pseudo,pseudo+1);
+    
+    int dSC = findClient(pseudo);
+    printf("erreur ici\n");
+    printf("%d",dSC);
+    int sendR;
+    if (dSC==-1){
+        printf("pseudo invalide\n");
+        char * error = (char *) malloc(sizeof(char)*100);
+        error = "Le pseudo saisit n'existe pas!\n";
+        printf("%s\n",error);
+        sendR = send(mydSC, error, strlen(error)+1, 0);
+        if (sendR == -1){ /*vérification de la valeur de retour*/
+            perror("erreur au send");
+            exit(-1);
+        }
+    }else {
+        sendR = send(dSC, msg, strlen(msg)+1, 0);
+        if (sendR == -1){ /*vérification de la valeur de retour*/
+            perror("erreur au send");
+            exit(-1);
+        }
+    }
+
 }
 
 /*
@@ -125,11 +168,14 @@ void * broadcast(void * clientParam){
         strcat(msgToSend, pseudoSender);
         strcat(msgToSend, " : ");
         strcat(msgToSend, msgReceived);
-
-        /*Envoi du message aux autres clients*/
-        printf("Envoi du message aux autres clients. \n");
-        sending(tabClient[numClient].dSC, msgToSend);
-        
+        char first = msgReceived[0];
+        if(strcmp(&first,"@")==0){
+            sendingPrivate(tabClient[numClient].dSC, msgReceived);
+        }else {
+            /*Envoi du message aux autres clients*/
+            printf("Envoi du message aux autres clients. \n");
+            sendingAll(tabClient[numClient].dSC, msgToSend);
+        }
     }
 
     /*Fermeture du socket client*/
@@ -161,7 +207,7 @@ void killThread(){
  * Fonction qui vérifie si le pseudo saisie n'est pas déjà utilisé 
  * Retour: 1 si le pseudo n'est pas encore utilisé, 0 sinon 
  */
-int avalablePseudo(char * pseudo){
+int isAvailablePseudo(char * pseudo){
     int i;
     for (i=0; i<MAX_CLIENT; i++){
         printf("%d\n",tabClient[i].occupied);
@@ -174,6 +220,7 @@ int avalablePseudo(char * pseudo){
     }
     return 1;
 }
+
 
 /*
  * _____________________ MAIN _____________________
@@ -249,17 +296,17 @@ int main(int argc, char *argv[]) {
         /*Réception du pseudo*/
 
         char * pseudo = (char *) malloc(sizeof(char)*100);
-        int avalableP = 0;
+        int availablePseudo = 0;
         do {
-            if(send(dSC,&avalableP, sizeof(int),0)==-1){
+            if(send(dSC,&availablePseudo, sizeof(int),0)==-1){
                 perror("erreur au send du nbClient");
                 exit(-1);
             }
             receiving(dSC, pseudo, sizeof(char)*12);
             pseudo = strtok(pseudo, "\n");
-            avalableP=avalablePseudo(pseudo);
-        } while(!avalableP);
-        send(dSC,&avalableP, sizeof(int),0);
+            availablePseudo=isAvailablePseudo(pseudo);
+        } while(!availablePseudo);
+        send(dSC,&availablePseudo, sizeof(int),0);
 
 
         /*On enregistre le pseudo du client*/
@@ -277,7 +324,7 @@ int main(int argc, char *argv[]) {
 
         /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
         strcat(pseudo," à rejoint la communication\n");
-        sending(dSC, pseudo);
+        sendingAll(dSC, pseudo);
 
         free(pseudo);
 

@@ -126,20 +126,20 @@ int main(int argc, char *argv[]) {
     }
         
     /*Saisie du pseudo du client au clavier*/
-    int avalablePseudo;
+    int availablePseudo;
     char * myPseudo = (char *) malloc(sizeof(char)*12);
-    recv(dS,&avalablePseudo,sizeof(int),0);
+    recv(dS,&availablePseudo,sizeof(int),0);
    
     printf("Votre pseudo (maximum 12 caractères): ");
     fgets(myPseudo, 12, stdin);
     sending(dS,myPseudo);
-    recv(dS,&avalablePseudo,sizeof(int),0);
+    recv(dS,&availablePseudo,sizeof(int),0);
    
-    while(!avalablePseudo){
+    while(!availablePseudo){
         printf("Pseudo déjà utilisé!\nVotre pseudo (maximum 12 caractères): ");
         fgets(myPseudo, 12, stdin);
         sending(dS,myPseudo);
-        recv(dS,&avalablePseudo,sizeof(int),0);
+        recv(dS,&availablePseudo,sizeof(int),0);
     }
     
     /*En attente d'un autre client*/
