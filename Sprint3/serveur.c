@@ -38,86 +38,95 @@ int tabThreadToKill[MAX_CLIENT];
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
+/*_____Fonction pour gérer le tableau de Clients_____*/
+
 /*
-* Fonctions pour gérer les indices du tableaux de clients 
-* Retour : un entier, indice du premier emplacement disponible
-*          -1 si tout les emplecements sont occupés. 
-*/
+ * Fonctions pour gérer les indices du tableaux de clients 
+ * Retour : un entier, indice du premier emplacement disponible
+ *          -1 si tout les emplecements sont occupés. 
+ */
 int giveNumClient(){
     int i = 0;
-    while (i<MAX_CLIENT){
+    int indice = -1;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    while (i<MAX_CLIENT && indice==-1){
         if(!tabClient[i].occupied){
-            return i;
+            indice = i;
         }
         i+=1;
     }
-    
-    return -1;
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    return indice;
 }
 
 /*
- * Envoi un message à toutes les sockets présentent dans le tableau des clients
- * et teste que tout se passe bien
- * Paramètres : int dS : expéditeur du message
- *              char * msg : message à envoyer
- * Retour : pas de retour
-*/
-void sendingAll(int dS, char * msg){
-    int i;
-    for (i = 0; i<MAX_CLIENT ; i++) {
-        /*On n'envoie pas au client qui a écrit le message*/
-        if(tabClient[i].occupied && dS != tabClient[i].dSC){
-            int sendR = send(tabClient[i].dSC, msg, strlen(msg)+1, 0);
-            if (sendR == -1){ /*vérification de la valeur de retour*/
-                perror("erreur au send");
-                exit(-1);
-            }
-        }
-    }
-}
-
+ * Fonctions pour trouver un client dans le tableau à partir de son pseudo
+ * Paramètre : char * pseudo = le pseudo du client que l'on cherche 
+ * Retour : un entier, correspondant à la socket du client trouvé
+ *          -1 si le client n'existe pas 
+ */
 int findClient(char * pseudo){
-    int i;
-    for (i=0;i<MAX_CLIENT;i++){
+    int i = 0;
+    int client = -1;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    while (i<MAX_CLIENT && client==-1){
         if (tabClient[i].occupied){
             if (strcmp(pseudo, tabClient[i].pseudo)==0){
-                return tabClient[i].dSC;
+                client = tabClient[i].dSC;
             }
         }
+        i+=1;
     }
-    return -1;
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    return client;
 }
 
-void sendingPrivate(int mydSC, char * msg){
-    char * copyMsg = (char *) malloc(sizeof(char)*100);
-    strcpy(copyMsg, msg);
-    char * pseudo = (char *) malloc(sizeof(char)*13);
-    pseudo = strtok(copyMsg," ");
-    strcpy(pseudo,pseudo+1);
-    
-    int dSC = findClient(pseudo);
-    printf("erreur ici\n");
-    printf("%d",dSC);
-    int sendR;
-    if (dSC==-1){
-        printf("pseudo invalide\n");
-        char * error = (char *) malloc(sizeof(char)*100);
-        error = "Le pseudo saisit n'existe pas!\n";
-        printf("%s\n",error);
-        sendR = send(mydSC, error, strlen(error)+1, 0);
-        if (sendR == -1){ /*vérification de la valeur de retour*/
-            perror("erreur au send");
-            exit(-1);
-        }
-    }else {
-        sendR = send(dSC, msg, strlen(msg)+1, 0);
-        if (sendR == -1){ /*vérification de la valeur de retour*/
-            perror("erreur au send");
-            exit(-1);
-        }
-    }
+/* 
+ * Fonction qui vérifie si le pseudo saisie n'est pas déjà utilisé 
+ * Retour: 1 si le pseudo n'est pas encore utilisé, 0 sinon 
+ */
+int isAvailablePseudo(char * pseudo){
+    int i= 0;
+    int available = 1;
+    printf("Function availablePseudo\n");
 
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+    printf("entrée\n");
+    printf("available : %d, i : %d\n",available, i);
+    while (i<MAX_CLIENT && available){
+        printf("je suis dans la fonction et je boucle : %d\n",available);
+        if(tabClient[i].occupied){
+            if(strcmp(tabClient[i].pseudo,pseudo)==0){
+                available = 0;
+            }
+        }
+        i+=1;
+    }
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+    printf("sortie\n");
+    return available;
 }
+
+
+void addPseudoToMsg(char * msg, char * pseudoSender){
+    printf("fonction addPseudoToMsg\n");
+    char * msgToSend = (char *) malloc(sizeof(char)*150);
+    strcpy(msgToSend, pseudoSender);
+    strcat(msgToSend, " : ");
+    strcat(msgToSend, msg);
+    strcpy(msg,msgToSend);
+    free(msgToSend);
+    return;
+}
+
+
+/*_____Fonction pour gérer les envois et les receptions_____*/
 
 /*
  * Receptionne un message d'une socket et teste que tout se passe bien
@@ -135,6 +144,106 @@ void receiving(int dS, char * rep, ssize_t size){
 }
 
 /*
+ * Envoi un message à une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              char * msg : message à envoyer
+ * Retour : pas de retour
+ * */
+void sending(int dS, char * msg){
+    int sendR = send(dS, msg, strlen(msg)+1, 0);
+    if (sendR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au send");
+        exit(-1);
+    }
+}
+
+/*
+ * Envoi un entier à une socket et teste que tout se passe bien
+ * Paramètres : int dS : la socket
+ *              int number : entier à envoyer
+ * Retour : pas de retour
+ * */
+void sendingInt(int dS, int number){
+    int sendR = send(dS, &number, sizeof(int), 0);
+    if (sendR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au send");
+        exit(-1);
+    }
+}
+
+/*
+ * Envoi un message à toutes les sockets présentent dans le tableau des clients
+ * et teste que tout se passe bien
+ * Paramètres : int numClient: expéditeur du message
+ *              char * msg : message à envoyer
+ * Retour : pas de retour
+*/
+void sendingAll(int numClient, char * msg){
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    int dS = tabClient[numClient].dSC;
+
+    addPseudoToMsg(msg, tabClient[numClient].pseudo);
+
+    int i;
+    for (i = 0; i<MAX_CLIENT ; i++) {
+
+        /*On n'envoie pas au client qui a écrit le message*/
+        if(tabClient[i].occupied && dS != tabClient[i].dSC){
+            sending(tabClient[i].dSC, msg);
+        }
+    }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+}
+
+/*
+ * Envoi un message à un seul client
+ * et teste que tout se passe bien
+ * Paramètres : int numClient : expéditeur du message
+ *              char * msg : message à envoyer contenant un @ suivi d'un pseudo
+ * Retour : pas de retour
+*/
+void sendingPrivate(int numClient, char * msg){
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    int mydSC = tabClient[numClient].dSC;
+
+    /*Récupération du pseudo présent au début du message*/
+    char * copyMsg = (char *) malloc(sizeof(char)*100);
+    strcpy(copyMsg, msg);
+    char * pseudo = (char *) malloc(sizeof(char)*13);
+    pseudo = strtok(copyMsg," ");
+    strcpy(pseudo,pseudo+1);
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    int dSC = findClient(pseudo);
+
+    if (dSC==-1){ /*Aucun client n'a été trouvé*/
+
+        char * error = (char *) malloc(sizeof(char)*100);
+        error = "Le pseudo saisit n'existe pas!\n";
+        sending(mydSC, error);
+
+    }else { /*Le client à été trouvé et nous avons récupéré sa socket*/
+
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+        /*Ajout du pseudo de l'expéditeur devant le message à envoyer*/
+        addPseudoToMsg(msg, tabClient[numClient].pseudo);
+    
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+        sending(dSC, msg);       
+    }
+
+}
+
+/*
  * Vérifie si un client souhaite quitter la communication
  * Paramètres : char ** msg : message du client à vérifier
  * Retour : 1 (vrai) si le client veut quitter, 0 (faux) sinon
@@ -146,13 +255,14 @@ int endOfCommunication(char * msg){
     return 0;
 }
 
+
+/*_____Fonction pour gérer les threads_____*/
 /*
  * Start routine de pthread_create()
  * */
 void * broadcast(void * clientParam){
     int isEnd = 0;
     int numClient = (long) clientParam;
-    char * pseudoSender = tabClient[numClient].pseudo;
 
     while(!isEnd){
         /*Réception du message*/
@@ -163,18 +273,13 @@ void * broadcast(void * clientParam){
         /*On verifie si le client veut terminer la communication*/
         isEnd = endOfCommunication(msgReceived);
 
-        /*Ajout du pseudo de l'expéditeur devant le message à envoyer*/
-        char * msgToSend = (char *) malloc(sizeof(char)*115);
-        strcat(msgToSend, pseudoSender);
-        strcat(msgToSend, " : ");
-        strcat(msgToSend, msgReceived);
         char first = msgReceived[0];
         if(strcmp(&first,"@")==0){
-            sendingPrivate(tabClient[numClient].dSC, msgReceived);
+            sendingPrivate(numClient, msgReceived);
         }else {
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
-            sendingAll(tabClient[numClient].dSC, msgToSend);
+            sendingAll(numClient, msgReceived);
         }
     }
 
@@ -203,32 +308,12 @@ void killThread(){
     pthread_mutex_unlock(&lock);
 }
 
-/* 
- * Fonction qui vérifie si le pseudo saisie n'est pas déjà utilisé 
- * Retour: 1 si le pseudo n'est pas encore utilisé, 0 sinon 
- */
-int isAvailablePseudo(char * pseudo){
-    int i;
-    for (i=0; i<MAX_CLIENT; i++){
-        printf("%d\n",tabClient[i].occupied);
-        if(tabClient[i].occupied){
-            printf("%s",tabClient[i].pseudo);
-            if(strcmp(tabClient[i].pseudo,pseudo)==0){
-                return 0;
-            }
-        }
-    }
-    return 1;
-}
-
-
 /*
  * _____________________ MAIN _____________________
  * */
 int main(int argc, char *argv[]) {
 
-    killThread();
-    sem_init(&semNbClient, 0, 5);
+    sem_init(&semNbClient, 0, MAX_CLIENT);
 
     /*Verification des paramètres*/
     if(argc<2){
@@ -267,7 +352,10 @@ int main(int argc, char *argv[]) {
         int dSC;
 
         /*Tant qu'on peut accepter des clients */
-        sem_wait(&semNbClient);    
+        sem_wait(&semNbClient); 
+
+        /*On tue les threads pour lesquels les clients ont quitté la connexion*/
+        killThread();   
 
         /*Accepter une connexion*/
         struct sockaddr_in aC;
@@ -280,51 +368,53 @@ int main(int argc, char *argv[]) {
 
     /*On gère l'arrivée du client avant de créer son thread*/
 
-        /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
-        long numClient = giveNumClient();
+        /*Récupération du nombre de client connectés*/
         int valueSem;
         sem_getvalue(&semNbClient, &valueSem);
         int nbClient = MAX_CLIENT-valueSem;
+
+        /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
+        long numClient = giveNumClient();
+
         /*Envoi du nombre de client présent au nouveau client*/
-        if (send(dSC, &nbClient, sizeof(int), 0) == -1){
-            perror("erreur au send du nbClient");
-            exit(-1);
-        }
-        
+        sendingInt(dSC, nbClient);
+                
         printf("Client %ld connecté\n", numClient);
 
         /*Réception du pseudo*/
 
         char * pseudo = (char *) malloc(sizeof(char)*100);
-        int availablePseudo = 0;
-        do {
-            if(send(dSC,&availablePseudo, sizeof(int),0)==-1){
-                perror("erreur au send du nbClient");
-                exit(-1);
-            }
-            receiving(dSC, pseudo, sizeof(char)*12);
-            pseudo = strtok(pseudo, "\n");
-            availablePseudo=isAvailablePseudo(pseudo);
-        } while(!availablePseudo);
-        send(dSC,&availablePseudo, sizeof(int),0);
+        int availablePseudo = 0; /*false*/
 
+        do {
+            sendingInt(dSC,availablePseudo);
+            receiving(dSC, pseudo, sizeof(char)*12);
+            printf("%s\n",pseudo);
+            pseudo = strtok(pseudo, "\n");
+            availablePseudo = isAvailablePseudo(pseudo);
+            printf("%d",availablePseudo);
+
+        } while(!availablePseudo);
+
+        /*Pseudo valide*/
+        sendingInt(dSC,availablePseudo);
 
         /*On enregistre le pseudo du client*/
         
-        pthread_mutex_lock(&lock);
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
         tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
-        printf("%s",pseudo);
         strcpy(tabClient[numClient].pseudo,pseudo);
-        printf("%s",tabClient[numClient].pseudo);
+
         /*On enregistre la socket du client*/
         tabClient[numClient].occupied = 1;
         tabClient[numClient].dSC = dSC;
-        pthread_mutex_unlock(&lock);
-        printf("%s",tabClient[numClient].pseudo);
+
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
         /*On envoi un message pour avertir les autres clients de l'arriver du nouveau client*/
-        strcat(pseudo," à rejoint la communication\n");
-        sendingAll(dSC, pseudo);
+        strcat(pseudo," a rejoint la communication\n");
+        sendingAll(numClient, pseudo);    
 
         free(pseudo);
 
@@ -336,7 +426,6 @@ int main(int argc, char *argv[]) {
     
         printf("Clients connectés : %d\n", nbClient);
         
-
     }
     sem_destroy(&semNbClient);
 	close(dS);
