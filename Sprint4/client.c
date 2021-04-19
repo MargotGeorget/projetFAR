@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <pthread.h>
 #include <unistd.h>
 
@@ -26,6 +27,18 @@ int endOfCommunication(char * msg){
 }
 
 /*
+ * Vérifie si un client souhaite envoyer un fichier
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 1 (vrai) si le client veut envoyer un fichier, 0 (faux) sinon
+*/
+int isSendingFile(char * msg){
+    if (strcmp(msg, "/file\n")==0){
+        return 1;
+    }
+    return 0;
+}
+
+/*
  * Envoi un message à une socket et teste que tout se passe bien
  * Paramètres : int dS : la socket
  *              char * msg : message à envoyer
@@ -37,6 +50,30 @@ void sending(int dS, char * msg){
         perror("erreur au send");
         exit(-1);
     }
+}
+
+void sendingFile(int dS){
+
+    /*Saisie du nom du fichier au clavier*/
+    char * fileName = (char *) malloc(sizeof(char)*100);
+
+    printf("\nSaisissez le nom d'un fichier à envoyer : \n");
+    fgets(fileName, 100, stdin);
+
+    sending(dS,fileName);
+
+    /* ToDo : ouvrir le fichier; envoi */ 
+    FILE * fp;
+    fp = fopen(fileName,"w");
+    char data[1024];
+
+    while(fgets(data, 1024, fp) != NULL) {
+        if (send(dS, data, sizeof(data), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        bzero(data, 1024);
+  }
 }
 
 /* -- Fonction pour le thread d'envoi -- */
@@ -56,11 +93,21 @@ void * sending_th(void * dSparam){
         /*Envoi*/
         sending(dS, m);
 
+        if (isSendingFile(m)){
+            printf("\n");
+            int cr = system("ls ./FileToSend");
+            if(cr == -1){
+                printf("commande echouée");
+            }
+            sendingFile(dS);
+        }
+
         free(m);
     }
     close(dS);
     return NULL;
 }
+
 
 /*
  * Receptionne un message d'une socket et teste que tout se passe bien

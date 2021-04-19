@@ -3,11 +3,11 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
 #include <semaphore.h>
-
 
 /*Compiler gcc -pthread -Wall -ansi -o serveur serveur.c*/
 /*Lancer avec ./serveur votre_port */
@@ -263,6 +263,42 @@ int endOfCommunication(char * msg){
     return 0;
 }
 
+/*
+ * Vérifie si un client souhaite envoyer un fichier
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 1 (vrai) si le client veut envoyer un fichier, 0 (faux) sinon
+*/
+int isSendingFile(char * msg){
+    if (strcmp(msg, "/file\n")==0){
+        return 1;
+    }
+    return 0;
+}
+
+void receiveFile(int dSC){
+    /*Reception du nom du fichier à recevoir*/
+    char * fileName = (char *) malloc(sizeof(char)*30);
+    receiving(dSC, fileName, sizeof(char)*30);
+    printf("\nNom du fichier à recevoir: %s \n", fileName);
+
+    fileName = strtok(fileName, "\n");
+
+    /*Création d'un fichier au même nom et reception du contenu du fichier*/
+    char * pathToFile = (char *) malloc(sizeof(char)*130);
+    strcpy(pathToFile,"FileServeur/");
+    strcat(pathToFile,fileName);
+    int nbBytesReceived;
+    char buffer[1024];
+    FILE * fp;
+    fp = fopen(pathToFile,"w");
+
+    do{
+        nbBytesReceived = recv(dSC, buffer, 1024, 0);
+        fprintf(fp,"%s",buffer);
+        bzero(buffer, 1024);
+    }while(nbBytesReceived>0);
+    
+}
 
 /*_____Fonction pour gérer les threads_____*/
 /*
@@ -271,6 +307,8 @@ int endOfCommunication(char * msg){
 void * broadcast(void * clientParam){
     int isEnd = 0;
     int numClient = (long) clientParam;
+
+    /*METTRE UN MUTEX !!*/
 
     while(!isEnd){
         /*Réception du message*/
@@ -284,6 +322,9 @@ void * broadcast(void * clientParam){
         char first = msgReceived[0];
         if(strcmp(&first,"@")==0){
             sendingPrivate(numClient, msgReceived);
+        }else if(isSendingFile(msgReceived)){
+            printf("laaaaaaaaa\n");
+            receiveFile(tabClient[numClient].dSC);
         }else {
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
