@@ -59,21 +59,46 @@ void sendingFile(int dS){
 
     printf("\nSaisissez le nom d'un fichier à envoyer : \n");
     fgets(fileName, 100, stdin);
-
     sending(dS,fileName);
+    fileName = strtok(fileName, "\n");
 
-    /* ToDo : ouvrir le fichier; envoi */ 
-    FILE * fp;
-    fp = fopen(fileName,"w");
-    char data[1024];
+    /*Création du chemin pour trouver le fichier*/
+    char * pathToFile = (char *) malloc(sizeof(char)*130);
+    strcpy(pathToFile,"FileToSend/");
+    strcat(pathToFile,fileName);
+    printf("%s",pathToFile);
 
-    while(fgets(data, 1024, fp) != NULL) {
+    /*Ouverture et envoi du fichier*/
+    FILE * fp = NULL;
+    fp = fopen(pathToFile,"r");
+    if (fp== NULL) {   
+        printf("Error! Could not open file\n"); 
+        exit(-1); 
+    }
+    char data[1024] = "";
+    /*Booleen pour controler la fin de l'envoi du fichier*/
+    int isEndSendFile = 0;
+
+    while(fgets(data, 1024, (FILE *)fp) != NULL) {
+        printf("%s\n",data);
+        if (send(dS, &isEndSendFile, sizeof(int), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
         if (send(dS, data, sizeof(data), 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
+        
         bzero(data, 1024);
-  }
+    }
+    isEndSendFile = 1;
+    if (send(dS, &isEndSendFile, sizeof(int), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        
+    fclose(fp);
 }
 
 /* -- Fonction pour le thread d'envoi -- */
@@ -94,7 +119,7 @@ void * sending_th(void * dSparam){
         sending(dS, m);
 
         if (isSendingFile(m)){
-            printf("\n");
+            printf("envoi de fichier\n");
             int cr = system("ls ./FileToSend");
             if(cr == -1){
                 printf("commande echouée");

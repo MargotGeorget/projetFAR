@@ -284,20 +284,31 @@ void receiveFile(int dSC){
     fileName = strtok(fileName, "\n");
 
     /*Création d'un fichier au même nom et reception du contenu du fichier*/
+
+    /*Création du chemin pour accéder au fichier*/ 
     char * pathToFile = (char *) malloc(sizeof(char)*130);
     strcpy(pathToFile,"FileServeur/");
     strcat(pathToFile,fileName);
-    int nbBytesReceived;
+
+    /*Ouverture du fichier et création du buffer pour recevoir les données*/
     char buffer[1024];
     FILE * fp;
     fp = fopen(pathToFile,"w");
 
-    do{
-        nbBytesReceived = recv(dSC, buffer, 1024, 0);
+    /*Booleen pour controler la fin de la reception du fichier*/
+    int isEndRecvFile;
+    recv(dSC, &isEndRecvFile, sizeof(int), 0);
+
+    /*Reception*/
+    while(!isEndRecvFile){
+        recv(dSC, buffer, 1024, 0);
+        recv(dSC, &isEndRecvFile, sizeof(int), 0);
+        printf("%s\n",buffer);
         fprintf(fp,"%s",buffer);
         bzero(buffer, 1024);
-    }while(nbBytesReceived>0);
-    
+    }
+    fclose(fp);
+
 }
 
 /*_____Fonction pour gérer les threads_____*/
