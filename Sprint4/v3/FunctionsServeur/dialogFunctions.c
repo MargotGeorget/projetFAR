@@ -91,7 +91,7 @@ void sendingPrivate(int numClient, char * msg){
 }
 
 int createSocketServeur(int port){
-    /*Création de la socket pour les envois de fichier*/
+    /*Création de la socket */
 	int dS = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in ad;
 	ad.sin_family = AF_INET;
