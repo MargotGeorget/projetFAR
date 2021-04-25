@@ -20,6 +20,7 @@ void * sendingFile_th(void * fpParam){
             perror("[-]Error in sending file.");
             exit(1);
         }
+        printf("%s",data);
         bzero(data, 1024);
     }
     isEndSendFile = 1;
@@ -28,6 +29,43 @@ void * sendingFile_th(void * fpParam){
     fclose(fp);
     return NULL;
 }
+
+/* -- Fonction pour le thread de reception de fichier -- */
+void * receivingFile_th(void * fileNameParam){
+
+    /*Créer un socket et demander une connection*/ 
+    long dSFile = createSocketCLient(port+1, ip);
+
+    char * fileName = (char *)fileNameParam;
+
+    /*Création du chemin pour enregister le fichier*/ 
+    char * pathToFile = (char *) malloc(sizeof(char)*130);
+    strcpy(pathToFile,"FileReceived/");
+    strcat(pathToFile,fileName);
+
+    printf("Je reçois le fichier %s du serveur avec le socket %ld\n",fileName,dSFile);
+
+    /*Création du fichier et du buffer pour recevoir les données*/
+    char buffer[1024];
+    FILE * fp;
+    fp = fopen(pathToFile,"w");
+
+    /*Booleen pour controler la fin de la reception du fichier*/
+    int isEndRecvFile = receivingInt(dSFile);
+
+    /*Reception*/
+    while(!isEndRecvFile){
+        recv(dSFile, buffer, 1024, 0);
+        isEndRecvFile = receivingInt(dSFile);
+        printf("%s\n",buffer);
+        fprintf(fp,"%s",buffer);
+        bzero(buffer, 1024);
+    }
+    fclose(fp);
+    return NULL;
+
+}
+
 
 /* -- Fonction pour le thread d'envoi -- */
 void * sending_th(void * dSparam){
@@ -48,6 +86,8 @@ void * sending_th(void * dSparam){
 
         if (isSendingFile(m)){
             sendingFile(dS);
+        }else if(isReceivingFile(m)){
+            receivingFile(dS);
         }
 
         free(m);

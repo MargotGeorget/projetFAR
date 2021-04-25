@@ -17,4 +17,11 @@ int endOfCommunication(char * msg);
 */
 int isSendingFile(char * msg);
 
+/*
+ * Vérifie si un client souhaite recevoir un fichier
+ * Paramètres : char ** msg : message du client à vérifier
+ * Retour : 1 (vrai) si le client veut recevoir un fichier, 0 (faux) sinon
+*/
+int isReceivingFile(char * msg);
+
 #endif

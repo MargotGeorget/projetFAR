@@ -8,6 +8,9 @@
 /* -- Fonction pour le thread d'envoi de fichier -- */
 void * sendingFile_th(void * fileNameParam);
 
+/* -- Fonction pour le thread de reception de fichier -- */
+void * receivingFile_th(void * fileNameParam);
+
 /* -- Fonction pour le thread d'envoi -- */
 void * sending_th(void * dSparam);
 

@@ -34,12 +34,13 @@ int receivingInt(long dS){
 }
 
 int createSocketCLient(int port, char * ip){
+
     /*Création de la socket*/
 	long dS = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in aS;
 	aS.sin_family = AF_INET;
-	inet_pton(AF_INET, (char *)port, &(aS.sin_addr));
-	aS.sin_port = htons(atoi(ip));
+	inet_pton(AF_INET, ip, &(aS.sin_addr));
+	aS.sin_port = htons(port);
 
 	/*Demander une connexion*/
 	socklen_t lgA = sizeof(struct sockaddr_in);
@@ -88,4 +89,42 @@ void sendingFile(int dS){
             perror("error thread");
         }
     }
+}
+
+void receivingFile(int dS){
+    /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
+    /*Booleen pour controler la fin de la reception du fichier*/
+    int isEndRecvFile = receivingInt(dS);
+    char buffer[1024];
+    /*Reception et affichage*/
+    while(!isEndRecvFile){
+        recv(dS, buffer, 1024, 0);
+        isEndRecvFile = receivingInt(dS);
+        printf("%s\n",buffer);
+        bzero(buffer, 1024);
+    }
+
+    /*Saisie du nom du fichier à télécharger*/
+    char * fileName = (char *) malloc(sizeof(char)*100);
+    printf("\nSaisissez le nom d'un fichier à télécharger : \n");
+    fgets(fileName, 100, stdin);
+
+    /*Envoi du nom du fichier au serveur*/
+    sending(dS,fileName);
+    fileName = strtok(fileName, "\n");
+
+    /*Vérification de la validité du nom de fichier saisie*/
+    int isAvailableFile = receivingInt(dS);
+    if(!isAvailableFile){
+        printf("Nom de fichier saisie incorrect!\n");
+    }else {
+        /*Création du thread de reception de fichier*/
+        pthread_t threadFile;
+        int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
+        if(thread==-1){
+            perror("error thread");
+        }
+    }
+        
+    return;
 }

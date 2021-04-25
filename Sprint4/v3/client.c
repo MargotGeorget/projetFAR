@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
         printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> ");
     }
 
-    port = atoi(argv[1]); 
-    ip = argv[2]; 
+    ip = argv[1]; 
+    port = atoi(argv[2]); 
 
 	/*Création de la socket*/
 	long dS = createSocketCLient(port, ip);

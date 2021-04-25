@@ -7,6 +7,8 @@
 
 void * receivingFile_th(void * fileNameParam);
 
+void * sendingFile_th(void * fp);
+
 /*
  * Start routine de pthread_create()
  * */

@@ -10,14 +10,14 @@ void * receivingFile_th(void * fileNameParam){
 
     /*Création d'un fichier au même nom et reception du contenu du fichier*/
 
-    /*Création du chemin pour accéder au fichier*/ 
+    /*Création du chemin pour enregister le fichier*/ 
     char * pathToFile = (char *) malloc(sizeof(char)*130);
     strcpy(pathToFile,"FileServeur/");
     strcat(pathToFile,fileName);
 
     printf("Je reçois le fichier %s du client le socket %ld\n",fileName,dSFile);
 
-    /*Ouverture du fichier et création du buffer pour recevoir les données*/
+    /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
     FILE * fp;
     fp = fopen(pathToFile,"w");
@@ -37,6 +37,34 @@ void * receivingFile_th(void * fileNameParam){
     fclose(fp);
     return NULL;
 
+}
+
+void * sendingFile_th(void * fpParam){
+
+    /*Accpeter une connexion*/
+	long dSCFile = acceptConnection(dSFile);
+
+    FILE * fp = (FILE *)fpParam;
+
+    printf("J'envoi le fichier au client avec le socket %ld\n",dSCFile);
+    
+    /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
+    char data[1024] = "";
+    int isEndSendFile = 0;
+
+    while(fgets(data, 1024, (FILE *)fp) != NULL) {
+        sendingInt(dSCFile, isEndSendFile);
+        if (send(dSCFile, data, sizeof(data), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        bzero(data, 1024);
+    }
+    isEndSendFile = 1;
+    sendingInt(dSCFile, isEndSendFile);  
+
+    fclose(fp);
+    return NULL;
 }
 
 void * broadcast(void * clientParam){
@@ -68,6 +96,48 @@ void * broadcast(void * clientParam){
 
             pthread_t threadFile;
             int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
+            if(thread==-1){
+                perror("error thread");
+            }
+
+        }else if(isSendingFile(msgReceived)){
+
+            /*Envoi des fichiers pouvant être téléchargés*/
+            int cr = system("ls ./FileServeur > listeFichier.txt");
+            /*Vérification*/
+            if(cr == -1){
+                printf("commande echouée");
+            }
+            FILE *fp;
+            fp = fopen("listeFichier.txt", "r");
+            /*ToDo : vérifier l'ouverture du fichier : message d'erreur */
+
+            /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
+            char data[1024] = "";
+            int isEndSendFile = 0;
+
+            while(fgets(data, 1024, (FILE *)fp) != NULL) {
+                printf("%s",data);
+                sendingInt(tabClient[numClient].dSC, isEndSendFile);
+                if (send(tabClient[numClient].dSC, data, sizeof(data), 0) == -1) {
+                    perror("[-]Error in sending file.");
+                    exit(1);
+                }
+                bzero(data, 1024);
+            }
+            isEndSendFile = 1;
+            sendingInt(tabClient[numClient].dSC, isEndSendFile);  
+            fclose(fp);
+
+            /*Reception du nom du fichier à envoyer*/
+            char * fileName = (char *) malloc(sizeof(char)*30);
+            receiving(tabClient[numClient].dSC, fileName, sizeof(char)*30);
+            printf("\nNom du fichier à envoyer: %s \n", fileName);
+
+            fileName = strtok(fileName, "\n");
+
+            pthread_t threadFile;
+            int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
             if(thread==-1){
                 perror("error thread");
             }

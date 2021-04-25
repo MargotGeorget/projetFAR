@@ -24,3 +24,9 @@ int isReceivingFile(char * msg){
     return 0;
 }
 
+int isSendingFile(char * msg){
+    if (strcmp(msg, "/download\n")==0){
+        return 1;
+    }
+    return 0;
+}
