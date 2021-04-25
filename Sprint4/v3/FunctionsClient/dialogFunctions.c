@@ -16,7 +16,6 @@ void sendingInt(int dS, int number){
     }
 }
 
-
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/
@@ -26,20 +25,20 @@ void receiving(int dS, char * rep, ssize_t size){
 }
 
 int receivingInt(long dS){
-    int nbClient;
-    if(recv(dS, &nbClient, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
+    int number;
+    if(recv(dS, &number, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
         perror("erreur au recv d'un int");
         exit(-1);
     } 
-    return nbClient;
+    return number;
 }
 
-int createSocketCLient(char * port, char * ip){
+int createSocketCLient(int port, char * ip){
     /*Création de la socket*/
 	long dS = socket(PF_INET, SOCK_STREAM, 0);
 	struct sockaddr_in aS;
 	aS.sin_family = AF_INET;
-	inet_pton(AF_INET, port, &(aS.sin_addr));
+	inet_pton(AF_INET, (char *)port, &(aS.sin_addr));
 	aS.sin_port = htons(atoi(ip));
 
 	/*Demander une connexion*/
@@ -51,4 +50,42 @@ int createSocketCLient(char * port, char * ip){
 	}
 
     return dS;
+}
+
+void sendingFile(int dS){
+    printf("envoi de fichier\n");
+
+    /*Affichage des fichiers disponibles à l'envoi*/
+    int cr = system("ls ./FileToSend");
+    if(cr == -1){
+        printf("commande echouée");
+    }
+
+    /*Saisie du nom du fichier au clavier*/
+    char * fileName = (char *) malloc(sizeof(char)*100);
+    printf("\nSaisissez le nom d'un fichier à envoyer : \n");
+    fgets(fileName, 100, stdin);
+
+    /*Envoi du nom du fichier au serveur*/
+    sending(dS,fileName);
+    fileName = strtok(fileName, "\n");
+    
+    /*Création du chemin pour trouver le fichier*/
+    char * pathToFile = (char *) malloc(sizeof(char)*130);
+    strcpy(pathToFile,"FileToSend/");
+    strcat(pathToFile,fileName);
+
+    /*Ouverture et envoi du fichier*/
+    FILE * fp = NULL;
+    fp = fopen(pathToFile,"r");
+    if (fp== NULL) {   
+        printf("Erreur! Fichier inconnu\n"); 
+    }else {
+        /*Création du thread d'envoi de fichier*/
+        pthread_t threadFile;
+        int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
+        if(thread==-1){
+            perror("error thread");
+        }
+    }
 }

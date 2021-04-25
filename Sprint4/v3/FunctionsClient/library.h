@@ -11,8 +11,8 @@
 #include <unistd.h>
 
 extern int isEnd;
-char * arg1;
-char * arg2;
+int port;
+char * ip;
 
 
 #endif

@@ -5,6 +5,7 @@
 #include "managementMessage.h"
 #include "dialogFunctions.h"
 
+/* -- Fonction pour le thread d'envoi de fichier -- */
 void * sendingFile_th(void * fileNameParam);
 
 /* -- Fonction pour le thread d'envoi -- */

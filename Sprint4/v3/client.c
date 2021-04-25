@@ -17,32 +17,31 @@ int main(int argc, char *argv[]) {
         printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> ");
     }
 
-    arg1 = argv[1]; 
-    arg2 = argv[2]; 
+    port = atoi(argv[1]); 
+    ip = argv[2]; 
 
 	/*Création de la socket*/
-	long dS = createSocketCLient(arg1, arg2);
+	long dS = createSocketCLient(port, ip);
 
     /*Reception du nombre de client*/
     int nbClient;
     nbClient = receivingInt(dS);
-    printf("numéro client%d\n",nbClient);
         
     /*Saisie du pseudo du client au clavier*/
     int availablePseudo;
     char * myPseudo = (char *) malloc(sizeof(char)*12);
-    recv(dS,&availablePseudo,sizeof(int),0); /*ToDo : mettre la fonction receivingInt*/
+    availablePseudo = receivingInt(dS); /*Reçois faux en premier*/
    
     printf("Votre pseudo (maximum 12 caractères): ");
     fgets(myPseudo, 12, stdin);
     sending(dS,myPseudo);
-    recv(dS,&availablePseudo,sizeof(int),0); /*ToDo : mettre la fonction receivingInt*/
+    availablePseudo = receivingInt(dS); 
    
     while(!availablePseudo){
         printf("Pseudo déjà utilisé!\nVotre pseudo (maximum 12 caractères): ");
         fgets(myPseudo, 12, stdin);
         sending(dS,myPseudo);
-        recv(dS,&availablePseudo,sizeof(int),0);
+        availablePseudo = receivingInt(dS);
     }
     
     /*En attente d'un autre client*/
