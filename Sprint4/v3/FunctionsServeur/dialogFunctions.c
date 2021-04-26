@@ -126,3 +126,20 @@ int acceptConnection(int dS){
     }
     return dSC;
 }
+
+void sendFile(int dS, FILE * fp){
+    char data[1024] = "";
+    int isEndSendFile = 0;
+
+    while(fgets(data, 1024, (FILE *)fp) != NULL) {
+        sendingInt(dS, isEndSendFile);
+        if (send(dS, data, sizeof(data), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        bzero(data, 1024);
+    }
+    isEndSendFile = 1;
+    sendingInt(dS, isEndSendFile); 
+    fclose(fp);
+}

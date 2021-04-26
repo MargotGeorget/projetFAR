@@ -52,18 +52,8 @@ void * sendingFile_th(void * fpParam){
     char data[1024] = "";
     int isEndSendFile = 0;
 
-    while(fgets(data, 1024, (FILE *)fp) != NULL) {
-        sendingInt(dSCFile, isEndSendFile);
-        if (send(dSCFile, data, sizeof(data), 0) == -1) {
-            perror("[-]Error in sending file.");
-            exit(1);
-        }
-        bzero(data, 1024);
-    }
-    isEndSendFile = 1;
-    sendingInt(dSCFile, isEndSendFile);  
+    sendFile(dSCFile,fp);
 
-    fclose(fp);
     close(dSCFile);
     return NULL;
 }
@@ -85,9 +75,9 @@ void * broadcast(void * clientParam){
         isEnd = endOfCommunication(msgReceived);
 
         char first = msgReceived[0];
-        if(strcmp(&first,"@")==0){
+        if(strcmp(&first,"@")==0){ //On regarde si le client souhaite envoyer un message privé
             sendingPrivate(numClient, msgReceived);
-        }else if(isReceivingFile(msgReceived)){
+        }else if(isReceivingFile(msgReceived)){ //On regarde si le client souhaite envoyer un fichier au serveur
 
             /*Reception du nom du fichier à recevoir*/
             char * fileName = (char *) malloc(sizeof(char)*30);
@@ -96,43 +86,27 @@ void * broadcast(void * clientParam){
 
             fileName = strtok(fileName, "\n");
 
+            /*Création du thread pour gérer la reception du fichier*/
             pthread_t threadFile;
             int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
             if(thread==-1){
                 perror("error thread");
             }
 
-        }else if(isSendingFile(msgReceived)){
+        }else if(isSendingFile(msgReceived)){ //On regarde si le client souhaite télécharger un fichier du serveur
 
             /*Envoi du message au thread de reception du client*/
-
             sending(dSC,msgReceived);
 
             /*Envoi des fichiers pouvant être téléchargés*/
             int cr = system("ls ./FileServeur > listeFichier.txt");
-            /*Vérification*/
             if(cr == -1){
                 printf("commande echouée");
             }
             FILE *fp;
             fp = fopen("listeFichier.txt", "r");
             /*ToDo : vérifier l'ouverture du fichier : message d'erreur */
-
-            /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
-            char data[1024] = "";
-            int isEndSendFile = 0;
-
-            while(fgets(data, 1024, (FILE *)fp) != NULL) {
-                sendingInt(dSC, isEndSendFile);
-                if (send(dSC, data, sizeof(data), 0) == -1) {
-                    perror("[-]Error in sending file.");
-                    exit(1);
-                }
-                bzero(data, 1024);
-            }
-            isEndSendFile = 1;
-            sendingInt(dSC, isEndSendFile); 
-            fclose(fp);
+            sendFile(dSC,fp);
 
             /*Reception du nom du fichier à envoyer*/
             char * fileName = (char *) malloc(sizeof(char)*30);
@@ -154,7 +128,7 @@ void * broadcast(void * clientParam){
                 sending(dSC,error);
             }else {
                 sending(dSC,fileName);
-
+                /*Création du thread d'envoi de fichier*/
                 pthread_t threadFile;
                 int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
                 if(thread==-1){

@@ -51,4 +51,6 @@ int createSocketServeur(int port);
 
 int acceptConnection(int dS);
 
+void sendFile(int dS, FILE * fp);
+
 #endif
