@@ -27,6 +27,7 @@ void * sendingFile_th(void * fpParam){
     sendingInt(dSFile, isEndSendFile);  
 
     fclose(fp);
+    close(dSFile);
     return NULL;
 }
 
@@ -57,11 +58,11 @@ void * receivingFile_th(void * fileNameParam){
     while(!isEndRecvFile){
         recv(dSFile, buffer, 1024, 0);
         isEndRecvFile = receivingInt(dSFile);
-        printf("%s\n",buffer);
         fprintf(fp,"%s",buffer);
         bzero(buffer, 1024);
     }
     fclose(fp);
+    close(dSFile);
     return NULL;
 
 }
@@ -87,7 +88,7 @@ void * sending_th(void * dSparam){
         if (isSendingFile(m)){
             sendingFile(dS);
         }else if(isReceivingFile(m)){
-            receivingFile(dS);
+            receivingFileSending_th(dS);
         }
 
         free(m);
@@ -104,6 +105,10 @@ void * receiving_th(void * dSparam){
         char * r = (char *) malloc(sizeof(char)*100);
         receiving(dS, r, sizeof(char)*100);
         printf(">%s",r);
+
+        if(isReceivingFile(r)){
+            receivingFileReceiving_th(dS);
+        }
 
         free(r);
     }

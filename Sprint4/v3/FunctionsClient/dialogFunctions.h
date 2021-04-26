@@ -52,10 +52,22 @@ int createSocketCLient(int port, char * ip);
 void sendingFile(int dS);
 
 /*
- * Met en place la reception de fichier et créer le thread nécessaire 
+ * Met en place la reception de fichier dans le thread de reception 
+ *          - reception des fichiers pouvant être téléchargés
+ *          - affichage des fichiers au client
  * Paramètres : int dS : la socket courante du client 
  * Retour : pas de retour
  * */
-void receivingFile(int dS);
+void receivingFileReceiving_th(int dS);
+
+/*
+ * Met en place la reception de fichier et créer le thread nécessaire dans le thread d'envoi
+ *          - saisie du nom du fichier par le client 
+ *          - envoi du nom de fichier au serveur 
+ *          - création d'un thread dédier à la reception de fichier 
+ * Paramètres : int dS : la socket courante du client 
+ * Retour : pas de retour
+ * */
+void receivingFileSending_th(int dS);
 
 #endif

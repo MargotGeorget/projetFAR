@@ -91,31 +91,24 @@ void sendingFile(int dS){
     }
 }
 
-void receivingFile(int dS){
+void receivingFileReceiving_th(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
+    printf("Listes des fichiers disponibles au téléchargement : \n");
     /*Booleen pour controler la fin de la reception du fichier*/
     int isEndRecvFile = receivingInt(dS);
     char buffer[1024];
     /*Reception et affichage*/
     while(!isEndRecvFile){
         recv(dS, buffer, 1024, 0);
+        printf("%s",buffer);
         isEndRecvFile = receivingInt(dS);
-        printf("%s\n",buffer);
         bzero(buffer, 1024);
     }
-
-    /*Saisie du nom du fichier à télécharger*/
-    char * fileName = (char *) malloc(sizeof(char)*100);
     printf("\nSaisissez le nom d'un fichier à télécharger : \n");
-    fgets(fileName, 100, stdin);
 
-    /*Envoi du nom du fichier au serveur*/
-    sending(dS,fileName);
-    fileName = strtok(fileName, "\n");
-
-    /*Vérification de la validité du nom de fichier saisie*/
-    int isAvailableFile = receivingInt(dS);
-    if(!isAvailableFile){
+    char * fileName = (char *) malloc(sizeof(char)*100);
+    receiving(dS,fileName,sizeof(char)*100);
+    if(strcmp(fileName,"error")==0){
         printf("Nom de fichier saisie incorrect!\n");
     }else {
         /*Création du thread de reception de fichier*/
@@ -123,8 +116,20 @@ void receivingFile(int dS){
         int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
         if(thread==-1){
             perror("error thread");
-        }
+        } 
     }
+    return;
+}
+
+void receivingFileSending_th(int dS){
         
+    /*Saisie du nom du fichier à télécharger*/
+    char * fileName = (char *) malloc(sizeof(char)*100);
+    fgets(fileName, 100, stdin);
+
+    /*Envoi du nom du fichier au serveur*/
+    sending(dS,fileName);
+    fileName = strtok(fileName, "\n");
+
     return;
 }

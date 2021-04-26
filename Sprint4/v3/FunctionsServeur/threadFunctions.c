@@ -30,11 +30,11 @@ void * receivingFile_th(void * fileNameParam){
     while(!isEndRecvFile){
         recv(dSCFile, buffer, 1024, 0);
         recv(dSCFile, &isEndRecvFile, sizeof(int), 0);
-        printf("%s\n",buffer);
         fprintf(fp,"%s",buffer);
         bzero(buffer, 1024);
     }
     fclose(fp);
+    close(dSCFile);
     return NULL;
 
 }
@@ -64,19 +64,21 @@ void * sendingFile_th(void * fpParam){
     sendingInt(dSCFile, isEndSendFile);  
 
     fclose(fp);
+    close(dSCFile);
     return NULL;
 }
 
 void * broadcast(void * clientParam){
     int isEnd = 0;
     int numClient = (long) clientParam;
-
-    /*METTRE UN MUTEX !!*/
+    pthread_mutex_lock(&lock);
+    int dSC = tabClient[numClient].dSC;
+    pthread_mutex_unlock(&lock);
 
     while(!isEnd){
         /*Réception du message*/
         char * msgReceived = (char *) malloc(sizeof(char)*100);
-        receiving(tabClient[numClient].dSC, msgReceived, sizeof(char)*100);
+        receiving(dSC, msgReceived, sizeof(char)*100);
         printf("\nMessage recu: %s \n", msgReceived);
 
         /*On verifie si le client veut terminer la communication*/
@@ -89,7 +91,7 @@ void * broadcast(void * clientParam){
 
             /*Reception du nom du fichier à recevoir*/
             char * fileName = (char *) malloc(sizeof(char)*30);
-            receiving(tabClient[numClient].dSC, fileName, sizeof(char)*30);
+            receiving(dSC, fileName, sizeof(char)*30);
             printf("\nNom du fichier à recevoir: %s \n", fileName);
 
             fileName = strtok(fileName, "\n");
@@ -101,6 +103,10 @@ void * broadcast(void * clientParam){
             }
 
         }else if(isSendingFile(msgReceived)){
+
+            /*Envoi du message au thread de reception du client*/
+
+            sending(dSC,msgReceived);
 
             /*Envoi des fichiers pouvant être téléchargés*/
             int cr = system("ls ./FileServeur > listeFichier.txt");
@@ -117,29 +123,43 @@ void * broadcast(void * clientParam){
             int isEndSendFile = 0;
 
             while(fgets(data, 1024, (FILE *)fp) != NULL) {
-                printf("%s",data);
-                sendingInt(tabClient[numClient].dSC, isEndSendFile);
-                if (send(tabClient[numClient].dSC, data, sizeof(data), 0) == -1) {
+                sendingInt(dSC, isEndSendFile);
+                if (send(dSC, data, sizeof(data), 0) == -1) {
                     perror("[-]Error in sending file.");
                     exit(1);
                 }
                 bzero(data, 1024);
             }
             isEndSendFile = 1;
-            sendingInt(tabClient[numClient].dSC, isEndSendFile);  
+            sendingInt(dSC, isEndSendFile); 
             fclose(fp);
 
             /*Reception du nom du fichier à envoyer*/
             char * fileName = (char *) malloc(sizeof(char)*30);
-            receiving(tabClient[numClient].dSC, fileName, sizeof(char)*30);
+            receiving(dSC, fileName, sizeof(char)*30);
             printf("\nNom du fichier à envoyer: %s \n", fileName);
 
             fileName = strtok(fileName, "\n");
 
-            pthread_t threadFile;
-            int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
-            if(thread==-1){
-                perror("error thread");
+            /*Création du chemin pour trouver le fichier*/
+            char * pathToFile = (char *) malloc(sizeof(char)*130);
+            strcpy(pathToFile,"FileServeur/");
+            strcat(pathToFile,fileName);
+
+            /*Ouverture et envoi du fichier*/
+            fp = fopen(pathToFile,"r");
+            if (fp== NULL) {   
+                char * error = "error";
+                printf("Erreur! Fichier inconnu\n"); 
+                sending(dSC,error);
+            }else {
+                sending(dSC,fileName);
+
+                pthread_t threadFile;
+                int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
+                if(thread==-1){
+                    perror("error thread");
+                }
             }
         }else {
             /*Envoi du message aux autres clients*/
