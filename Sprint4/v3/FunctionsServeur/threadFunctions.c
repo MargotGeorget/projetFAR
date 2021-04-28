@@ -41,7 +41,7 @@ void * receivingFile_th(void * fileNameParam){
 
 void * sendingFile_th(void * fpParam){
 
-    /*Accpeter une connexion*/
+    /*Accepter une connexion*/
 	long dSCFile = acceptConnection(dSFile);
 
     FILE * fp = (FILE *)fpParam;
@@ -102,7 +102,6 @@ void * broadcast(void * clientParam){
             }
             FILE *fp;
             fp = fopen("listeFichier.txt", "r");
-            /*ToDo : vérifier l'ouverture du fichier : message d'erreur */
             sendFile(dSC,fp);
 
             /*Reception du nom du fichier à envoyer*/

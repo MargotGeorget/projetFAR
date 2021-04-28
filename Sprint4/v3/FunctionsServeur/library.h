@@ -1,6 +1,8 @@
 #ifndef LIBRARY_H_
 #define LIBRARY_H_
 
+/* ----- FICHIER DE DECLARATION DES VARIABLES GLOBALES ----- */
+
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -27,8 +29,10 @@ struct Client{
  * - tabClient = tableau répertoriant les clients connectés
  * - tabThread = tableau des threads associés au traitement de chaque client
  * - semNbClient = sémaphore qui gère le nombre de clients actuellement connectés
- * - tabThreadToKill = 
- * - lock = 
+ * - tabThreadToKill = tableau recensant les threads à tuer (thread abandonnés lors de la déconnexion d'un client)
+ * - lock = variable mutex permettant la gestion des sections critiques
+ * - dSFile = socket recevant les connexions lors d'une demande d'envoi/de téléchargement de fichier
+ * - arg1 = récupère le premier argument de la ligne de commande
  * */
 #define MAX_CLIENT 5
 Client tabClient[MAX_CLIENT];

@@ -4,10 +4,9 @@
 #include "library.h"
 
 /*
- * Fonction pour mettre en forme le message à envoyer avec le pseudo de l'expéditeur 
- * Paramètres : char * : le message à envoyer 
- *              char * : le pseudo à ajouter 
- * Pas de retour
+ * Mise en forme du message à envoyer avec le pseudo de l'expéditeur
+ * Paramètres : char * : message à envoyer
+ *              char * : pseudo à ajouter 
  */
 void addPseudoToMsg(char * msg, char * pseudoSender);
 
