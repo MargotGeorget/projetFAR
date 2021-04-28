@@ -48,10 +48,7 @@ void * sendingFile_th(void * fpParam){
 
     printf("J'envoi le fichier au client avec le socket %ld\n",dSCFile);
     
-    /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
-    char data[1024] = "";
-    int isEndSendFile = 0;
-
+    /*Appel de la fonction envoyant le fichier*/
     sendFile(dSCFile,fp);
 
     close(dSCFile);
@@ -75,9 +72,9 @@ void * broadcast(void * clientParam){
         isEnd = endOfCommunication(msgReceived);
 
         char first = msgReceived[0];
-        if(strcmp(&first,"@")==0){ //On regarde si le client souhaite envoyer un message privé
+        if(strcmp(&first,"@")==0){ /*On regarde si le client souhaite envoyer un message privé*/
             sendingPrivate(numClient, msgReceived);
-        }else if(isReceivingFile(msgReceived)){ //On regarde si le client souhaite envoyer un fichier au serveur
+        }else if(isReceivingFile(msgReceived)){ /*On regarde si le client souhaite envoyer un fichier au serveur*/
 
             /*Reception du nom du fichier à recevoir*/
             char * fileName = (char *) malloc(sizeof(char)*30);
@@ -93,7 +90,7 @@ void * broadcast(void * clientParam){
                 perror("error thread");
             }
 
-        }else if(isSendingFile(msgReceived)){ //On regarde si le client souhaite télécharger un fichier du serveur
+        }else if(isSendingFile(msgReceived)){ /*On regarde si le client souhaite télécharger un fichier du serveur*/
 
             /*Envoi du message au thread de reception du client*/
             sending(dSC,msgReceived);
