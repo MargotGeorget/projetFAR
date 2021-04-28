@@ -1,20 +1,30 @@
 #ifndef THREADFUNCTIONS_H_
 #define THREADFUNCTIONS_H_
 
+/* ----- FICHIER DES FONCTIONS RELATIVES AUX THREADS CLIENT ----- */
+
 #include "library.h"
 #include "managementMessage.h"
 #include "dialogFunctions.h"
 
-/* -- Fonction pour le thread d'envoi de fichier -- */
+/* Envoi du fichier dans le thread associé
+ * Paramètres : void * fileNameParam : nom du fichier à envoyer
+ * */
 void * sendingFile_th(void * fileNameParam);
 
-/* -- Fonction pour le thread de reception de fichier -- */
+/* Réception du fichier dans le thread associé
+ * Paramètres : void * fileNameParam : nom du fichier à receptionner
+ * */
 void * receivingFile_th(void * fileNameParam);
 
-/* -- Fonction pour le thread d'envoi -- */
+/* Gestion du thread d'envoi
+ * Paramètres : void * dSparam : numéro de la socket sur laquelle envoyer
+ * */
 void * sending_th(void * dSparam);
 
-/* -- Fonction pour le thread de reception -- */
+/* Gestion du thread de réception
+ * Paramètres : void * dSparam : numéro de la socket sur laquelle recevoir
+ * */
 void * receiving_th(void * dSparam);
 
 #endif

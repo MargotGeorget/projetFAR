@@ -1,6 +1,8 @@
 #ifndef MANAGEMENTCLIENT_H_
 #define MANAGEMENTCLIENT_H_
 
+/* ----- FICHIER DE GESTION DES CLIENTS ----- */
+
 #include "library.h"
 
 /*

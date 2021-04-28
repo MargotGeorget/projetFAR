@@ -1,12 +1,14 @@
 #ifndef MANAGEMENTMESSAGE_H_
 #define MANAGEMENTMESSAGE_H_
 
+/* ----- FICHIER DE GESTION DES MESSAGES ----- */
+
 #include "library.h"
 
 /*
  * Mise en forme du message à envoyer avec le pseudo de l'expéditeur
  * Paramètres : char * : message à envoyer
- *              char * : pseudo à ajouter 
+ *              char * : pseudo à ajouter
  */
 void addPseudoToMsg(char * msg, char * pseudoSender);
 

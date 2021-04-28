@@ -24,7 +24,7 @@ struct Client{
     long dSC;
 };
 
-/*   Initialisation des variables :
+/*   Déclaration des variables :
  * - MAX_CLIENT = nombre maximum de client accepté sur le serveur
  * - tabClient = tableau répertoriant les clients connectés
  * - tabThread = tableau des threads associés au traitement de chaque client

@@ -1,36 +1,35 @@
 #ifndef DIALOGFUNCTIONS_H_
 #define DIALOGFUNCTIONS_H_
 
+/* ----- FICHIER RECENSANT LES FONCTIONS DE DIALOGUE CÔTE CLIENT ----- */
+
 #include "library.h"
 #include "threadFunctions.h"
 
 /*
- * Envoi un message à une socket et teste que tout se passe bien
+ * Envoi d'un message à une socket et test bon déroulement
  * Paramètres : int dS : la socket
  *              char * msg : message à envoyer
- * Retour : pas de retour
  * */
 void sending(int dS, char * msg);
 
 /*
- * Envoi un entier à une socket et teste que tout se passe bien
+ * Envoi d'un entier à une socket et test bon déroulement
  * Paramètres : int dS : la socket
  *              int number : entier à envoyer
- * Retour : pas de retour
  * */
 void sendingInt(int dS, int number);
 
 /*
- * Receptionne un message d'une socket et teste que tout se passe bien
+ * Reception d'un message d'une socket et test bon déroulement
  * Paramètres : int dS : la socket
- *              char * msg : message à recevoir
+ *              char * rep : message à recevoir
  *              ssize_t size : taille maximum du message à recevoir
- * Retour : pas de retour
  * */
 void receiving(int dS, char * rep, ssize_t size);
 
 /*
- * Receptionne un entier d'une socket et teste que tout se passe bien
+ * Reception d'un entier d'une socket et test bon déroulement
  * Paramètres : int dS : la socket
  * Retour : l'entier reçu
  * */
@@ -42,31 +41,29 @@ int receivingInt(long dS);
  *              char * ip : ip du serveur
  * Retour : la socket créée
  * */
-int createSocketCLient(int port, char * ip);
+int createSocketClient(int port, char * ip);
 
 /*
- * Met en place l'envoi de fichier et créer le thread nécessaire 
- * Paramètres : int dS : la socket courante du client 
- * Retour : pas de retour
+ * Mise en place de l'envoi d'un fichier et création du thread nécessaire
+ * Paramètres : int dS : la socket courante du client
  * */
 void sendingFile(int dS);
 
 /*
- * Met en place la reception de fichier dans le thread de reception 
+ * Mise en place de la reception d'un fichier dans le thread de reception
  *          - reception des fichiers pouvant être téléchargés
  *          - affichage des fichiers au client
- * Paramètres : int dS : la socket courante du client 
- * Retour : pas de retour
+ *          - réception de la confirmation du serveur de l'existence du fichier
+ *          - création du thread de réception
+ * Paramètres : int dS : la socket courante du client
  * */
 void receivingFileReceiving_th(int dS);
 
 /*
- * Met en place la reception de fichier et créer le thread nécessaire dans le thread d'envoi
+ * Mise en place de la reception de fichier
  *          - saisie du nom du fichier par le client 
- *          - envoi du nom de fichier au serveur 
- *          - création d'un thread dédier à la reception de fichier 
- * Paramètres : int dS : la socket courante du client 
- * Retour : pas de retour
+ *          - envoi du nom de fichier au serveur
+ * Paramètres : int dS : la socket courante du client
  * */
 void receivingFileSending_th(int dS);
 

@@ -1,7 +1,7 @@
 #ifndef DIALOGFUNCTIONS_H_
 #define DIALOGFUNCTIONS_H_
 
-/* ----- FICHIER RECENSANT LES FONCTIONS DE DIALOGUE CLIENT/SERVEUR ----- */
+/* ----- FICHIER RECENSANT LES FONCTIONS DE DIALOGUE COTE SERVEUR ----- */
 
 #include "library.h"
 #include "managementMessage.h"

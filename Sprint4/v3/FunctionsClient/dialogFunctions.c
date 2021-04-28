@@ -33,7 +33,7 @@ int receivingInt(long dS){
     return number;
 }
 
-int createSocketCLient(int port, char * ip){
+int createSocketClient(int port, char * ip){
 
     /*Création de la socket*/
 	long dS = socket(PF_INET, SOCK_STREAM, 0);
@@ -93,7 +93,7 @@ void sendingFile(int dS){
 
 void receivingFileReceiving_th(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
-    printf("Listes des fichiers disponibles au téléchargement : \n");
+    printf("\n ----- Listes des fichiers disponibles au téléchargement : \n");
     /*Booleen pour controler la fin de la reception du fichier*/
     int isEndRecvFile = receivingInt(dS);
     char buffer[1024];
@@ -104,7 +104,7 @@ void receivingFileReceiving_th(int dS){
         isEndRecvFile = receivingInt(dS);
         bzero(buffer, 1024);
     }
-    printf("\nSaisissez le nom d'un fichier à télécharger : \n");
+    printf("\n --- Saisissez le nom d'un fichier à télécharger : \n");
 
     char * fileName = (char *) malloc(sizeof(char)*100);
     receiving(dS,fileName,sizeof(char)*100);
@@ -129,7 +129,6 @@ void receivingFileSending_th(int dS){
 
     /*Envoi du nom du fichier au serveur*/
     sending(dS,fileName);
-    fileName = strtok(fileName, "\n");
 
     return;
 }

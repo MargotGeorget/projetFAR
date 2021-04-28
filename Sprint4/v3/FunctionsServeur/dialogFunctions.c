@@ -67,7 +67,7 @@ void sendingPrivate(int numClient, char * msg){
     if (dSC==-1){ /*Aucun client n'a été trouvé*/
 
         char * error = (char *) malloc(sizeof(char)*100);
-        error = "Le pseudo saisit n'existe pas!\n";
+        error = "Le pseudo saisi n'existe pas!\n";
         sending(mydSC, error);
 
         printf("%s",error);

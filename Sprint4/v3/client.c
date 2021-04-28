@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     port = atoi(argv[2]); 
 
 	/*Création de la socket*/
-	long dS = createSocketCLient(port, ip);
+	long dS = createSocketClient(port, ip);
 
     /*Reception du nombre de client*/
     int nbClient;

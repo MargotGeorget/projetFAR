@@ -46,7 +46,7 @@ void * sendingFile_th(void * fpParam){
 
     FILE * fp = (FILE *)fpParam;
 
-    printf("J'envoi le fichier au client avec le socket %ld\n",dSCFile);
+    printf("J'envoie le fichier au client avec le socket %ld\n",dSCFile);
     
     /*Appel de la fonction envoyant le fichier*/
     sendFile(dSCFile,fp);
