@@ -1,0 +1,10 @@
+DEBUT DU FICHIER 
+
+fichier pour tester les envois de fichier 
+d'un client vers le serveur 
+et les téléchargements
+du serveur vers le client 
+
+test j'ajoute des caractères au fichier
+
+FIN DU FICHIER 
