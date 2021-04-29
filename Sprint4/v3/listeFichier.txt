@@ -1,4 +1,6 @@
 fichier.txt
+img2.jpg
 logo.png
 margot.txt
 ophelie.txt
+paris.mp3

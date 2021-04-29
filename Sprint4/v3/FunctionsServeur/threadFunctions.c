@@ -1,4 +1,5 @@
 #include "threadFunctions.h"
+#include <fcntl.h>
 
 void * receivingFile_th(void * fileNameParam){
 
@@ -100,8 +101,8 @@ void * broadcast(void * clientParam){
             if(cr == -1){
                 printf("commande echouée");
             }
-            FILE *fp;
-            fp = fopen("listeFichier.txt", "r");
+            
+            FILE * fp = fopen("listeFichier.txt", "r");
             sendFile(dSC,fp);
 
             /*Reception du nom du fichier à envoyer*/
@@ -116,8 +117,14 @@ void * broadcast(void * clientParam){
             strcpy(pathToFile,"FileServeur/");
             strcat(pathToFile,fileName);
 
+            int fd = open(pathToFile, O_RDONLY);
+            off_t size = lseek(fd, 0, SEEK_END);
+            printf("size: %ld\n",size);
+            FILE *fp;
+
             /*Ouverture et envoi du fichier*/
             fp = fopen(pathToFile,"r");
+
             if (fp== NULL) {   
                 char * error = "error";
                 printf("Erreur! Fichier inconnu\n"); 

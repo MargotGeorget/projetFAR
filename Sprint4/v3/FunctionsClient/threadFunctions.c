@@ -1,4 +1,5 @@
 #include "threadFunctions.h"
+#include <fcntl.h>
 
 /* -- Fonction pour le thread d'envoi de fichier -- */
 void * sendingFile_th(void * fpParam){
@@ -44,6 +45,10 @@ void * receivingFile_th(void * fileNameParam){
     strcat(pathToFile,fileName);
 
     /*printf("Je reçois le fichier %s du serveur avec le socket %ld\n",fileName,dSFile);*/
+
+    int fd = open(pathToFile, O_RDONLY);
+    off_t size = lseek(fd, 0, SEEK_END);
+    printf("size: %ld\n",size);
 
     /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
