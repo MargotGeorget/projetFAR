@@ -95,13 +95,14 @@ void receivingFileReceiving_th(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
     printf("\n ----- Listes des fichiers disponibles au téléchargement : \n");
     /*Booleen pour controler la fin de la reception du fichier*/
-    int isEndRecvFile = receivingInt(dS);
+    int nbOctets = receivingInt(dS);
+    printf("nboctets %d\n",nbOctets);
     char buffer[1024];
     /*Reception et affichage*/
-    while(!isEndRecvFile){
+    while(nbOctets>0){
         recv(dS, buffer, 1024, 0);
         printf("%s",buffer);
-        isEndRecvFile = receivingInt(dS);
+        nbOctets = receivingInt(dS);
         bzero(buffer, 1024);
     }
     printf("\n --- Saisissez le nom d'un fichier à télécharger : \n");

@@ -11,9 +11,8 @@ void * sendingFile_th(void * fpParam){
 
     /*printf("J'envoi le fichier au serveur avec le socket %ld\n",dSFile);*/
     
-    /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
+    /*Création du buffer pour l'envoi du fichier*/
     char data[1024] = "";
-    int isEndSendFile = 0;
     int nbOctets = -1;
 
     /*descripteur de fichier à partir du FILE * */
@@ -26,8 +25,6 @@ void * sendingFile_th(void * fpParam){
     while(nbOctets != 0){
         nbOctets = read(fd, data, 1023);
         data[1023]='\0';
-        printf("retour read : %d\n",nbOctets);
-        printf("contenu envoyé %s\n",data);
         sendingInt(dSFile, nbOctets);
         if(nbOctets != 0){
             if (send(dSFile, data, sizeof(data), 0) == -1) {
@@ -35,14 +32,9 @@ void * sendingFile_th(void * fpParam){
                 exit(1);
             }
         }
-
-        printf("après send \n");
         bzero(data, nbOctets);
     } 
-    printf("après le while\n");
-
-    isEndSendFile = 1;
-    /*sendingInt(dSFile, isEndSendFile);*/
+    printf("**Fichier envoyé**\n");
     fclose(fp);
     close(dSFile);
     return NULL;
@@ -63,26 +55,30 @@ void * receivingFile_th(void * fileNameParam){
 
     /*printf("Je reçois le fichier %s du serveur avec le socket %ld\n",fileName,dSFile);*/
 
-    int fd = open(pathToFile, O_RDONLY);
-    off_t size = lseek(fd, 0, SEEK_END);
-    printf("size: %ld\n",size);
-
     /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
-    FILE * fp;
-    fp = fopen(pathToFile,"w");
+    /*changement du fopen en open*/
+    int fp = open(pathToFile, O_WRONLY |  O_CREAT, 0666);
+    if(fp == -1){
+        printf("erreur au open");
+        exit(1);
+    }
+    printf("dans receivingFile_th, après open");
 
     /*Booleen pour controler la fin de la reception du fichier*/
-    int isEndRecvFile = receivingInt(dSFile);
+    int nbOctets;
+    recv(dSFile, &nbOctets, sizeof(int), 0);
 
     /*Reception*/
-    while(!isEndRecvFile){
+    while(nbOctets>0){
         recv(dSFile, buffer, 1024, 0);
-        isEndRecvFile = receivingInt(dSFile);
-        fprintf(fp,"%s",buffer);
+        write(fp, buffer,nbOctets);
+        recv(dSFile, &nbOctets, sizeof(int), 0);
         bzero(buffer, 1024);
     }
-    fclose(fp);
+    printf("**Fichier envoyé**");
+    close(fp);
+
     close(dSFile);
     return NULL;
 
@@ -125,10 +121,11 @@ void * receiving_th(void * dSparam){
 
         char * r = (char *) malloc(sizeof(char)*100);
         receiving(dS, r, sizeof(char)*100);
-        printf(">%s",r);
 
         if(isReceivingFile(r)){
             receivingFileReceiving_th(dS);
+        }else{
+            printf(">%s",r);
         }
 
         free(r);

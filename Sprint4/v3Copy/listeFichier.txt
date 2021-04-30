@@ -1,5 +1,4 @@
-img2.jpg
+hoshi.mp3
 logo.png
 margot.txt
-ophelie.txt
 paris.mp3
