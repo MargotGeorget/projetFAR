@@ -14,18 +14,35 @@ void * sendingFile_th(void * fpParam){
     /*Création du buffer et d'un booleen pour controler la fin de l'envoi du fichier*/
     char data[1024] = "";
     int isEndSendFile = 0;
+    int nbOctets = -1;
 
-    while(fgets(data, 1024, (FILE *)fp) != NULL) {
-        sendingInt(dSFile, isEndSendFile);
-        if (send(dSFile, data, sizeof(data), 0) == -1) {
-            perror("[-]Error in sending file.");
-            exit(1);
+    /*descripteur de fichier à partir du FILE * */
+    int fd = fileno(fp);
+    printf("fd : %d\n", fd);
+
+    /*tant qu'on n'a pas atteint la fin du fichier
+     * faire un read (retourne 0 si on est en fin de fichier)
+     * envoyer le bloc lu */
+    while(nbOctets != 0){
+        nbOctets = read(fd, data, 1023);
+        data[1023]='\0';
+        printf("retour read : %d\n",nbOctets);
+        printf("contenu envoyé %s\n",data);
+        sendingInt(dSFile, nbOctets);
+        if(nbOctets != 0){
+            if (send(dSFile, data, sizeof(data), 0) == -1) {
+                perror("[-]Error in sending file.");
+                exit(1);
+            }
         }
-        bzero(data, 1024);
-    }
-    isEndSendFile = 1;
-    sendingInt(dSFile, isEndSendFile);  
 
+        printf("après send \n");
+        bzero(data, nbOctets);
+    } 
+    printf("après le while\n");
+
+    isEndSendFile = 1;
+    /*sendingInt(dSFile, isEndSendFile);*/
     fclose(fp);
     close(dSFile);
     return NULL;

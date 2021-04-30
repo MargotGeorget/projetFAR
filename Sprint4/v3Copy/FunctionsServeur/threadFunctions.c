@@ -33,12 +33,13 @@ void * receivingFile_th(void * fileNameParam){
     recv(dSCFile, &isEndRecvFile, sizeof(int), 0);
 
     /*Reception*/
-    while(!isEndRecvFile){
+    while(isEndRecvFile>0){
         recv(dSCFile, buffer, 1024, 0);
+        printf("contenu reçu: %s\n",buffer);
         recv(dSCFile, &isEndRecvFile, sizeof(int), 0);
         /*TODO: faire un write au lieu d'un fprintf*/
         write(fp, buffer, sizeof(buffer));
-        /*bzero(buffer, 1024);*/
+        bzero(buffer, 1024);
     }
     close(fp);
     close(dSCFile);

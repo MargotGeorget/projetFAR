@@ -136,10 +136,6 @@ void sendFile(int dS, FILE * fp){
     int fd = fileno(fp);
     printf("fd : %d\n", fd);
 
-    /*récupérer la taille du fichier*/
-    int size = lseek(fd, 0, SEEK_END);
-    printf("taille du fichier : %d\n", size);
-
     /*tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
      * envoyer le bloc lu */
