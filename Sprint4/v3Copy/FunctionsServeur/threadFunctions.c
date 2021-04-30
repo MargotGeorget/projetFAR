@@ -29,17 +29,17 @@ void * receivingFile_th(void * fileNameParam){
     printf("dans receivingFile_th, après open");
 
     /*Booleen pour controler la fin de la reception du fichier*/
-    int isEndRecvFile;
-    recv(dSCFile, &isEndRecvFile, sizeof(int), 0);
+    int nbOctets;
+    recv(dSCFile, &nbOctets, sizeof(int), 0);
 
     /*Reception*/
-    while(!isEndRecvFile){
+    while(nbOctets>0){
         recv(dSCFile, buffer, 1024, 0);
-        recv(dSCFile, &isEndRecvFile, sizeof(int), 0);
-        /*TODO: faire un write au lieu d'un fprintf*/
-        write(fp, buffer, sizeof(buffer));
-        /*bzero(buffer, 1024);*/
+        write(fp, buffer,nbOctets);
+        recv(dSCFile, &nbOctets, sizeof(int), 0);
+        bzero(buffer, 1024);
     }
+    printf("**Fichier envoyé**");
     close(fp);
     close(dSCFile);
     return NULL;
