@@ -21,7 +21,12 @@ void * receivingFile_th(void * fileNameParam){
     /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
     /*changement du fopen en open*/
-    int fp = open(pathToFile, O_WRONLY);
+    int fp = open(pathToFile, O_WRONLY |  O_CREAT, 0666);
+    if(fp == -1){
+        printf("erreur au open");
+        exit(1);
+    }
+    printf("dans receivingFile_th, après open");
 
     /*Booleen pour controler la fin de la reception du fichier*/
     int isEndRecvFile;

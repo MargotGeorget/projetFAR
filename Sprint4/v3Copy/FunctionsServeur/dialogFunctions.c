@@ -156,6 +156,7 @@ void sendFile(int dS, FILE * fp){
         printf("après send \n");
         bzero(data, 1024);
     } while(nbOctets != 0);
+    printf("après le while\n");
 
     isEndSendFile = 1;
     sendingInt(dS, isEndSendFile);
