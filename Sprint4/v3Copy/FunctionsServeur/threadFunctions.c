@@ -26,20 +26,19 @@ void * receivingFile_th(void * fileNameParam){
         printf("erreur au open");
         exit(1);
     }
-    printf("dans receivingFile_th, après open");
 
     /*Booleen pour controler la fin de la reception du fichier*/
-    int nbOctets;
-    recv(dSCFile, &nbOctets, sizeof(int), 0);
+    int nbBytes;
+    recv(dSCFile, &nbBytes, sizeof(int), 0);
 
     /*Reception*/
-    while(nbOctets>0){
+    while(nbBytes>0){
         recv(dSCFile, buffer, 1024, 0);
-        write(fp, buffer,nbOctets);
-        recv(dSCFile, &nbOctets, sizeof(int), 0);
+        write(fp, buffer,nbBytes);
+        recv(dSCFile, &nbBytes, sizeof(int), 0);
         bzero(buffer, 1024);
     }
-    printf("**Fichier envoyé**");
+    printf("\n**Fichier reçu**\n");
     close(fp);
     close(dSCFile);
     return NULL;

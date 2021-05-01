@@ -18,7 +18,7 @@ int endOfCommunication(char * msg){
 }
 
 int isReceivingFile(char * msg){
-    if (strcmp(msg, "/file\n")==0){
+    if (strcmp(msg, "/upload\n")==0){
         return 1;
     }
     return 0;

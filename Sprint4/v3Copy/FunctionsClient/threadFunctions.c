@@ -13,7 +13,7 @@ void * sendingFile_th(void * fpParam){
     
     /*Création du buffer pour l'envoi du fichier*/
     char data[1024] = "";
-    int nbOctets = -1;
+    int nbBytes = -1;
 
     /*descripteur de fichier à partir du FILE * */
     int fd = fileno(fp);
@@ -22,19 +22,19 @@ void * sendingFile_th(void * fpParam){
     /*tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
      * envoyer le bloc lu */
-    while(nbOctets != 0){
-        nbOctets = read(fd, data, 1023);
+    while(nbBytes != 0){
+        nbBytes = read(fd, data, 1023);
         data[1023]='\0';
-        sendingInt(dSFile, nbOctets);
-        if(nbOctets != 0){
+        sendingInt(dSFile, nbBytes);
+        if(nbBytes != 0){
             if (send(dSFile, data, sizeof(data), 0) == -1) {
                 perror("[-]Error in sending file.");
                 exit(1);
             }
         }
-        bzero(data, nbOctets);
+        bzero(data, nbBytes);
     } 
-    printf("**Fichier envoyé**\n");
+    printf("\n**Fichier envoyé**\n");
     fclose(fp);
     close(dSFile);
     return NULL;
@@ -63,20 +63,19 @@ void * receivingFile_th(void * fileNameParam){
         printf("erreur au open");
         exit(1);
     }
-    printf("dans receivingFile_th, après open");
 
     /*Booleen pour controler la fin de la reception du fichier*/
-    int nbOctets;
-    recv(dSFile, &nbOctets, sizeof(int), 0);
+    int nbBytes;
+    recv(dSFile, &nbBytes, sizeof(int), 0);
 
     /*Reception*/
-    while(nbOctets>0){
+    while(nbBytes>0){
         recv(dSFile, buffer, 1024, 0);
-        write(fp, buffer,nbOctets);
-        recv(dSFile, &nbOctets, sizeof(int), 0);
+        write(fp, buffer,nbBytes);
+        recv(dSFile, &nbBytes, sizeof(int), 0);
         bzero(buffer, 1024);
     }
-    printf("**Fichier envoyé**");
+    printf("\n**Fichier reçu**\n");
     close(fp);
 
     close(dSFile);

@@ -128,29 +128,27 @@ int acceptConnection(int dS){
 }
 
 void sendFile(int dS, FILE * fp){
-    char * data[1024];
-    int nbOctets = -1;
+    char data[1024];
+    int nbBytes = -1;
 
     /*descripteur de fichier à partir du FILE * */
     int fd = fileno(fp);
-    printf("fd : %d\n", fd);
 
     /*tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
      * envoyer le bloc lu */
-    while(nbOctets != 0){
-        nbOctets = read(fd, data, 1023);
-        printf("nbO : %d\n",nbOctets);
+    while(nbBytes != 0){
+        nbBytes = read(fd, data, 1023);
         data[1023]='\0';
-        sendingInt(dS, nbOctets);
-        if(nbOctets != 0){
+        sendingInt(dS, nbBytes);
+        if(nbBytes != 0){
             if (send(dS, data, sizeof(data), 0) == -1) {
                 perror("[-]Error in sending file.");
                 exit(1);
             }
         }
-        bzero(data, nbOctets);
+        bzero(data, nbBytes);
     } 
-    printf("**Fichier envoyé**\n");
+    printf("\n**Fichier envoyé**\n");
     fclose(fp);
 }

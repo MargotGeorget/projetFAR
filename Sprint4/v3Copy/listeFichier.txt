@@ -1,4 +1,5 @@
+fichierLong.txt
 hoshi.mp3
-logo.png
-margot.txt
+img.JPG
+img2.jpg
 paris.mp3
