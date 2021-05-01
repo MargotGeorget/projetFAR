@@ -54,17 +54,17 @@ int createSocketClient(int port, char * ip){
 }
 
 void sendingFile(int dS){
-    printf("envoi de fichier\n");
+    printf("\n ----- Listes de fichiers disponibles à l'envoi ----- \n");
 
     /*Affichage des fichiers disponibles à l'envoi*/
-    int cr = system("ls ./FileToSend");
+    int cr = system("ls --format=single-column ./FileToSend");
     if(cr == -1){
         printf("commande echouée");
     }
 
     /*Saisie du nom du fichier au clavier*/
     char * fileName = (char *) malloc(sizeof(char)*100);
-    printf("\nSaisissez le nom d'un fichier à envoyer : \n");
+    printf("\n --- Saisissez le nom d'un fichier à envoyer : \n");
     fgets(fileName, 100, stdin);
 
     /*Envoi du nom du fichier au serveur*/
@@ -93,7 +93,7 @@ void sendingFile(int dS){
 
 void receivingFileReceiving_th(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
-    printf("\n ----- Listes des fichiers disponibles au téléchargement : \n");
+    printf("\n ----- Listes de fichiers disponibles au téléchargement ----- \n");
     /*Booleen pour controler la fin de la reception du fichier*/
     int nbBytes = receivingInt(dS);
     char buffer[1024];

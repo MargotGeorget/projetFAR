@@ -11,14 +11,14 @@
 int endOfCommunication(char * msg);
 
 /*
- * Vérifie si un client souhaite envoyer un fichier
+ * Vérifie si un client souhaite envoyer un fichier (envoie /upload)
  * Paramètres : char ** msg : message du client à vérifier
  * Retour : 1 (vrai) si le client veut envoyer un fichier, 0 (faux) sinon
 */
 int isSendingFile(char * msg);
 
 /*
- * Vérifie si un client souhaite recevoir un fichier
+ * Vérifie si un client souhaite recevoir un fichier (envoie /download)
  * Paramètres : char ** msg : message du client à vérifier
  * Retour : 1 (vrai) si le client veut recevoir un fichier, 0 (faux) sinon
 */
