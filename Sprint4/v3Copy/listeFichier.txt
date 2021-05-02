@@ -1,5 +1,0 @@
-fichierLong.txt
-hoshi.mp3
-img.JPG
-img2.jpg
-paris.mp3

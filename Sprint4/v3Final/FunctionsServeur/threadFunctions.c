@@ -81,16 +81,19 @@ void * broadcast(void * clientParam){
             char * fileName = (char *) malloc(sizeof(char)*30);
             receiving(dSC, fileName, sizeof(char)*30);
             printf("\nNom du fichier à recevoir: %s \n", fileName);
+            if(strcmp(fileName,"error")==0){
+                printf("Nom de fichier incorrect\n");
+            }else{
 
-            fileName = strtok(fileName, "\n");
+                fileName = strtok(fileName, "\n");
 
-            /*Création du thread pour gérer la reception du fichier*/
-            pthread_t threadFile;
-            int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
-            if(thread==-1){
-                perror("error thread");
+                /*Création du thread pour gérer la reception du fichier*/
+                pthread_t threadFile;
+                int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
+                if(thread==-1){
+                    perror("error thread");
+                }
             }
-
         }else if(isSendingFile(msgReceived)){ /*On regarde si le client souhaite télécharger un fichier du serveur*/
 
             /*Envoi du message au thread de reception du client*/

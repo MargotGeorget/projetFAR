@@ -102,8 +102,6 @@ void * sending_th(void * dSparam){
 
         if (isSendingFile(m)){
             sendingFile(dS);
-        }else if(isReceivingFile(m)){
-            receivingFileSending_th(dS);
         }
 
         free(m);
@@ -121,7 +119,7 @@ void * receiving_th(void * dSparam){
         receiving(dS, r, sizeof(char)*100);
 
         if(isReceivingFile(r)){
-            receivingFileReceiving_th(dS);
+            receivingFile(dS);
         }else{
             printf(">%s",r);
         }

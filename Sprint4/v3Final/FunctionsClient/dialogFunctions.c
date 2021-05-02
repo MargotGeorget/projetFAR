@@ -66,9 +66,6 @@ void sendingFile(int dS){
     char * fileName = (char *) malloc(sizeof(char)*100);
     printf("\n --- Saisissez le nom d'un fichier à envoyer : \n");
     fgets(fileName, 100, stdin);
-
-    /*Envoi du nom du fichier au serveur*/
-    sending(dS,fileName);
     fileName = strtok(fileName, "\n");
     
     /*Création du chemin pour trouver le fichier*/
@@ -79,9 +76,13 @@ void sendingFile(int dS){
     /*Ouverture et envoi du fichier*/
     FILE * fp = NULL;
     fp = fopen(pathToFile,"r");
-    if (fp== NULL) {   
+    if (fp== NULL) { 
+        char * error = "error";
+        sending(dS, error);  
         printf("Erreur! Fichier inconnu\n"); 
     }else {
+        /*Envoi du nom du fichier au serveur*/
+        sending(dS,fileName);
         /*Création du thread d'envoi de fichier*/
         pthread_t threadFile;
         int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
@@ -89,9 +90,11 @@ void sendingFile(int dS){
             perror("error thread");
         }
     }
+    free(pathToFile);
+    free(fileName);
 }
 
-void receivingFileReceiving_th(int dS){
+void receivingFile(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
     printf("\n ----- Listes de fichiers disponibles au téléchargement ----- \n");
     /*Booleen pour controler la fin de la reception du fichier*/
@@ -119,17 +122,5 @@ void receivingFileReceiving_th(int dS){
             perror("error thread");
         } 
     }
-    return;
-}
-
-void receivingFileSending_th(int dS){
-        
-    /*Saisie du nom du fichier à télécharger*/
-    char * fileName = (char *) malloc(sizeof(char)*100);
-    fgets(fileName, 100, stdin);
-
-    /*Envoi du nom du fichier au serveur*/
-    sending(dS,fileName);
-
     return;
 }

@@ -1,2 +1,0 @@
-Fichier de test pour envoi de fichier 
-A partir d'un client vers un serveur 

@@ -28,12 +28,6 @@ void sendingInt(int dS, int number);
  * */
 void receiving(int dS, char * rep, ssize_t size);
 
-/*
- * Reception d'un entier d'une socket et test bon déroulement
- * Paramètres : int dS : la socket
- * Retour : l'entier reçu
- * */
-int receivingInt(long dS);
 
 /*
  * Création et demande de connexion d'une socket client à un serveur 
@@ -57,14 +51,6 @@ void sendingFile(int dS);
  *          - création du thread de réception
  * Paramètres : int dS : la socket courante du client
  * */
-void receivingFileReceiving_th(int dS);
-
-/*
- * Mise en place de la reception de fichier
- *          - saisie du nom du fichier par le client 
- *          - envoi du nom de fichier au serveur
- * Paramètres : int dS : la socket courante du client
- * */
-void receivingFileSending_th(int dS);
+void receivingFile(int dS);
 
 #endif

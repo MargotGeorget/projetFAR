@@ -1,7 +1,5 @@
-fichierLong.txt
+fichier.txt
 hoshi.mp3
-img.JPG
-img.PNG
-img2.jpg
+img.JGP
 margot.txt
 paris.mp3
