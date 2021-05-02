@@ -8,6 +8,15 @@ void receiving(int dS, char * rep, ssize_t size){
     }
 }
 
+int receivingInt(long dS){
+    int number;
+    if(recv(dS, &number, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
+        perror("erreur au recv d'un int");
+        exit(-1);
+    }
+    return number;
+}
+
 void sending(int dS, char * msg){
     int sendR = send(dS, msg, strlen(msg)+1, 0);
     if (sendR == -1){ /*vérification de la valeur de retour*/

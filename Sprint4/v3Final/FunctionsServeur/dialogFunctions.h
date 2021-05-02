@@ -8,7 +8,7 @@
 #include "managementClient.h"
 
 /*
- * Receptionne un message d'une socket et teste que tout se passe bien
+ * Receptionne un message d'une socket et test bon déroulement
  * Paramètres : int dS : la socket
  *              char * msg : message à recevoir
  *              ssize_t size : taille maximum du message à recevoir
@@ -23,14 +23,14 @@ void receiving(int dS, char * rep, ssize_t size);
 int receivingInt(long dS);
 
 /*
- * Envoi un message à une socket et teste que tout se passe bien
+ * Envoi un message à une socket et test bon déroulement
  * Paramètres : int dS : la socket
  *              char * msg : message à envoyer
  * */
 void sending(int dS, char * msg);
 
 /*
- * Envoi un entier à une socket et teste que tout se passe bien
+ * Envoi un entier à une socket et test bon déroulement
  * Paramètres : int dS : la socket
  *              int number : entier à envoyer
  * */
