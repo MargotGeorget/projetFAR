@@ -57,13 +57,16 @@ int isAvailablePseudo(char * pseudo){
 }
 
 void killThread(){
-    pthread_mutex_lock(&lock);
     int i;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+    
     for (i=0;i<MAX_CLIENT;i++){
         if(tabThreadToKill[i]){
             pthread_cancel(tabThread[i]);
             tabThreadToKill[i]=0;
         }
     }
-    pthread_mutex_unlock(&lock);
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 }

@@ -1,7 +1,7 @@
 #ifndef LIBRARY_H_
 #define LIBRARY_H_
 
-/* ----- FICHIER DE DECLARATION DES VARIABLES GLOBALES ----- */
+/* ----- FICHIER DE DECLARATION DES VARIABLES GLOBALES ET D'IMPORTATION DES LIBRARIES ----- */
 
 #include <stdio.h>
 #include <sys/socket.h>
@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <fcntl.h>
 
 /*
  * Définition d'une structure Client pour regrouper toutes les informations du client

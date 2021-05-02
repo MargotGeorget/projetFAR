@@ -1,5 +1,4 @@
 #include "threadFunctions.h"
-#include <fcntl.h>
 
 void * receivingFile_th(void * fileNameParam){
 
@@ -20,22 +19,18 @@ void * receivingFile_th(void * fileNameParam){
 
     /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
-    /*changement du fopen en open*/
     int fp = open(pathToFile, O_WRONLY |  O_CREAT, 0666);
     if(fp == -1){
         printf("erreur au open");
         exit(1);
     }
-
-    /*Booleen pour controler la fin de la reception du fichier*/
-    int nbBytes;
-    recv(dSCFile, &nbBytes, sizeof(int), 0);
+    int nbBytes = receivingInt(dSCFile);
 
     /*Reception*/
     while(nbBytes>0){
         recv(dSCFile, buffer, 1024, 0);
         write(fp, buffer,nbBytes);
-        recv(dSCFile, &nbBytes, sizeof(int), 0);
+        nbBytes = receivingInt(dSCFile);
         bzero(buffer, 1024);
     }
     printf("\n**Fichier reçu**\n");
@@ -122,19 +117,15 @@ void * broadcast(void * clientParam){
             strcpy(pathToFile,"FileServeur/");
             strcat(pathToFile,fileName);
 
-            /*int fd = open(pathToFile, O_RDONLY);
-            off_t size = lseek(fd, 0, SEEK_END);
-            printf("size: %ld\n",size);
-            FILE *fp;*/
-
             /*Ouverture et envoi du fichier*/
             fp = fopen(pathToFile,"r");
-
             if (fp== NULL) {   
                 char * error = "error";
                 printf("Erreur! Fichier inconnu\n"); 
+                /*On informe le client de l'erreur*/
                 sending(dSC,error);
             }else {
+                /*Le fichier va être envoyé, on informe le client et on transmet au thread de reception le nom du fichier*/
                 sending(dSC,fileName);
                 /*Création du thread d'envoi de fichier*/
                 pthread_t threadFile;

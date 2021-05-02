@@ -6,7 +6,7 @@
 #include "library.h"
 
 /*
- * Gestion des indices du tableaux de clients
+ * Gestion des indices du tableau de clients
  * Retour : un entier, indice du premier emplacement disponible dans le tableau des clients
  *          -1 si tout les emplacements sont occupés.
  */

@@ -6,6 +6,7 @@
 #include "library.h"
 #include "managementMessage.h"
 #include "managementClient.h"
+
 /*
  * Receptionne un message d'une socket et teste que tout se passe bien
  * Paramètres : int dS : la socket
@@ -13,6 +14,13 @@
  *              ssize_t size : taille maximum du message à recevoir
  * */
 void receiving(int dS, char * rep, ssize_t size);
+
+/*
+ * Reception d'un entier d'une socket et test bon déroulement
+ * Paramètres : int dS : la socket
+ * Retour : l'entier reçu
+ * */
+int receivingInt(long dS);
 
 /*
  * Envoi un message à une socket et teste que tout se passe bien
