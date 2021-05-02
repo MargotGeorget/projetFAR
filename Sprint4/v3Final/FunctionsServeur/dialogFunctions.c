@@ -158,6 +158,6 @@ void sendFile(int dS, FILE * fp){
         }
         bzero(data, nbBytes);
     } 
-    printf("\n**Fichier envoyé**\n");
+    printf("\n** Fichier envoyé **\n");
     fclose(fp);
 }

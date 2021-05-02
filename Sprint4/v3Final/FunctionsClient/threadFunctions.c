@@ -17,7 +17,6 @@ void * sendingFile_th(void * fpParam){
 
     /*descripteur de fichier à partir du FILE * */
     int fd = fileno(fp);
-    printf("fd : %d\n", fd);
 
     /*tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
@@ -34,7 +33,7 @@ void * sendingFile_th(void * fpParam){
         }
         bzero(data, nbBytes);
     } 
-    printf("\n**Fichier envoyé**\n");
+    printf("\n** Fichier envoyé **\n");
     fclose(fp);
     close(dSFile);
     return NULL;
@@ -75,7 +74,7 @@ void * receivingFile_th(void * fileNameParam){
         recv(dSFile, &nbBytes, sizeof(int), 0);
         bzero(buffer, 1024);
     }
-    printf("\n**Fichier reçu**\n");
+    printf("\n** Fichier reçu **\n");
     close(fp);
 
     close(dSFile);
