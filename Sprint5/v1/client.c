@@ -43,6 +43,16 @@ int main(int argc, char *argv[]) {
         sending(dS,myPseudo);
         availablePseudo = receivingInt(dS);
     }
+
+    /*Réception des salons*/
+    char * msg = (char *) malloc(sizeof(char)*300);
+    receiving(dS, msg, sizeof(char)*300);
+    printf("%s",msg);
+
+    int idRoom;
+    printf("\nChoisissez un salon: ");
+    scanf("%d",&idRoom);
+    sendingInt(dS,idRoom);
     
     /*En attente d'un autre client*/
     if(nbClient==1){

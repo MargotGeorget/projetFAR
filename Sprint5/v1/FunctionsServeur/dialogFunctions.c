@@ -56,6 +56,30 @@ void sendingAll(int numClient, char * msg){
 
 }
 
+void sendingRoom(int numClient, char * msg){
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    int dS = tabClient[numClient].dSC;
+
+    printf("Je reçois le message du client avec le socket %d\n",dS);
+
+    addPseudoToMsg(msg, tabClient[numClient].pseudo);
+
+    int i;
+    int idRoom = tabClient[numClient].idRoom;
+    for (i = 0; i<MAX_CLIENT ; i++) {
+
+        /*On n'envoie pas au client qui a écrit le message*/
+        if(rooms[idRoom-1].&members[i].occupied && dS != rooms[idRoom-1].&members[i].dSC){
+            sending(rooms[idRoom-1].&members[i].dSC, msg);
+        }
+    }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+}
+
 void sendingPrivate(int numClient, char * msg){
 
     pthread_mutex_lock(&lock); /*Début d'une section critique*/

@@ -95,15 +95,19 @@ int main(int argc, char *argv[]) {
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
+        /*Affichage des salons au client*/
+        presentationRoom(dSC);
+        /*Reception de l'id du salon choisi par le client*/
+        int idRoom = receivingInt(dSC);
+        addMember(numClient,idRoom);
+
         /*On envoi un message pour avertir les autres clients de l'arrivée du nouveau client*/
         strcpy(pseudo,"** a rejoint la communication **\n");
-        sendingAll(numClient, pseudo);    
+        sendingRoom(numClient, pseudo);    
 
         printf("%s\n",pseudo);
 
         free(pseudo);
-
-        presentationRoom(dSC);
 
         /*_____________________ Communication _____________________*/
         int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);

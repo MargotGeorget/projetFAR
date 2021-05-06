@@ -44,6 +44,9 @@ void sendingInt(int dS, int number);
  * */
 void sendingAll(int numClient, char * msg);
 
+
+void sendingRoom(int numClient, char * msg);
+
 /*
  * Envoi un message à un seul client
  * et teste que tout se passe bien

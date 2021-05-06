@@ -140,7 +140,7 @@ void * broadcast(void * clientParam){
         }else {
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
-            sendingAll(numClient, msgReceived);
+            sendingRoom(numClient, msgReceived);
         }
     }
 

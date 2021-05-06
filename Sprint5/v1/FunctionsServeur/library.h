@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <stdarg.h>
 
 /*
  * MAX_CLIENT = nombre maximum de client accepté sur le serveur
@@ -37,7 +38,7 @@ typedef struct Room Room;
 struct Room{
     int id;
     char * name;
-    Client members[MAX_CLIENT];
+    Client * members[MAX_CLIENT];
     int nbClient;
     int created;
 };
