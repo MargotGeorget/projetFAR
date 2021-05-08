@@ -21,7 +21,7 @@
  * NB_ROOMS = nombre maximum de salon de discussion 
  * */
 #define MAX_CLIENT 5
-#define NB_ROOMS 3
+#define NB_ROOMS 4 /*3 salons + 1 salon général*/
 
 /*
  * Définition d'une structure Client pour regrouper toutes les informations du client
@@ -38,7 +38,7 @@ typedef struct Room Room;
 struct Room{
     int id;
     char * name;
-    Client * members[MAX_CLIENT];
+    int members[MAX_CLIENT];
     int nbClient;
     int created;
 };

@@ -29,9 +29,8 @@ int main(int argc, char *argv[]) {
     for(i=0;i<MAX_CLIENT;i++){
         tabThreadToKill[i]=0;
     }
-    printf("init room\n");
+
     initRoom();
-    printf("init room fin\n");
 
     /*Création, nommage et passage en mode écoute de la socket pour les envois de fichier*/
     dSFile = createSocketServeur(atoi(arg1)+1);
@@ -89,25 +88,19 @@ int main(int argc, char *argv[]) {
         tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
         strcpy(tabClient[numClient].pseudo,pseudo);
 
+        free(pseudo);
+
         /*On enregistre la socket du client*/
         tabClient[numClient].occupied = 1;
         tabClient[numClient].dSC = dSC;
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-        /*Affichage des salons au client*/
-        presentationRoom(dSC);
-        /*Reception de l'id du salon choisi par le client*/
-        int idRoom = receivingInt(dSC);
-        addMember(numClient,idRoom);
+        /*Ajout du nouveau client dans le salon général*/
+        printf("dans le serveur; avant member\n\n");
+        addMember(numClient,0);
+        printf("dans le serveur; après member\n\n");
 
-        /*On envoi un message pour avertir les autres clients de l'arrivée du nouveau client*/
-        strcpy(pseudo,"** a rejoint la communication **\n");
-        sendingRoom(numClient, pseudo);    
-
-        printf("%s\n",pseudo);
-
-        free(pseudo);
 
         /*_____________________ Communication _____________________*/
         int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);

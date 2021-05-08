@@ -43,16 +43,6 @@ int main(int argc, char *argv[]) {
         sending(dS,myPseudo);
         availablePseudo = receivingInt(dS);
     }
-
-    /*Réception des salons*/
-    char * msg = (char *) malloc(sizeof(char)*300);
-    receiving(dS, msg, sizeof(char)*300);
-    printf("%s",msg);
-
-    int idRoom;
-    printf("\nChoisissez un salon: ");
-    scanf("%d",&idRoom);
-    sendingInt(dS,idRoom);
     
     /*En attente d'un autre client*/
     if(nbClient==1){
@@ -71,10 +61,10 @@ int main(int argc, char *argv[]) {
     /*Echange des messages*/
 
     /*Création d'un thread d'envoi*/
-    pthread_t thread_sendind;
+    pthread_t thread_sending;
     pthread_t thread_receiving;
 
-    int thread1 = pthread_create(&thread_sendind, NULL, sending_th, (void *)dS);
+    int thread1 = pthread_create(&thread_sending, NULL, sending_th, (void *)dS);
     if(thread1==-1){
         perror("error thread 1");
     }
@@ -86,7 +76,7 @@ int main(int argc, char *argv[]) {
     }
 
     /*Attente de la fin des threads*/
-    pthread_join(thread_sendind, NULL);
+    pthread_join(thread_sending, NULL);
     pthread_join(thread_receiving, NULL);
     
     /*Fin de la communication**/

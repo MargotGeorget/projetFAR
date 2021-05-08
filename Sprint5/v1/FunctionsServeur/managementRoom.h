@@ -18,8 +18,12 @@ Room getRoomById(int idRoom);
 
 int getFreePlaceMember(int idRoom);
 
+int getIdRoomByName(char * nameRoom);
+
 void addMember(int numClient, int idRoom);
 
 void deleteMember(int numClient, int idRoom);
+
+void joinRoom(int numClient, char * msg);
 
 #endif

@@ -71,8 +71,8 @@ void sendingRoom(int numClient, char * msg){
     for (i = 0; i<MAX_CLIENT ; i++) {
 
         /*On n'envoie pas au client qui a écrit le message*/
-        if(rooms[idRoom-1].&members[i].occupied && dS != rooms[idRoom-1].&members[i].dSC){
-            sending(rooms[idRoom-1].&members[i].dSC, msg);
+        if(rooms[idRoom].members[i] && tabClient[i].occupied && dS != tabClient[i].dSC){
+            sending(tabClient[i].dSC, msg);
         }
     }
 

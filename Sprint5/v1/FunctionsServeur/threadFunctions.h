@@ -6,6 +6,7 @@
 #include "library.h"
 #include "managementMessage.h"
 #include "dialogFunctions.h"
+#include "managementRoom.h"
 
 /*
  * Préparation et réception d'un fichier envoyé par le client

@@ -1,7 +1,7 @@
-#include "library.h"
+#include "managementMessage.h"
 
 int endOfCommunication(char * msg){
-    if (strcmp(msg, "fin\n")==0){
+    if (strcmp(msg, "/end\n")==0){
         strcpy(msg, "** a quitté la communication **\n");
         return 1;
     }

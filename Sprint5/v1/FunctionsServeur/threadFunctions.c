@@ -137,7 +137,11 @@ void * broadcast(void * clientParam){
                     perror("error thread");
                 }
             }
-        }else {
+        }else if(isPresentationRoom(msgReceived)){
+            presentationRoom(dSC);
+        }else if(isJoinRoom(msgReceived)){
+            joinRoom(numClient, msgReceived);
+        }else{
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
             sendingRoom(numClient, msgReceived);

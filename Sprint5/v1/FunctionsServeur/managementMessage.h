@@ -33,4 +33,8 @@ int isReceivingFile(char * msg);
 */
 int isSendingFile(char * msg);
 
+int isPresentationRoom(char * msg);
+
+int isJoinRoom(char * msg);
+
 #endif
