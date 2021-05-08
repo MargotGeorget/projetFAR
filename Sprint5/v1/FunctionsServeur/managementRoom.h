@@ -28,4 +28,8 @@ void removeRoom(int numClient, char * msg);
 
 int getNonCreatedRoom();
 
+void updateNameRoom(int numClient, char * msg);
+
+void updateDescrRoom(int numClient, char * msg);
+
 #endif

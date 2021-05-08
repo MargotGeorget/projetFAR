@@ -41,4 +41,8 @@ int isCreateRoom(char * msg);
 
 int isRemoveRoom(char * msg);
 
+int isUpdateNameRoom(char * msg);
+
+int isUpdateDescrRoom(char * msg);
+
 #endif

@@ -38,6 +38,7 @@ typedef struct Room Room;
 struct Room{
     int id;
     char * name;
+    char * descr;
     int members[MAX_CLIENT];
     int nbClient;
     int created;

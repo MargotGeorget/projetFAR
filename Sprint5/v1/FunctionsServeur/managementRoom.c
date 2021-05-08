@@ -32,6 +32,8 @@ void initRoom(){
         rooms[i].id = atoi(strtok(buffer,","));
         rooms[i].name = (char *)malloc(sizeof(char)*100);
         strcpy(rooms[i].name,strtok(NULL,","));
+        rooms[i].descr = (char *)malloc(sizeof(char)*100);
+        strcpy(rooms[i].descr,strtok(NULL,","));
         rooms[i].created = atoi(strtok(NULL,","));
         int j;
         for (j=0;j<MAX_CLIENT;j++){
@@ -52,12 +54,17 @@ void presentationRoom(int dS){
     int j;
     char * msg = (char *)malloc(sizeof(char)*300);
     strcpy(msg," ");
+    printf("affichage\n");
 
     for (i=0;i<NB_ROOMS;i++){
         if (rooms[i].created){
             strcat(msg,"\n** ");
             strcat(msg,rooms[i].name);
             strcat(msg," **\n");
+            strcat(msg," --");
+            strcat(msg,rooms[i].descr);
+            strcat(msg," --\n");
+            printf("%s\n",msg);
             /*
              * tabClient[rooms[i].members[j]].occupied
              * On récupère la room d'indice i dans le tableau des rooms
@@ -211,6 +218,10 @@ void updateRoom(){
         strcat(line,rooms[i].name);
         strcat(line,",");
 
+        /*DESCRIPTION*/
+        strcat(line,rooms[i].descr);
+        strcat(line,",");
+
         /*CREATED*/
         sprintf(create,"%d",rooms[i].created);
         strcat(line, create);
@@ -234,7 +245,6 @@ void removeRoom(int numClient, char * msg){
     strtok(msg," ");
     roomName = strtok(NULL,"\n");
 
-    
     /*ToDo message de confirmation si salon occupé par d'autres membres*/
 
     /*ToDo: renvoyer les membres du salon dans le général*/
@@ -243,6 +253,7 @@ void removeRoom(int numClient, char * msg){
     int idRoom = getRoomByName(roomName);
 
     rooms[idRoom].created=0;
+    strcpy(rooms[idRoom].descr,"Default");
 
     /*MAJ NOM dans le fichier*/
     updateRoom();
@@ -256,3 +267,38 @@ int getNonCreatedRoom(){
     return i;
 }
 
+void updateNameRoom(int numClient, char * msg){
+    /*On récupère le nom du salon à modifier*/
+    char *  roomName =  (char *) malloc(sizeof(char)*300);
+    strtok(msg," ");
+    roomName = strtok(NULL," ");
+    /*On récupère le nouveau nom*/
+    char *  newName =  (char *) malloc(sizeof(char)*300);
+    roomName = strtok(NULL,"\n");
+
+    /*ID*/
+    int idRoom = getRoomByName(roomName);
+
+    strcpy(rooms[idRoom].name,newName);
+    
+    /*MAJ NOM dans le fichier*/
+    updateRoom();
+}
+
+void updateDescrRoom(int numClient, char * msg){
+    /*On récupère le nom du salon à modifier*/
+    char *  roomName =  (char *) malloc(sizeof(char)*300);
+    strtok(msg," ");
+    roomName = strtok(NULL," ");
+    /*On récupère le nouveau nom*/
+    char *  newDescr =  (char *) malloc(sizeof(char)*300);
+    roomName = strtok(NULL,"\n");
+
+    /*ID*/
+    int idRoom = getRoomByName(roomName);
+
+    strcpy(rooms[idRoom].descr,newDescr);
+    
+    /*MAJ NOM dans le fichier*/
+    updateRoom();
+}

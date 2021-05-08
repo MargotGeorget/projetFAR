@@ -73,3 +73,27 @@ int isRemoveRoom(char * msg){
     }
     return 0;
 }
+
+int isUpdateNameRoom(char * msg){
+    char * msgCopy = (char *) malloc(sizeof(char)*30);
+    strcpy(msgCopy,msg);
+    char * cmd = (char *) malloc(sizeof(char)*30);
+    cmd = strtok(msgCopy," ");
+
+    if (strcmp(cmd, "/name")==0){
+        return 1;
+    }
+    return 0;
+}
+
+int isUpdateDescrRoom(char * msg){
+    char * msgCopy = (char *) malloc(sizeof(char)*30);
+    strcpy(msgCopy,msg);
+    char * cmd = (char *) malloc(sizeof(char)*30);
+    cmd = strtok(msgCopy," ");
+
+    if (strcmp(cmd, "/descr")==0){
+        return 1;
+    }
+    return 0;
+}

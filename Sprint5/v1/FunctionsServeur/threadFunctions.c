@@ -145,6 +145,10 @@ void * broadcast(void * clientParam){
             createRoom(numClient, msgReceived);
         }else if(isRemoveRoom(msgReceived)){
             removeRoom(numClient,msgReceived);
+        }else if(isUpdateNameRoom(msgReceived)){
+            updateNameRoom(numClient,msgReceived);
+        }else if(isUpdateDescrRoom(msgReceived)){
+            updateDescrRoom(numClient,msgReceived);
         }else{
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
