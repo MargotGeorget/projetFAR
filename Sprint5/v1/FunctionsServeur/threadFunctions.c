@@ -141,6 +141,10 @@ void * broadcast(void * clientParam){
             presentationRoom(dSC);
         }else if(isJoinRoom(msgReceived)){
             joinRoom(numClient, msgReceived);
+        }else if(isCreateRoom(msgReceived)){
+            createRoom(numClient, msgReceived);
+        }else if(isRemoveRoom(msgReceived)){
+            removeRoom(numClient,msgReceived);
         }else{
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");

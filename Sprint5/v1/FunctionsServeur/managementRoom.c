@@ -52,7 +52,7 @@ void presentationRoom(int dS){
     int j;
     char * msg = (char *)malloc(sizeof(char)*300);
     strcpy(msg," ");
-    
+
     for (i=0;i<NB_ROOMS;i++){
         if (rooms[i].created){
             strcat(msg,"\n** ");
@@ -78,49 +78,50 @@ void presentationRoom(int dS){
     free(msg);
 }
 
-void createRoom(char * nameRoom, int idRoom){
+void createRoom(int numClient, char * msg) {
+    char * error = (char *)malloc(sizeof(char)*60);
+
+    char *  roomName =  (char *) malloc(sizeof(char)*300);
+    strtok(msg," ");
+    roomName = strtok(NULL,"\n");
+
+    /*ID*/
+    int idRoom = getNonCreatedRoom();
+
+    if(idRoom != NB_ROOMS){
+        /*CREATED*/
+        if(idRoom != 0){ /*On ne peut modifier le salon principal*/
+            rooms[idRoom].created = 1;
+            strcpy(rooms[idRoom].name,roomName);
+            /*MAJ NOM dans le fichier*/
+            updateRoom();
+        }else {
+            strcpy(error, "Vous ne pouvez pas changer le nom du salon général.\n");
+            sending(tabClient[numClient].dSC, error);
+        }
+    }else {
+        strcpy(error, "Le nombre maximum de salons a été créé.\n");
+        sending(tabClient[numClient].dSC, error);
+    }
+    free(error);
 }
 
-Room getRoomById(int idRoom){
-    int i = 0;
+int getRoomByName(char * roomName){
     int found = 0;
-    Room result;
-
-    pthread_mutex_lock(&lock); /*Début d'une section critique*/
-
-    while (i<NB_ROOMS && !found){
-        if(rooms[i].id==idRoom){
-            result = rooms[i];
-            found = 1;
-        }
-        i+=1;
-    }
-
-    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
-
-    return result;
-}
-
-int getFreePlaceMember(int idRoom){
-    int i = 0;
+    int i = 0; 
     int indice = -1;
+    
 
-    pthread_mutex_lock(&lock); /*Début d'une section critique*/
-
-    while (i<MAX_CLIENT && indice==-1){
-        if(rooms[idRoom].members[i]==-1 || !tabClient[rooms[idRoom].members[i]].occupied){
+    while(i<NB_ROOMS && !found){
+        printf("nom du salon : %s\n",rooms[i].name);
+        if(strcmp(rooms[i].name, roomName) == 0){
+            found = 1;
             indice = i;
-            printf("indice libre: %d\n",indice);
         }
-        i+=1;
+
+        i++;
     }
-    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
-
     return indice;
-}
-
-int getIdRoomByName(char * nameRoom){
-    return 1;
 }
 
 void addMember(int numClient, int idRoom){
@@ -140,41 +141,118 @@ void addMember(int numClient, int idRoom){
 }
 
 void deleteMember(int numClient, int idRoom){
-
-    /*On indique dans les membres du salon que le client n'est plus présent*/
-    rooms[idRoom].members[numClient] = 0;
+    printf("Fonction deleteMember()\n");
 
     /*Envoi d'un message pour informer les autres membres du salon*/
     char * leaveNotification =  (char *) malloc(sizeof(char)*100);
     strcpy(leaveNotification,"** a quitté le salon **\n");
     sendingRoom(numClient, leaveNotification); 
+
+    printf("message de déconnexion envoyé\n");
+
+    /*On indique dans les membres du salon que le client n'est plus présent*/
+    rooms[idRoom].members[numClient] = 0;
     
     free(leaveNotification);
+
+    printf("fin de la fonction deleteMember\n");
 }
 
 void joinRoom(int numClient, char * msg){
+    printf("Fonction joinRoom()\n");
 
     deleteMember(numClient,tabClient[numClient].idRoom);
     
     char *  nameRoom =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
-    nameRoom = strtok(NULL," ");
+    nameRoom = strtok(NULL,"\n");
+
+    printf("gestion nom du salon : %s\n",nameRoom);
 
     /*Récupération de l'id du salon choisi par le client*/
-    int idRoom = getIdRoomByName(nameRoom);
+    int idRoom = getRoomByName(nameRoom);
 
+    printf("indice salon à rejoindre : %d\n",idRoom);
+    /*ToDo vérifier retour si -1 aucun salon à ce nom*/
     addMember(numClient,idRoom);
     return;
 }
 
-void updateRoomName(char * newName, int idRoom){
-    strcpy(rooms[idRoom].name, newName);
+void updateRoom(){
 
-    /*toDo : changer dans le fichier*/
+    char * line = (char *)malloc(sizeof(char)*100);
+    
+    /*Suppression fichier*/
+    int ret = remove("./FunctionsServeur/room.txt");
+    if (ret == -1){
+        perror("erreur suppression updateRoom: \n");
+        exit(1);
+    }
+
+    /*Création du fichier*/
+    int fd = open("./FunctionsServeur/room.txt", O_CREAT | O_WRONLY, 0666);
+    if (fd == -1){
+        perror("erreur création updateRoom: \n");
+        exit(1);
+    }
+
+    int i;
+    for (i = 0; i < NB_ROOMS; i++){
+
+        char * id = malloc(sizeof(int));
+        char * create = malloc(sizeof(int));
+
+        /*ID*/
+        sprintf(id,"%d",rooms[i].id);
+        strcpy(line,id);
+        strcat(line,",");
+
+        /*NOM*/
+        strcat(line,rooms[i].name);
+        strcat(line,",");
+
+        /*CREATED*/
+        sprintf(create,"%d",rooms[i].created);
+        strcat(line, create);
+        strcat(line, "\n\0");
+        
+        int w = write(fd,line,strlen(line));
+        if(w == -1){
+            perror("erreur au write\n");
+            exit(1);
+        }
+
+        free(id);
+        free(create);
+    }
+    free(line);
+    return;
 }
 
-void removeRoom(int idRoom){
+void removeRoom(int numClient, char * msg){
+    char *  roomName =  (char *) malloc(sizeof(char)*300);
+    strtok(msg," ");
+    roomName = strtok(NULL,"\n");
+
+    
+    /*ToDo message de confirmation si salon occupé par d'autres membres*/
+
+    /*ToDo: renvoyer les membres du salon dans le général*/
+
+    /*ID*/
+    int idRoom = getRoomByName(roomName);
+
     rooms[idRoom].created=0;
 
-    /*toDo : changer dans le fichier*/
+    /*MAJ NOM dans le fichier*/
+    updateRoom();
 }
+
+int getNonCreatedRoom(){
+    int i = 0;
+    while(i<NB_ROOMS && rooms[i].created){
+        i++;
+    }
+    return i;
+}
+

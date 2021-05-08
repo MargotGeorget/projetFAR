@@ -37,4 +37,8 @@ int isPresentationRoom(char * msg);
 
 int isJoinRoom(char * msg);
 
+int isCreateRoom(char * msg);
+
+int isRemoveRoom(char * msg);
+
 #endif

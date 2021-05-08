@@ -12,18 +12,20 @@ void initRoom();
 
 void presentationRoom(int dS);
 
-void createRoom(char * nameRoom, int idRoom);
+void createRoom(int numClient, char * msg);
 
-Room getRoomById(int idRoom);
-
-int getFreePlaceMember(int idRoom);
-
-int getIdRoomByName(char * nameRoom);
+int getRoomByName(char * nameRoom);
 
 void addMember(int numClient, int idRoom);
 
 void deleteMember(int numClient, int idRoom);
 
 void joinRoom(int numClient, char * msg);
+
+void updateRoom();
+
+void removeRoom(int numClient, char * msg);
+
+int getNonCreatedRoom();
 
 #endif

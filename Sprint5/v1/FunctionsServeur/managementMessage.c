@@ -43,8 +43,32 @@ int isJoinRoom(char * msg){
     strcpy(msgCopy,msg);
     char * cmd = (char *) malloc(sizeof(char)*30);
     cmd = strtok(msgCopy," ");
-    /*toDo: strtok()*/
-    if (strcmp(cmd, "/join\n")==0){
+
+    if (strcmp(cmd, "/join")==0){
+        return 1;
+    }
+    return 0;
+}
+
+int isCreateRoom(char * msg){
+    char * msgCopy = (char *) malloc(sizeof(char)*30);
+    strcpy(msgCopy,msg);
+    char * cmd = (char *) malloc(sizeof(char)*30);
+    cmd = strtok(msgCopy," ");
+
+    if (strcmp(cmd, "/create")==0){
+        return 1;
+    }
+    return 0;
+}
+
+int isRemoveRoom(char * msg){
+    char * msgCopy = (char *) malloc(sizeof(char)*30);
+    strcpy(msgCopy,msg);
+    char * cmd = (char *) malloc(sizeof(char)*30);
+    cmd = strtok(msgCopy," ");
+
+    if (strcmp(cmd, "/remove")==0){
         return 1;
     }
     return 0;
