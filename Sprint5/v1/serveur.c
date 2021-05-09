@@ -80,6 +80,7 @@ int main(int argc, char *argv[]) {
 
         /*Pseudo valide*/
         sendingInt(dSC,availablePseudo);
+        printf("Nouveau client : %s,\ndSC: %d\n\n",pseudo,dSC);
 
         /*On enregistre le pseudo du client*/
         
@@ -94,13 +95,14 @@ int main(int argc, char *argv[]) {
         tabClient[numClient].occupied = 1;
         tabClient[numClient].dSC = dSC;
 
+        printf("Nouveau client enregistré : %s,\ndSC : %ld,\noccupied : %d\n\n",tabClient[numClient].pseudo,tabClient[numClient].dSC,tabClient[numClient].occupied);
+
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
         /*Ajout du nouveau client dans le salon général*/
-        printf("dans le serveur; avant member\n\n");
         addMember(numClient,0);
-        printf("dans le serveur; après member\n\n");
 
+        welcomeMsg(dSC);
 
         /*_____________________ Communication _____________________*/
         int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);

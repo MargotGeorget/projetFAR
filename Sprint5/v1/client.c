@@ -43,18 +43,8 @@ int main(int argc, char *argv[]) {
         sending(dS,myPseudo);
         availablePseudo = receivingInt(dS);
     }
-    
-    /*En attente d'un autre client*/
-    if(nbClient==1){
-        printf("En attente d'un autre client\n");
 
-        /*Reception du premier message informant de l'arrivée d'un autre client*/
-        char * msg = (char *) malloc(sizeof(char)*100);
-        receiving(dS, msg, sizeof(char)*100);
-        printf("%s",msg);
-
-        free(msg);
-    }
+    free(myPseudo);
 
     /*_____________________ Communication _____________________*/
 

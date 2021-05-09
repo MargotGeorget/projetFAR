@@ -10,6 +10,8 @@ int giveIdRoom();
 
 void initRoom();
 
+void welcomeMsg(int dS);
+
 void presentationRoom(int dS);
 
 void createRoom(int numClient, char * msg);

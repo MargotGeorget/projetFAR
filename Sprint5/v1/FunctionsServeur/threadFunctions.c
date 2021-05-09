@@ -57,13 +57,16 @@ void * sendingFile_th(void * fpParam){
 }
 
 void * broadcast(void * clientParam){
+    
     int isEnd = 0;
     int numClient = (long) clientParam;
     pthread_mutex_lock(&lock);
     int dSC = tabClient[numClient].dSC;
     pthread_mutex_unlock(&lock);
+    printf("broadcast lancé pour le client : %s\n",tabClient[numClient].pseudo);
 
     while(!isEnd){
+        printf("entre dans la boucle, dSC client : %d\n",dSC);
         /*Réception du message*/
         char * msgReceived = (char *) malloc(sizeof(char)*100);
         receiving(dSC, msgReceived, sizeof(char)*100);
@@ -149,14 +152,14 @@ void * broadcast(void * clientParam){
             updateNameRoom(numClient,msgReceived);
         }else if(isUpdateDescrRoom(msgReceived)){
             updateDescrRoom(numClient,msgReceived);
-        }else{
+        }else if(!isEnd){
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
             sendingRoom(numClient, msgReceived);
         }
     }
-
     /*Fermeture du socket client*/
+    deleteMember(numClient,tabClient[numClient].idRoom);
     sem_post(&semNbClient);
     pthread_mutex_lock(&lock);
     tabClient[numClient].occupied=0;

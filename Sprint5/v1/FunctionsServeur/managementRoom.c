@@ -49,22 +49,43 @@ void initRoom(){
     printf("\n-- Salons initialisés --\n");
 }
 
+void welcomeMsg(int dS){
+    int i;
+    char * msg = (char *)malloc(sizeof(char)*300);
+    strcpy(msg,"\n___Bienvenu dans le salon général___\nVoici les membres présents : \n");
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    for (i=0;i<MAX_CLIENT;i++){
+        if(rooms[0].members[i] && tabClient[rooms[0].members[i]].occupied){
+            strcat(msg,tabClient[i].pseudo);
+            strcat(msg,"\n");
+        }
+    }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    strcat(msg,"______Bonne communication______\n");
+    sending(dS,msg);
+    free(msg);
+}
+
 void presentationRoom(int dS){
     int i;
     int j;
-    char * msg = (char *)malloc(sizeof(char)*300);
-    strcpy(msg," ");
-    printf("affichage\n");
+    char * msg = (char *)malloc(sizeof(char)*400);
+    strcpy(msg,"\n______Liste des salons existants______\n");
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
     for (i=0;i<NB_ROOMS;i++){
         if (rooms[i].created){
             strcat(msg,"\n** ");
             strcat(msg,rooms[i].name);
             strcat(msg," **\n");
-            strcat(msg," --");
+            strcat(msg," -- ");
             strcat(msg,rooms[i].descr);
             strcat(msg," --\n");
-            printf("%s\n",msg);
             /*
              * tabClient[rooms[i].members[j]].occupied
              * On récupère la room d'indice i dans le tableau des rooms
@@ -78,8 +99,11 @@ void presentationRoom(int dS){
                 }
 
             }
-        }
+        } 
     }
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    strcat(msg,"_____________________________________\n\n");
     printf("%s\n",msg);
     sending(dS,msg);
     free(msg);
@@ -96,18 +120,18 @@ void createRoom(int numClient, char * msg) {
     int idRoom = getNonCreatedRoom();
 
     if(idRoom != NB_ROOMS){
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+        
         /*CREATED*/
-        if(idRoom != 0){ /*On ne peut modifier le salon principal*/
-            rooms[idRoom].created = 1;
-            strcpy(rooms[idRoom].name,roomName);
-            /*MAJ NOM dans le fichier*/
-            updateRoom();
-        }else {
-            strcpy(error, "Vous ne pouvez pas changer le nom du salon général.\n");
-            sending(tabClient[numClient].dSC, error);
-        }
+        rooms[idRoom].created = 1;
+        strcpy(rooms[idRoom].name,roomName);
+        /*MAJ NOM dans le fichier*/
+        updateRoom();
+
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+        
     }else {
-        strcpy(error, "Le nombre maximum de salons a été créé.\n");
+        strcpy(error, "Le nombre maximum de salons a été atteint.\n");
         sending(tabClient[numClient].dSC, error);
     }
     free(error);
@@ -118,26 +142,32 @@ int getRoomByName(char * roomName){
     int i = 0; 
     int indice = -1;
     
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
     while(i<NB_ROOMS && !found){
-        printf("nom du salon : %s\n",rooms[i].name);
+        printf("nom du salon : .%s.\n",rooms[i].name);
         if(strcmp(rooms[i].name, roomName) == 0){
             found = 1;
             indice = i;
         }
-
         i++;
     }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
     return indice;
 }
 
 void addMember(int numClient, int idRoom){
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
     /*Ajout de l'id du salon au client*/
     tabClient[numClient].idRoom = idRoom;
     /*On indique dans les membres du salon que le client est présent*/
-    printf("avant add member : %s\n", tabClient[rooms[idRoom].members[numClient]].pseudo);
     rooms[idRoom].members[numClient] = 1;
-    printf("add member : %s\n", tabClient[rooms[idRoom].members[numClient]].pseudo);
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
     
     /*Envoi d'un message pour informer les autres membres du salon*/
     char * joinNotification =  (char *) malloc(sizeof(char)*100);
@@ -148,43 +178,51 @@ void addMember(int numClient, int idRoom){
 }
 
 void deleteMember(int numClient, int idRoom){
-    printf("Fonction deleteMember()\n");
-
     /*Envoi d'un message pour informer les autres membres du salon*/
     char * leaveNotification =  (char *) malloc(sizeof(char)*100);
     strcpy(leaveNotification,"** a quitté le salon **\n");
     sendingRoom(numClient, leaveNotification); 
+        
+    free(leaveNotification);
 
-    printf("message de déconnexion envoyé\n");
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
     /*On indique dans les membres du salon que le client n'est plus présent*/
     rooms[idRoom].members[numClient] = 0;
-    
-    free(leaveNotification);
 
-    printf("fin de la fonction deleteMember\n");
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
 }
 
 void joinRoom(int numClient, char * msg){
-    printf("Fonction joinRoom()\n");
+    char * error = (char *)malloc(sizeof(char)*60);
 
-    deleteMember(numClient,tabClient[numClient].idRoom);
-    
     char *  nameRoom =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
     nameRoom = strtok(NULL,"\n");
 
-    printf("gestion nom du salon : %s\n",nameRoom);
-
     /*Récupération de l'id du salon choisi par le client*/
     int idRoom = getRoomByName(nameRoom);
 
-    printf("indice salon à rejoindre : %d\n",idRoom);
-    /*ToDo vérifier retour si -1 aucun salon à ce nom*/
-    addMember(numClient,idRoom);
+    if(idRoom == -1){
+
+        strcpy(error, "Aucun salon trouvé.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else {
+
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+        int idRoomClient = tabClient[numClient].idRoom;
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+        deleteMember(numClient,idRoomClient);
+        addMember(numClient,idRoom);
+    }
+
     return;
 }
 
+/*Attention cette fonction est toujours appelée dans une section critique, ne pas mettre de mutex dedans*/
 void updateRoom(){
 
     char * line = (char *)malloc(sizeof(char)*100);
@@ -241,6 +279,8 @@ void updateRoom(){
 }
 
 void removeRoom(int numClient, char * msg){
+    char * error = (char *)malloc(sizeof(char)*60);
+
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
     roomName = strtok(NULL,"\n");
@@ -252,53 +292,116 @@ void removeRoom(int numClient, char * msg){
     /*ID*/
     int idRoom = getRoomByName(roomName);
 
-    rooms[idRoom].created=0;
-    strcpy(rooms[idRoom].descr,"Default");
+    if(idRoom == -1){
 
-    /*MAJ NOM dans le fichier*/
-    updateRoom();
+        strcpy(error, "Aucun salon trouvé.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else if(idRoom == 0){ /*On ne peut modifier le salon principal*/
+
+        strcpy(error, "Vous ne pouvez pas supprimer le salon général.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else{
+
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+        rooms[idRoom].created=0;
+        strcpy(rooms[idRoom].descr,"Default");
+
+        /*MAJ NOM dans le fichier*/
+        updateRoom();
+
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+    }
 }
 
 int getNonCreatedRoom(){
     int i = 0;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
     while(i<NB_ROOMS && rooms[i].created){
         i++;
     }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
     return i;
 }
 
 void updateNameRoom(int numClient, char * msg){
+    char * error = (char *)malloc(sizeof(char)*60);
+
     /*On récupère le nom du salon à modifier*/
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
     roomName = strtok(NULL," ");
+
     /*On récupère le nouveau nom*/
     char *  newName =  (char *) malloc(sizeof(char)*300);
-    roomName = strtok(NULL,"\n");
+    newName = strtok(NULL,"\n");
 
     /*ID*/
     int idRoom = getRoomByName(roomName);
 
-    strcpy(rooms[idRoom].name,newName);
+    if(idRoom == -1){
+
+        strcpy(error, "Aucun salon trouvé.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else if(idRoom == 0){ /*On ne peut modifier le salon principal*/
+
+        strcpy(error, "Vous ne pouvez pas modifier le salon général.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else{
+
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+        strcpy(rooms[idRoom].name,newName);
     
-    /*MAJ NOM dans le fichier*/
-    updateRoom();
+        /*MAJ NOM dans le fichier*/
+        updateRoom();
+
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+    }
 }
 
 void updateDescrRoom(int numClient, char * msg){
+    char * error = (char *)malloc(sizeof(char)*60);
+
     /*On récupère le nom du salon à modifier*/
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
     roomName = strtok(NULL," ");
+
     /*On récupère le nouveau nom*/
     char *  newDescr =  (char *) malloc(sizeof(char)*300);
-    roomName = strtok(NULL,"\n");
+    newDescr = strtok(NULL,"\n");
 
     /*ID*/
     int idRoom = getRoomByName(roomName);
 
-    strcpy(rooms[idRoom].descr,newDescr);
+    if(idRoom == -1){
+
+        strcpy(error, "Aucun salon trouvé.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else if(idRoom == 0){ /*On ne peut modifier le salon principal*/
+
+        strcpy(error, "Vous ne pouvez pas modifier le salon général.\n");
+        sending(tabClient[numClient].dSC, error);
+
+    }else{
+
+        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+        strcpy(rooms[idRoom].descr,newDescr);
     
-    /*MAJ NOM dans le fichier*/
-    updateRoom();
+        /*MAJ NOM dans le fichier*/
+        updateRoom();
+
+        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+    }
 }

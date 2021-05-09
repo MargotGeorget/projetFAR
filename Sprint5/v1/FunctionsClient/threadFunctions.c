@@ -85,9 +85,10 @@ void * receivingFile_th(void * fileNameParam){
 
 /* -- Fonction pour le thread d'envoi -- */
 void * sending_th(void * dSparam){
+    printf("sending th lancé \n");
     int dS = (long)dSparam;
     while (!isEnd){
-
+        
         /*Saisie du message au clavier*/
         char * m = (char *) malloc(sizeof(char)*100);
         printf(">");
@@ -95,9 +96,10 @@ void * sending_th(void * dSparam){
 
         /*On vérifie si le client veut quitter la communication*/
         isEnd = endOfCommunication(m);
+        printf("isEnd: %d\n",isEnd);
         
         /*Envoi*/
-        /*printf("J'envoi le message au serveur avec le socket %d\n",dS);*/
+        printf("J'envoi le message au serveur avec le socket %d\n",dS);
         sending(dS, m);
 
         if (isSendingFile(m)){
@@ -107,6 +109,7 @@ void * sending_th(void * dSparam){
         free(m);
     }
     close(dS);
+    printf("dS close au sending\n");
     return NULL;
 }
 
@@ -127,6 +130,7 @@ void * receiving_th(void * dSparam){
         free(r);
     }
     close(dS);
+    printf("dS close au receiving\n");
     return NULL;
 }
 

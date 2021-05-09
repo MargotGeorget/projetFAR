@@ -86,14 +86,14 @@ void sendingPrivate(int numClient, char * msg){
 
     int mydSC = tabClient[numClient].dSC;
 
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
     /*Récupération du pseudo présent au début du message*/
     char * copyMsg = (char *) malloc(sizeof(char)*100);
     strcpy(copyMsg, msg);
     char * pseudo = (char *) malloc(sizeof(char)*13);
     pseudo = strtok(copyMsg," ");
     strcpy(pseudo,pseudo+1);
-
-    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
     int dSC = findClient(pseudo);
 
