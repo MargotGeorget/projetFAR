@@ -2,7 +2,6 @@
 
 void sending(int dS, char * msg){
     int sendR = send(dS, msg, strlen(msg)+1, 0);
-    printf("message envoyé\n");
     if (sendR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au send");
         exit(-1);

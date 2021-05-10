@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     for(i=0;i<MAX_CLIENT;i++){
         tabThreadToKill[i]=0;
     }
+    nbThreadToKill = 0;
 
     initRoom();
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
         sem_wait(&semNbClient); 
 
         /*On tue les threads pour lesquels les clients ont quitté la connexion*/
-        killThread();   
+        killThread();
 
         /*Accepter une connexion*/
         dSC = acceptConnection(dS);

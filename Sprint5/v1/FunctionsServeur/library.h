@@ -58,7 +58,8 @@ Client tabClient[MAX_CLIENT];
 Room rooms[NB_ROOMS];
 pthread_t tabThread[MAX_CLIENT];
 sem_t semNbClient;
-int tabThreadToKill[MAX_CLIENT];
+pthread_t tabThreadToKill[MAX_CLIENT*2];
+int nbThreadToKill;
 
 extern pthread_mutex_t lock;
 

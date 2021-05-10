@@ -63,10 +63,8 @@ void * broadcast(void * clientParam){
     pthread_mutex_lock(&lock);
     int dSC = tabClient[numClient].dSC;
     pthread_mutex_unlock(&lock);
-    printf("broadcast lancé pour le client : %s\n",tabClient[numClient].pseudo);
 
     while(!isEnd){
-        printf("entre dans la boucle, dSC client : %d\n",dSC);
         /*Réception du message*/
         char * msgReceived = (char *) malloc(sizeof(char)*100);
         receiving(dSC, msgReceived, sizeof(char)*100);
@@ -160,11 +158,13 @@ void * broadcast(void * clientParam){
     }
     /*Fermeture du socket client*/
     deleteMember(numClient,tabClient[numClient].idRoom);
-    sem_post(&semNbClient);
     pthread_mutex_lock(&lock);
     tabClient[numClient].occupied=0;
-    tabThreadToKill[numClient]=1;
+    tabThreadToKill[nbThreadToKill]=tabThread[numClient];
+    nbThreadToKill+=1;
+    tabThread[numClient] = ((void *)0);
     close(tabClient[numClient].dSC);
     pthread_mutex_unlock(&lock);
+    sem_post(&semNbClient);
     return NULL;
 }

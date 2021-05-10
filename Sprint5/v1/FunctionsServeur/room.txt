@@ -1,4 +1,4 @@
 0,Général,Default,1
-1,bestSalon,Le meilleur salon ,1
-2,Teams34,Default,1
+1,bestSalon,Le salon d'Ophélie,1
+2,Teams34,Default,0
 3,lastSalon,Default,0

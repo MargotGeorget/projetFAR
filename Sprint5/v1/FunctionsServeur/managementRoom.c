@@ -65,7 +65,7 @@ void welcomeMsg(int dS){
 
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-    strcat(msg,"______Bonne communication______\n");
+    strcat(msg,"________Bonne communication________\n");
     sending(dS,msg);
     free(msg);
 }
@@ -103,7 +103,7 @@ void presentationRoom(int dS){
     }
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-    strcat(msg,"_____________________________________\n\n");
+    strcat(msg,"______________________________________\n\n");
     printf("%s\n",msg);
     sending(dS,msg);
     free(msg);
@@ -277,6 +277,16 @@ void updateRoom(){
     free(line);
     return;
 }
+ 
+int isOccupiedRoom(idRoom){
+    int isO = 0;
+    int i = 0;
+    while (i<MAX_CLIENT){
+        isO = rooms[idRoom].members[i];
+        i++;
+    }
+    return isO;
+ }
 
 void removeRoom(int numClient, char * msg){
     char * error = (char *)malloc(sizeof(char)*60);
@@ -284,10 +294,6 @@ void removeRoom(int numClient, char * msg){
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
     roomName = strtok(NULL,"\n");
-
-    /*ToDo message de confirmation si salon occupé par d'autres membres*/
-
-    /*ToDo: renvoyer les membres du salon dans le général*/
 
     /*ID*/
     int idRoom = getRoomByName(roomName);
@@ -302,8 +308,12 @@ void removeRoom(int numClient, char * msg){
         strcpy(error, "Vous ne pouvez pas supprimer le salon général.\n");
         sending(tabClient[numClient].dSC, error);
 
+    }else if(isOccupiedRoom(idRoom)) {
+        /*Des clients sont présents dans le salon à supprimer*/
+        strcpy(error, "Vous ne pouvez pas supprimer un salon occupé.\n");
+        sending(tabClient[numClient].dSC, error);
     }else{
-
+        
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
         rooms[idRoom].created=0;
@@ -313,6 +323,7 @@ void removeRoom(int numClient, char * msg){
         updateRoom();
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+        
     }
 }
 
