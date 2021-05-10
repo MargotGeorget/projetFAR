@@ -1,22 +1,5 @@
 #include "managementRoom.h"
 
-int giveIdRoom(){
-    int i = 0;
-    int indice = -1;
-
-    pthread_mutex_lock(&lock); /*Début d'une section critique*/
-
-    while (i<NB_ROOMS && indice==-1){
-        if(!rooms[i].created){
-            indice = i;
-        }
-        i+=1;
-    }
-    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
-
-    return indice;
-}
-
 void initRoom(){
     int i = 0;
     char buffer[100] = "";

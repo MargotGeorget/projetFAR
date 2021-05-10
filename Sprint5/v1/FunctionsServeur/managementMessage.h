@@ -4,6 +4,7 @@
 /* ----- FICHIER DE GESTION DES MESSAGES ----- */
 
 #include "library.h"
+#include "dialogFunctions.h"
 
 /*
  * Mise en forme du message à envoyer avec le pseudo de l'expéditeur
@@ -12,12 +13,16 @@
  */
 void addPseudoToMsg(char * msg, char * pseudoSender);
 
+void displayMan(int numClient);
+
 /*
  * Vérifie si un client souhaite quitter la communication
  * Paramètres : char * msg : message du client à vérifier
  * Retour : 1 (vrai) si le client veut quitter, 0 (faux) sinon
 */
 int endOfCommunication(char * msg);
+
+int numCommande(char * msg);
 
 /*
  * Vérifie si un client souhaite envoyer un fichier

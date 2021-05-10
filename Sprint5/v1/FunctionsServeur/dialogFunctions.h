@@ -6,6 +6,7 @@
 #include "library.h"
 #include "managementMessage.h"
 #include "managementClient.h"
+#include "threadFunctions.h"
 
 /*
  * Receptionne un message d'une socket et test bon déroulement
@@ -76,5 +77,9 @@ int acceptConnection(int dS);
  * Retour : pas de retour
  * */
 void sendFile(int dS, FILE * fp);
+
+void receivingFile(int dS);
+
+void sendingFile(int dS,char * msgReceived);
 
 #endif

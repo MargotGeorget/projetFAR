@@ -4,6 +4,7 @@
 /* ----- FICHIER DE GESTION DES CLIENTS ----- */
 
 #include "library.h"
+#include "dialogFunctions.h"
 
 /*
  * Gestion des indices du tableau de clients
@@ -26,6 +27,8 @@ int findClient(char * pseudo);
  *         0 sinon
  */
 int isAvailablePseudo(char * pseudo);
+
+void displayClient(int numClient);
 
 /*
  * Terminaison des threads pour lesquels les clients se sont déconnectés

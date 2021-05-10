@@ -70,90 +70,65 @@ void * broadcast(void * clientParam){
         receiving(dSC, msgReceived, sizeof(char)*100);
         printf("\nMessage recu: %s \n", msgReceived);
 
-        /*On verifie si le client veut terminer la communication*/
-        isEnd = endOfCommunication(msgReceived);
-
+        char * msgInfo = (char *) malloc(sizeof(char)*100);
         char first = msgReceived[0];
-        if(strcmp(&first,"@")==0){ /*On regarde si le client souhaite envoyer un message privé*/
-            sendingPrivate(numClient, msgReceived);
-        }else if(isReceivingFile(msgReceived)){ /*On regarde si le client souhaite envoyer un fichier au serveur*/
-
-            /*Reception du nom du fichier à recevoir*/
-            char * fileName = (char *) malloc(sizeof(char)*30);
-            receiving(dSC, fileName, sizeof(char)*30);
-            printf("\nNom du fichier à recevoir: %s \n", fileName);
-            if(strcmp(fileName,"error")==0){
-                printf("Nom de fichier incorrect\n");
-            }else{
-
-                fileName = strtok(fileName, "\n");
-
-                /*Création du thread pour gérer la reception du fichier*/
-                pthread_t threadFile;
-                int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
-                if(thread==-1){
-                    perror("error thread");
-                }
-            }
-        }else if(isSendingFile(msgReceived)){ /*On regarde si le client souhaite télécharger un fichier du serveur*/
-
-            /*Envoi du message au thread de reception du client*/
-            sending(dSC,msgReceived);
-
-            /*Envoi des fichiers pouvant être téléchargés*/
-            int cr = system("ls ./FileServeur > listeFichier.txt");
-            if(cr == -1){
-                printf("commande echouée");
-            }
-            
-            FILE * fp = fopen("listeFichier.txt", "r");
-            sendFile(dSC,fp);
-
-            /*Reception du nom du fichier à envoyer*/
-            char * fileName = (char *) malloc(sizeof(char)*30);
-            receiving(dSC, fileName, sizeof(char)*30);
-            printf("\nNom du fichier à envoyer: %s \n", fileName);
-
-            fileName = strtok(fileName, "\n");
-
-            /*Création du chemin pour trouver le fichier*/
-            char * pathToFile = (char *) malloc(sizeof(char)*130);
-            strcpy(pathToFile,"FileServeur/");
-            strcat(pathToFile,fileName);
-
-            /*Ouverture et envoi du fichier*/
-            fp = fopen(pathToFile,"r");
-            if (fp== NULL) {   
-                char * error = "error";
-                printf("Erreur! Fichier inconnu\n"); 
-                /*On informe le client de l'erreur*/
-                sending(dSC,error);
-            }else {
-                /*Le fichier va être envoyé, on informe le client et on transmet au thread de reception le nom du fichier*/
-                sending(dSC,fileName);
-                /*Création du thread d'envoi de fichier*/
-                pthread_t threadFile;
-                int thread = pthread_create(&threadFile, NULL, sendingFile_th, (void *)fp);
-                if(thread==-1){
-                    perror("error thread");
-                }
-            }
-        }else if(isPresentationRoom(msgReceived)){
-            presentationRoom(dSC);
-        }else if(isJoinRoom(msgReceived)){
-            joinRoom(numClient, msgReceived);
-        }else if(isCreateRoom(msgReceived)){
-            createRoom(numClient, msgReceived);
-        }else if(isRemoveRoom(msgReceived)){
-            removeRoom(numClient,msgReceived);
-        }else if(isUpdateNameRoom(msgReceived)){
-            updateNameRoom(numClient,msgReceived);
-        }else if(isUpdateDescrRoom(msgReceived)){
-            updateDescrRoom(numClient,msgReceived);
-        }else if(!isEnd){
+        printf("Message: %s || boolean: %d %c && %d %c\n", msgReceived,strcmp(&first,"@")==0,first,strcmp(&first,"/")==0,first);
+        if(strcmp(&first,"@")!=0 && strcmp(&first,"/")!=0){
             /*Envoi du message aux autres clients*/
             printf("Envoi du message aux autres clients. \n");
             sendingRoom(numClient, msgReceived);
+        }else {
+            int numCmd = numCommande(msgReceived);
+            printf("Numéro de la commande: %d\n",numCmd);
+            switch(numCmd){
+            case 0:        
+                strcpy(msgInfo,"Aucune commande reconnue\n"),
+                sending(dSC,msgInfo);
+                break;
+            case 1: /* --/man-- Afficher la listes des commandes*/
+                displayMan(numClient);
+                break;
+            case 2: /* --/whoishere-- Afficher la liste des clients connectés*/
+                displayClient(numClient);
+                break;
+            case 3:
+                /*ToDo: pseudo*/
+                break;
+            case 4: /* --/rooms-- Présentation des salons (Nom, Description et clients membres)*/
+                presentationRoom(dSC);
+                break;
+            case 5: /* --/join nameRoom-- Changer de salon*/
+                joinRoom(numClient, msgReceived);
+                break;
+            case 6: /* --/create nameRoom-- Créer un nouveau salon*/
+                createRoom(numClient, msgReceived);
+                break;
+            case 7: /* --/remove nameRoom-- Supprimer un salon*/
+                removeRoom(numClient,msgReceived);
+                break;
+            case 8: /* --/name nameRoom newNameRoom-- Changer le nom d'un salon*/
+                updateNameRoom(numClient,msgReceived);
+                break;
+            case 9: /* --/descr nameRoom newDescrRoom-- Changer la description d'un salon*/
+                updateDescrRoom(numClient,msgReceived);
+                break;
+            case 10: /* --/upload-- Télécharger un fichier vers le serveur*/
+                receivingFile(dSC);
+                break;
+            case 11: /* --/download-- Envoyer un fichier vers le client*/
+                sendingFile(dSC,msgReceived);
+                break;
+            case 12: /* --/end-- Quitter le serveur*/
+                isEnd = 1;
+                break;
+            case 13: /* --@all-- Envoyer le message à tous les clients*/
+                sendingAll(numClient,msgReceived);
+                break;
+            case 14: /*--@pseudo-- Envoyer le message en privée*/
+                sendingPrivate(numClient,msgReceived);
+                break;
+            }
+            free(msgInfo);
         }
     }
     /*Fermeture du socket client*/

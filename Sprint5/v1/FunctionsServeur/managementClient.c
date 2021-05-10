@@ -56,6 +56,28 @@ int isAvailablePseudo(char * pseudo){
     return available;
 }
 
+void displayClient(int numClient){
+
+	char * msg = (char *)malloc(sizeof(char)*12*MAX_CLIENT);
+	strcpy(msg, "_____ Liste des clients connectés _____ \n");
+    int i;
+
+    for(i = 0; i < MAX_CLIENT; i++){
+    	
+    	/*Si le client i est connecté*/
+    	if(tabClient[i].occupied){
+    		strcat(msg, "-- ");
+    		strcat(msg, tabClient[i].pseudo);
+    		strcat(msg, "\n");
+    	}
+    }
+    strcat(msg, "_______________________________________ \n");
+    sending(tabClient[numClient].dSC, msg);
+    free(msg);
+
+	return;
+}
+
 void killThread(){
     int i;
 
