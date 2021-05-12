@@ -1,6 +1,1 @@
-fichier.txt
-hoshi.mp3
-img.JGP
-logo.png
-margot.txt
 paris.mp3

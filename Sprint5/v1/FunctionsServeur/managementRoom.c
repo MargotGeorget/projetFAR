@@ -97,7 +97,7 @@ void createRoom(int numClient, char * msg) {
 
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
-    roomName = strtok(NULL,"\n");
+    roomName = strtok(NULL,"\0");
 
     /*ID*/
     int idRoom = getNonCreatedRoom();
@@ -182,7 +182,7 @@ void joinRoom(int numClient, char * msg){
 
     char *  nameRoom =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
-    nameRoom = strtok(NULL,"\n");
+    nameRoom = strtok(NULL,"\0");
 
     /*Récupération de l'id du salon choisi par le client*/
     int idRoom = getRoomByName(nameRoom);
@@ -276,7 +276,7 @@ void removeRoom(int numClient, char * msg){
 
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," ");
-    roomName = strtok(NULL,"\n");
+    roomName = strtok(NULL,"\0");
 
     /*ID*/
     int idRoom = getRoomByName(roomName);
@@ -334,7 +334,7 @@ void updateNameRoom(int numClient, char * msg){
 
     /*On récupère le nouveau nom*/
     char *  newName =  (char *) malloc(sizeof(char)*300);
-    newName = strtok(NULL,"\n");
+    newName = strtok(NULL,"\0");
 
     /*ID*/
     int idRoom = getRoomByName(roomName);
@@ -372,7 +372,7 @@ void updateDescrRoom(int numClient, char * msg){
 
     /*On récupère le nouveau nom*/
     char *  newDescr =  (char *) malloc(sizeof(char)*300);
-    newDescr = strtok(NULL,"\n");
+    newDescr = strtok(NULL,"\0");
 
     /*ID*/
     int idRoom = getRoomByName(roomName);

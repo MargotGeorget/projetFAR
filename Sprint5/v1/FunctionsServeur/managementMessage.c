@@ -65,8 +65,7 @@ int numCommande(char * msg){
         num = 9;
     }else if(strcmp(cmd, "/upload")==0){
         num = 10;
-    }
-    else if (strcmp(cmd, "/download")==0){
+    }else if (strcmp(cmd, "/download")==0){
         num = 11;
     }else if (strcmp(cmd, "/end")==0){
         num = 12;

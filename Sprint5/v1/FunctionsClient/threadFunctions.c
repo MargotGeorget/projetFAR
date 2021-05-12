@@ -116,7 +116,7 @@ void * receiving_th(void * dSparam){
 
         char * r = (char *) malloc(sizeof(char)*300);
         receiving(dS, r, sizeof(char)*300);
-
+        
         if(isReceivingFile(r)){
             receivingFile(dS);
         }else{

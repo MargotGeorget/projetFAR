@@ -188,23 +188,21 @@ void sendFile(int dS, FILE * fp){
 
 void receivingFile(int dS){
     /*Reception du nom du fichier à recevoir*/
-        char * fileName = (char *) malloc(sizeof(char)*30);
-        receiving(dS, fileName, sizeof(char)*30);
-        printf("\nNom du fichier à recevoir: %s \n", fileName);
-        if(strcmp(fileName,"error")==0){
-            printf("Nom de fichier incorrect\n");
-        }else{
+    char * fileName = (char *) malloc(sizeof(char)*30);
+    receiving(dS, fileName, sizeof(char)*30);
+    printf("\nNom du fichier à recevoir: %s \n", fileName);
+    if(strcmp(fileName,"error")==0){
+        printf("Nom de fichier incorrect\n");
+    }else{
 
-            fileName = strtok(fileName, "\n");
-
-            /*Création du thread pour gérer la reception du fichier*/
-            pthread_t threadFile;
-            int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
-            if(thread==-1){
-                perror("error thread");
-            }
-        }
-        free(fileName);
+        /*Création du thread pour gérer la reception du fichier*/
+        pthread_t threadFile;
+        int thread = pthread_create(&threadFile, NULL, receivingFile_th, (void *)fileName);
+        if(thread==-1){
+            perror("error thread");
+        }   
+    }
+    /*ToDo: join*/
 }
 
 void sendingFile(int dS,char * msgReceived){
@@ -226,7 +224,6 @@ void sendingFile(int dS,char * msgReceived){
     receiving(dS, fileName, sizeof(char)*30);
     printf("\nNom du fichier à envoyer: %s \n", fileName);
 
-    fileName = strtok(fileName, "\n");
 
     /*Création du chemin pour trouver le fichier*/
     char * pathToFile = (char *) malloc(sizeof(char)*130);

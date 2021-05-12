@@ -1,6 +1,7 @@
 #include "dialogFunctions.h"
 
 void sending(int dS, char * msg){
+    msg[strcspn(msg, "\n")] = 0;
     int sendR = send(dS, msg, strlen(msg)+1, 0);
     if (sendR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au send");
@@ -77,7 +78,7 @@ void sendingFile(int dS){
     FILE * fp = NULL;
     fp = fopen(pathToFile,"r");
     if (fp== NULL) { 
-        char * error = "error";
+        char * error = "error\n";
         sending(dS, error);  
         printf("Erreur! Fichier inconnu\n"); 
     }else {
@@ -92,6 +93,7 @@ void sendingFile(int dS){
     }
     free(pathToFile);
     free(fileName);
+    /*ToDo join pour close fp*/
 }
 
 void receivingFile(int dS){
