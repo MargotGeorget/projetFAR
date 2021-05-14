@@ -1,4 +1,0 @@
-0,Général,Default,1
-1,bestSalon,Le salon d'Ophélie,1
-2,SalonNathan,Le salon des bgs,1
-3,lastSalon,Default,0

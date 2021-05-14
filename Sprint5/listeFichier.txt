@@ -1,0 +1,3 @@
+fichier.txt
+hoshi.mp3
+paris.mp3
