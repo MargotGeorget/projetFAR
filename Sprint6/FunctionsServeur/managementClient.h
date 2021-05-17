@@ -34,9 +34,15 @@ int isFreePseudo(char * pseudo);
  * */
 void displayClient(int numClient);
 
+void displayOneClient(int numClient, char * msg);
+
 void initClients();
 
 void saveClients();
+
+void updatePseudo(int numClient, char * msg);
+
+void updateDescr(int numClient, char * msg);
 
 void createAccount(int dSC, char * pseudo, int numClient);
 

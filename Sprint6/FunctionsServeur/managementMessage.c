@@ -33,7 +33,7 @@ void displayMan(int numClient){
 
 int numCommande(char * msg){
     /*Récupération de la commande*/
-    char * msgCopy = (char *) malloc(sizeof(char)*30);
+    char * msgCopy = (char *) malloc(sizeof(char)*300);
     strcpy(msgCopy,msg);
     char * cmd = (char *) malloc(sizeof(char)*30);
     cmd = strtok(msgCopy," ");
@@ -57,7 +57,7 @@ int numCommande(char * msg){
         num = 7;
     }else if(strcmp(cmd, "/name")==0){
         num = 8;
-    }else if(strcmp(cmd, "/descr")==0){
+    }else if(strcmp(cmd, "/descrRoom")==0){
         num = 9;
     }else if(strcmp(cmd, "/upload")==0){
         num = 10;
@@ -69,6 +69,14 @@ int numCommande(char * msg){
         num = 13;
     }else if (strcmp(&first, "@")==0){        
         num = 14;
+    }else if (strcmp(cmd, "/descr")==0){
+        num = 15;
+    }else if (strcmp(cmd, "/profil")==0){
+        num = 16;
+    }else if (strcmp(cmd, "/deleteAccount")==0){
+        num = 17;
+    }else if (strcmp(&first, "/admin")==0){        
+        num = 18;
     }
     return num;
 }

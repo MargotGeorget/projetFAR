@@ -1,7 +1,7 @@
 #include "managementMessage.h"
 
 int endOfCommunication(char * msg){
-    if (strcmp(msg, "/end")==0){
+    if (strcmp(msg, "/end")==0 || strcmp(msg, "/deleteAccount")==0){
         return 1;
     }
     return 0;

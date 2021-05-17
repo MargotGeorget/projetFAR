@@ -1,5 +1,5 @@
-0,Nathan,nathan,Default,1,0
-1,Margot,margot,Default,1,0
-2,Marouan,marouan,Default,1,0
-3,Ophélie,ophelie,Default,1,0
+0,Nathan,nathan,Ruby est mon idole,1,0
+1,Margot,margot,C'est mon anniversaire,1,0
+2,Marouan,marouan,Default,1,1
+3,Ophélie,ophelie,Je porte la 5G en moi,1,0
 4,Margot,margot,Default,0,0

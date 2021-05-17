@@ -79,6 +79,42 @@ void displayClient(int numClient){
 	return;
 }
 
+void displayOneClient(int numClient, char * msg){
+    char * error = (char *)malloc(sizeof(char)*60);
+
+    /*On récupère le pseudo du client à afficher*/
+    char *  hisPseudo =  (char *) malloc(sizeof(char)*300);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    hisPseudo = strtok(NULL,"\0"); /*récupération du  peusdo*/
+
+    if(hisPseudo==NULL){
+        strcpy(error, "Saisissez le peusdo d'un client.\n");
+        sending(tabClient[numClient].dSC, error);       
+    }else{
+        int client = findClient(hisPseudo);
+        if(client==-1){
+            strcpy(error, "Aucun client ne correspond à ce pseudo.\n");
+            sending(tabClient[numClient].dSC, error);
+        }else{ /*On peut afficher le profil du client*/
+
+            char *  profil =  (char *) malloc(sizeof(char)*300);
+            strcpy(profil,"\n** ");
+
+            pthread_mutex_lock(&lock); /*Début d'une section critique*/
+            
+            strcat(profil,tabClient[client].pseudo);
+            strcat(profil," **\n");
+            strcat(profil,"-- ");
+            strcat(profil,tabClient[client].descr);
+            strcat(profil," --\n");
+
+            pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+            sending(tabClient[numClient].dSC, profil); 
+        }
+    }
+}
+
 void initClients(){
     int i = 0;
     char buffer[100] = "";
@@ -94,34 +130,27 @@ void initClients(){
     /*Initialisation du tableau des salons à partir du contenu du fichier*/
     while(fgets(buffer,100, (FILE *) fp)!=NULL && i<MAX_CLIENT){
         
-        printf("Identifiant\n");
         /*ID*/
         tabClient[i].id = atoi(strtok(buffer,","));
 
-        printf("Pseudo\n");
         /*PSEUDO*/
         tabClient[i].pseudo = (char *)malloc(sizeof(char)*15);
         strcpy(tabClient[i].pseudo,strtok(NULL,","));
 
-        printf("password\n");
         /*PASSWORD*/
         tabClient[i].password = (char *)malloc(sizeof(char)*12);
         strcpy(tabClient[i].password,strtok(NULL,","));
 
-        printf("description\n");
         /*DESCRIPTION*/
-        tabClient[i].descr = (char *)malloc(sizeof(char)*100);
+        tabClient[i].descr = (char *)malloc(sizeof(char)*300);
         strcpy(tabClient[i].descr,strtok(NULL,","));
 
-        printf("connected\n");
         /*CONNECTED*/
         tabClient[i].connected = 0;
 
-        printf("created\n");
         /*CREATED*/
         tabClient[i].created = atoi(strtok(NULL,","));
 
-        printf("admin\n");
         /*ISADMIN*/
         tabClient[i].isAdmin = atoi(strtok(NULL,","));
 
@@ -152,8 +181,6 @@ void saveClients(){
         exit(1);
     }
 
-    printf("Fichier créé\n");
-
     int i;
     for (i = 0; i < MAX_CLIENT; i++){
         char * id = malloc(sizeof(int));
@@ -161,38 +188,28 @@ void saveClients(){
         char * isAdmin = malloc(sizeof(int));
 
         /*ID*/
-        printf("Identifiant\n");
-
         sprintf(id,"%d",tabClient[i].id);
         strcpy(line,id);
         strcat(line,",");
 
         /*PSEUDO*/
-        printf("Pseudo\n");
-
         strcat(line,tabClient[i].pseudo);
         strcat(line,",");
 
         /*PASSWORD*/
-        printf("Password\n");
-
         strcat(line,tabClient[i].password);
         strcat(line,",");
 
         /*DESCRIPTION*/
-        printf("Decription\n");
-
         strcat(line,tabClient[i].descr);
         strcat(line,",");
 
         /*CREATED*/
-        printf("Created\n");
         sprintf(created,"%d",tabClient[i].created);
         strcat(line, created);
         strcat(line, ",");
 
         /*ISADMIN*/
-        printf("isAdmin\n");
         sprintf(isAdmin,"%d",tabClient[i].isAdmin);
         strcat(line, isAdmin);
         strcat(line, "\n\0");
@@ -203,11 +220,11 @@ void saveClients(){
             exit(1);
         }
 
-
         free(id);
         free(created);
         free(isAdmin);
     }
+    printf("-- Fichier clients mis à jour --\n");
     free(line);
     return;
 }
@@ -221,12 +238,19 @@ void updatePseudo(int numClient, char * msg){
     newPseudo = strtok(NULL,"\0"); /*récupération du nouveau peusdo*/
 
     if(newPseudo==NULL){
-        strcpy(error, "Saisissez un nouveau peusdo.\n");
+        strcpy(error, "Saisissez un nouveau pseudo.\n");
         sending(tabClient[numClient].dSC, error);       
     }else if(!isAvailableName(newPseudo)){
         strcpy(error, "Un pseudo ne peut pas contenir d'espace.\n");
         sending(tabClient[numClient].dSC, error);  
     }else{ /*On peut modifier le pseudo*/
+
+        char * info = (char *)malloc(sizeof(char)*60);
+        strcpy(info,"** est désormais ");
+        strcat(info,newPseudo);
+        strcat(info," **");
+        
+        sendingRoom(numClient,info);
 
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
@@ -237,7 +261,6 @@ void updatePseudo(int numClient, char * msg){
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-        /*ToDo : informer les autres clients que le pseudo à changé*/ 
     }
 }
 
@@ -270,14 +293,14 @@ void createAccount(int dSC, char * pseudo, int numClient){
 
     strcpy(tabClient[numClient].pseudo,pseudo);
 
-    printf("Pseudo : %s\n",tabClient[numClient].pseudo);
+    printf("-- Pseudo : %s\n",tabClient[numClient].pseudo);
 
     char * password = (char *) malloc(sizeof(char)*100);
     receiving(dSC, password, sizeof(char)*15);
     password = strtok(password, "\n");
     strcpy(tabClient[numClient].password,password);
 
-    printf("Password : %s\n",tabClient[numClient].password);
+    printf("-- Password : %s\n",tabClient[numClient].password);
 
     strcpy(tabClient[numClient].descr,"Default");
 
@@ -286,11 +309,9 @@ void createAccount(int dSC, char * pseudo, int numClient){
     /*A la création du compte le client est connecté et va rejoindre le salon général*/
     tabClient[numClient].connected = 1;
 
-    printf("Fin de la création du compte, client créé : %d, connecté : %d\n",tabClient[numClient].created,tabClient[numClient].connected);
+    printf("Compte créé\n");
 
-    printf("Sauvegarde dans fichier\n");
     saveClients();
-    printf("Fin de la sauvegare\n");
 
     addMember(numClient,0);
 

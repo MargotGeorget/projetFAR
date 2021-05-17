@@ -95,7 +95,7 @@ void * broadcast(void * clientParam){
                 displayClient(numClient);
                 break;
             case 3:
-                /*ToDo: changement de pseudo*/
+                updatePseudo(numClient,msgReceived);
                 break;
             case 4: /* --/rooms-- Présentation des salons (Nom, Description et clients membres)*/
                 presentationRoom(dSC);
@@ -112,7 +112,7 @@ void * broadcast(void * clientParam){
             case 8: /* --/name nameRoom newNameRoom-- Changer le nom d'un salon*/
                 updateNameRoom(numClient,msgReceived);
                 break;
-            case 9: /* --/descr nameRoom newDescrRoom-- Changer la description d'un salon*/
+            case 9: /* --/descrRoom nameRoom newDescrRoom-- Changer la description d'un salon*/
                 updateDescrRoom(numClient,msgReceived);
                 break;
             case 10: /* --/upload-- Télécharger un fichier vers le serveur*/
@@ -129,6 +129,19 @@ void * broadcast(void * clientParam){
                 break;
             case 14: /*--@pseudo-- Envoyer le message en privée*/
                 sendingPrivate(numClient,msgReceived);
+                break;
+            case 15: /* --/descr newDescr-- Changer sa description de profil*/
+                updateDescr(numClient,msgReceived);
+                break;
+            case 16: /* --/profil pseudo-- Afficher le profil d'un client (pseudo, rôle et description)*/
+                displayOneClient(numClient,msgReceived);
+                break;
+            case 17: /* --/deleteAccount-- Supprimer son compte (déconnecte la personne automatiquement)*/
+                deleteAccount(numClient);
+                isEnd = 1;
+                break;
+            case 18: /*--/admin-- Afficher les clients admin*/
+                
                 break;
             }
         }
