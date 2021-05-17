@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
     nbThreadToKill = 0;
 
     initRoom();
+    initClients();
 
     /*Création, nommage et passage en mode écoute de la socket pour les envois de fichier*/
     dSFile = createSocketServeur(atoi(arg1)+1);
@@ -58,54 +59,44 @@ int main(int argc, char *argv[]) {
         sem_getvalue(&semNbClient, &valueSem);
         int nbClient = MAX_CLIENT-valueSem;
 
-        /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
-        long numClient = giveNumClient();
-
         /*Envoi du nombre de client présent au nouveau client*/
         sendingInt(dSC, nbClient);
-                
-        printf("Client %ld connecté\n", numClient);
 
         /*Réception du pseudo*/
 
         char * pseudo = (char *) malloc(sizeof(char)*100);
-        int freePseudo = 0; /*false*/
         int availablePseudo = 0;
 
         do {
             receiving(dSC, pseudo, sizeof(char)*12);
             pseudo = strtok(pseudo, "\n");
-            freePseudo = isFreePseudo(pseudo);
             availablePseudo = isAvailableName(pseudo);
-            sendingInt(dSC,freePseudo);
             sendingInt(dSC,availablePseudo);
 
-        } while(!freePseudo || !availablePseudo);
+        } while(!availablePseudo);
 
-        
-        printf("Nouveau client : %s,\ndSC: %d\n\n",pseudo,dSC);
-
-        /*On enregistre le pseudo du client*/
-        
-        pthread_mutex_lock(&lock); /*Début d'une section critique*/
-
-        tabClient[numClient].pseudo = (char *) malloc(sizeof(char)*12);
-        strcpy(tabClient[numClient].pseudo,pseudo);
-
-        free(pseudo);
-
-        /*On enregistre la socket du client*/
-        tabClient[numClient].occupied = 1;
-        tabClient[numClient].dSC = dSC;
-
-        printf("Nouveau client enregistré : %s,\ndSC : %ld,\noccupied : %d\n\n",tabClient[numClient].pseudo,tabClient[numClient].dSC,tabClient[numClient].occupied);
-
-        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
-
-        /*Ajout du nouveau client dans le salon général*/
-        addMember(numClient,0);
-
-        welcomeMsg(dSC);
+        int error = -1;
+        int signUp = 0;
+        int signIn = 1; 
+        printf("pseudo: %s\n",pseudo);
+        long numClient = findClient(pseudo); 
+        printf("%ld\n",numClient);
+        if(numClient==-1){ /*Le client n'a pas de compte*/
+            /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
+            numClient = giveNumClient();
+            if(numClient==-1){
+                sendingInt(dSC,error);
+            }else { /*Le client peut s'inscrire*/
+                sendingInt(dSC,signUp);
+                createAccount(dSC, pseudo, numClient);
+                printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
+            }
+        }else{/*Le client à un compte, il se connecte*/
+            sendingInt(dSC,signIn);
+            connection(dSC, numClient);
+            printf("Client %ld connecté\n", numClient);
+        }
+            free(pseudo);
 
         /*_____________________ Communication _____________________*/
         int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);

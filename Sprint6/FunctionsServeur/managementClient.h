@@ -34,6 +34,16 @@ int isFreePseudo(char * pseudo);
  * */
 void displayClient(int numClient);
 
+void initClients();
+
+void saveClients();
+
+void createAccount(int dSC, char * pseudo, int numClient);
+
+void connection(int dSC, int numClient);
+
+void deleteAccount(int numClient);
+
 /**
  * Terminaison des threads pour lesquels les clients se sont déconnectés
  */

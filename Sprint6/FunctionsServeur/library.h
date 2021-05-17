@@ -28,10 +28,15 @@
  * */
 typedef struct Client Client;
 struct Client{
-    int occupied; /*Permet de savoir si la place dans le tableau de client est prise ou non*/
+    int connected; /*Permet de savoir si le client est connecté ou non*/
+    int id;
     char * pseudo;
+    char * password;
+    char * descr;
     long dSC; /*socket du client*/
     int idRoom; /*id du salon dans lequel se trouve le client*/
+    int created; /*Permet de savoir si un client occupe la place dans le tableau de client*/
+    int isAdmin; /*Booleen pour savoir si le client est un admin du serveur*/
 };
 
 typedef struct Room Room;

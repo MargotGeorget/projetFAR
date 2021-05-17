@@ -137,7 +137,7 @@ void * broadcast(void * clientParam){
     /*Fermeture du socket client*/
     deleteMember(numClient,tabClient[numClient].idRoom);
     pthread_mutex_lock(&lock);
-    tabClient[numClient].occupied=0;
+    tabClient[numClient].connected=0;
     tabThreadToKill[nbThreadToKill]=tabThread[numClient];
     nbThreadToKill+=1;
     tabThread[numClient] = ((void *)0);

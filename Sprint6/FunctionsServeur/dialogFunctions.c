@@ -49,9 +49,9 @@ void sendingAll(int numClient, char * msg){
 
     int i;
     for (i = 0; i<MAX_CLIENT ; i++) {
-        /*On envoie le message à tout les clients qui sont connectés (occupied==1) 
+        /*On envoie le message à tout les clients qui sont connectés (connected==1) 
         mais on ne l'envoie pas au client qui a écrit le message*/
-        if(tabClient[i].occupied && dS != tabClient[i].dSC){
+        if(tabClient[i].connected && dS != tabClient[i].dSC){
             sending(tabClient[i].dSC, msg);
         }
     }
@@ -100,7 +100,7 @@ void sendingPrivate(int numClient, char * msg){
     pseudo = strtok(copyMsg," ");
     strcpy(pseudo,pseudo+1);
 
-    int dSC = findClient(pseudo);
+    int dSC = tabClient[findClient(pseudo)].dSC;
 
     if (dSC==-1){ /*Aucun client n'a été trouvé*/
 
