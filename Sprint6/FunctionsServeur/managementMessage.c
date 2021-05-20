@@ -35,8 +35,7 @@ int numCommande(char * msg){
     /*Récupération de la commande*/
     char * msgCopy = (char *) malloc(sizeof(char)*300);
     strcpy(msgCopy,msg);
-    char * cmd = (char *) malloc(sizeof(char)*30);
-    cmd = strtok(msgCopy," ");
+    char * cmd = strtok(msgCopy," ");
     char first = cmd[0];
 
     /*Analyse de la commande pour trouver son numéro*/
@@ -92,6 +91,7 @@ int numCommande(char * msg){
     }else if (strcmp(cmd, "/dfhgkj")==0){        
         num = 25;
     }
+    free(msgCopy);
     return num;
 }
 

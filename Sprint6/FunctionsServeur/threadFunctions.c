@@ -169,6 +169,7 @@ void * broadcast(void * clientParam){
                 break;
             }
         }
+        free(msgReceived);
         free(msgInfo);
     }
     /*Fermeture du socket client*/
