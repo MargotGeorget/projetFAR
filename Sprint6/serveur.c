@@ -75,7 +75,8 @@ int main(int argc, char *argv[]) {
 
         } while(!availablePseudo);
 
-        int error = -1;
+        int errorMaxClient = -1;
+        int errorClientConnected = -2;
         int signUp = 0;
         int signIn = 1; 
         printf("pseudo: %s\n",pseudo);
@@ -84,28 +85,38 @@ int main(int argc, char *argv[]) {
         if(numClient==-1){ /*Le client n'a pas de compte*/
             /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
             numClient = giveNumClient();
+            printf("numéro client : %ld\n",numClient);
             if(numClient==-1){
-                sendingInt(dSC,error);
+                sendingInt(dSC,errorMaxClient);
             }else { /*Le client peut s'inscrire*/
                 sendingInt(dSC,signUp);
                 createAccount(dSC, pseudo, numClient);
                 printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
             }
         }else{/*Le client à un compte, il se connecte*/
-            sendingInt(dSC,signIn);
-            connection(dSC, numClient);
-            printf("Client %ld connecté\n", numClient);
+            if(tabClient[numClient].connected){
+                sendingInt(dSC,errorClientConnected);
+            }else {
+                sendingInt(dSC,signIn);
+                connection(dSC, numClient);
+                printf("Client %ld connecté\n", numClient);
+            }
         }
             free(pseudo);
-
-        /*_____________________ Communication _____________________*/
-        int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);
-        if(threadReturn == -1){
-            perror("erreur thread create");
-        }
-    
-        printf("Clients connectés : %d\n", nbClient);
         
+        if(numClient!=-1){
+
+            /*_____________________ Communication _____________________*/
+            int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);
+            if(threadReturn == -1){
+                perror("erreur thread create");
+            }
+        
+            printf("Clients connectés : %d\n", nbClient);
+            
+        }else{
+            sem_post(&semNbClient);
+        }
     }
     sem_destroy(&semNbClient);
 	close(dS);

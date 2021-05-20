@@ -20,6 +20,7 @@ void sendingInt(int dS, int number){
 void receiving(int dS, char * rep, ssize_t size){
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/
+        perror("erreur receiving\n");
         printf("** fin de la communication **\n");
         exit(-1);
     }

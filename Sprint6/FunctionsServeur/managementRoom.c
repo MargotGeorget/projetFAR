@@ -3,10 +3,21 @@
 void initRoom(){
     int i = 0;
     char buffer[100] = "";
+    char bufferAdmin[100] = "";
+    char bufferBan[100] = "";
+    
 
     /*Ouverture du fichier contenant la dernière sauvegarde des salons*/
     FILE *fp = fopen("FunctionsServeur/room.txt","r");
     if(fp==NULL){
+        perror("error\n");
+    }
+    FILE *fpAdmin = fopen("FunctionsServeur/adminRoom.txt","r");
+    if(fpAdmin==NULL){
+        perror("error\n");
+    }
+    FILE *fpBan = fopen("FunctionsServeur/ban.txt","r");
+    if(fpBan==NULL){
         perror("error\n");
     }
 
@@ -35,12 +46,47 @@ void initRoom(){
         for (j=0;j<MAX_CLIENT;j++){
             rooms[i].members[j]=0;
         }
+
+        /*ADMIN*/
+        /*Initialisation du tableau des admins à partir du fichier adminRoom.txt*/
+        int b = 0;
+        fgets(bufferAdmin,100, (FILE *) fpAdmin);
+        char * isAdmin = strtok(bufferAdmin,",");
+        while (b<MAX_CLIENT && isAdmin!=NULL){
+            rooms[i].admin[b]= atoi(isAdmin);
+            isAdmin = strtok(NULL,",");
+            b++;
+        }
+        while(b<MAX_CLIENT){ 
+            /*Si le fichier n'était pas complet (on à peut être augmenté le nombre MAX_CLIENT) alors on initialise le reste à 0*/
+            rooms[i].admin[b] = 0;
+            b++;
+        }
+
+        /*BAN*/
+        /*Initialisation du tableau des bans à partir du fichier ban.txt*/
+        b = 0;
+        fgets(bufferBan,100, (FILE *) fpBan);
+        char * isBan = strtok(bufferAdmin,",");
+        while (b<MAX_CLIENT && isBan!=NULL){
+            rooms[i].ban[b]= atoi(isBan);
+            isBan = strtok(NULL,",");
+            b++;
+        }
+        while(b<MAX_CLIENT){ 
+            /*Si le fichier n'était pas complet (on à peut être augmenté le nombre MAX_CLIENT) alors on initialise le reste à 0*/
+            rooms[i].ban[b] = 0;
+            b++;
+        }
+        
         i++;
     }
 
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
     fclose(fp);
+    fclose(fpAdmin);
+    fclose(fpBan);
 
     printf("\n-- Salons initialisés --\n");
 }
@@ -84,10 +130,21 @@ void presentationRoom(int dS){
             strcat(msg," **\n");
 
             /*DESCRIPTION*/
-            strcat(msg," -- ");
+            strcat(msg,"-- ");
             strcat(msg,rooms[i].descr);
             strcat(msg," --\n");
 
+            /*ADMIN*/
+            if(i!=0){
+                strcat(msg,"~~ Admin : ");
+                for(j=0;j<MAX_CLIENT;j++){
+                    if(rooms[i].admin[j]){
+                        strcat(msg,tabClient[j].pseudo);
+                        strcat(msg," ~");
+                    }
+                }
+                strcat(msg,"~\n");
+            }
             /*MEMBERS*/
             for(j=0;j<MAX_CLIENT;j++){
                 if(rooms[i].members[j]){
@@ -95,6 +152,8 @@ void presentationRoom(int dS){
                     strcat(msg,"\n");
                 }
             }
+
+            /*ToDo : présenter les admin??*/
         } 
     }
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
@@ -108,22 +167,23 @@ void presentationRoom(int dS){
 }
 
 void createRoom(int numClient, char * msg) {
-    char * error = (char *)malloc(sizeof(char)*60);
+    char * info = (char *)malloc(sizeof(char)*60);
 
     char *  roomName =  (char *) malloc(sizeof(char)*300);
     strtok(msg," "); /*suppression de la commande dans le message*/
     roomName = strtok(NULL,"\0"); /*récupération du nom du salon à créer*/
 
     if(roomName==NULL){
-        strcpy(error, "Saisissez un nom de salon.\n");
-        sending(tabClient[numClient].dSC, error);       
+        strcpy(info, "Saisissez un nom de salon.\n");
+        sending(tabClient[numClient].dSC, info);       
     }else if(!isAvailableName(roomName)){
-         strcpy(error, "Un nom de salon ne peut pas contenir d'espace.\n");
-        sending(tabClient[numClient].dSC, error);  
+         strcpy(info, "Un nom de salon ne peut pas contenir d'espace.\n");
+        sending(tabClient[numClient].dSC, info);  
     }else{
 
         /*ID*/
         int idRoom = getNonCreatedRoom();
+        printf("idRoom : %d\n", idRoom);
 
         if(idRoom != NB_ROOMS){ /*Un salon est disponible*/
             pthread_mutex_lock(&lock); /*Début d'une section critique*/
@@ -132,19 +192,23 @@ void createRoom(int numClient, char * msg) {
             rooms[idRoom].created = 1;
             /*NAME*/
             strcpy(rooms[idRoom].name,roomName);
-            
+            /*Le client créateur devient l'administrateur de la room*/
+            rooms[idRoom].admin[numClient]=1; 
             /*MAJ NOM dans le fichier*/
-            updateRoom();
+            updateRoom(1,1,0);
+
+            strcpy(info, "Le salon à été créé, vous êtes l'administrateur!\n");
+            sending(tabClient[numClient].dSC, info);
 
             pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
             
         }else { /*Aucun salon n'est disponible*/
-            strcpy(error, "Le nombre maximum de salons a été atteint.\n");
-            sending(tabClient[numClient].dSC, error);
+            strcpy(info, "Le nombre maximum de salons a été atteint.\n");
+            sending(tabClient[numClient].dSC, info);
         }
     }
     /*free(roomName);
-    free(error);*/
+    free(info);*/
 }
 
 int getRoomByName(char * roomName){
@@ -222,7 +286,12 @@ void joinRoom(int numClient, char * msg){
             strcpy(error, "Aucun salon trouvé.\n");
             sending(tabClient[numClient].dSC, error);
 
-        }else { /*Un salon à été trouvé, on fait le changement de salon*/
+        }else if(rooms[idRoom].ban[numClient]){
+
+            strcpy(error, "Vous avez été banni de ce salon, vous ne pouvez plus le rejoindre.\n");
+            sending(tabClient[numClient].dSC, error);
+
+        }else{ /*Un salon à été trouvé, on fait le changement de salon*/
 
             pthread_mutex_lock(&lock); /*Début d'une section critique*/
             int idRoomClient = tabClient[numClient].idRoom;
@@ -236,58 +305,386 @@ void joinRoom(int numClient, char * msg){
     return;
 }
 
+void moveClient(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client à déplacer*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        char *  roomName =  (char *) malloc(sizeof(char)*15);
+        roomName = strtok(NULL,"\0"); /*récupération du nom du salon où envoyer le client*/
+
+        if(roomName==NULL){
+            strcpy(info, "Saisissez le nom d'un salon.\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else {
+            int client = findClient(pseudo);
+            int idRoom = getRoomByName(roomName);
+            if(client==-1){
+                strcpy(info, "Aucun client trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(idRoom==-1){
+                strcpy(info, "Aucun salon trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(!tabClient[numClient].isAdmin) { 
+                strcpy(info, "Vous n'avez pas les droits pour déplacer le client\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else{ /*Un salon et un client ont été trouvés et le client à la droit, on fait le déplacement*/
+
+                pthread_mutex_lock(&lock); /*Début d'une section critique*/
+                int idRoomClient = tabClient[client].idRoom;
+                pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+                deleteMember(client,idRoomClient);
+                addMember(client,idRoom);
+
+                strcpy(info, "Client déplacé\n");
+                sending(tabClient[numClient].dSC, info); 
+
+                strcpy(info, "Vous avez été déplacé dans un autre salon.\n");
+                sending(tabClient[client].dSC, info); 
+            }
+        }
+    }
+
+    return;
+}
+
+void kickClient(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client à kick*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        
+        int client = findClient(pseudo);
+        if(client==-1){
+            strcpy(info, "Aucun client trouvé.\n");
+            sending(tabClient[numClient].dSC, info);  
+        }else {
+            int idRoomClient = tabClient[client].idRoom;
+            if(!rooms[idRoomClient].admin[numClient]) { 
+                strcpy(info, "Vous n'avez pas les droits pour exclure le client\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else{ /*Un salon et un client ont été trouvés et le client à la droit, on fait le déplacement*/
+
+                pthread_mutex_lock(&lock); /*Début d'une section critique*/
+                int idRoomClient = tabClient[client].idRoom;
+                pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+                deleteMember(client,idRoomClient);
+                addMember(client,0);
+
+                strcpy(info, "Client déplacé\n");
+                sending(tabClient[numClient].dSC, info); 
+
+                strcpy(info, "Vous avez été déplacé dans un autre salon.\n");
+                sending(tabClient[client].dSC, info); 
+            }
+        }
+    }
+
+    return;
+}
+
+void banClient(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client à ban*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        char *  roomName =  (char *) malloc(sizeof(char)*15);
+        roomName = strtok(NULL,"\0"); /*récupération du nom du salon dans lequel ban le client*/
+
+        if(roomName==NULL){
+            strcpy(info, "Saisissez le nom d'un salon.\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else {
+            int client = findClient(pseudo);
+            int idRoom = getRoomByName(roomName);
+            if(client==-1){
+                strcpy(info, "Aucun client trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(idRoom==-1){
+                strcpy(info, "Aucun salon trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]) { 
+                strcpy(info, "Vous n'avez pas les droits pour bannir le client\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else{ /*Un salon et un client ont été trouvés et le client à les droits*/
+
+                pthread_mutex_lock(&lock); /*Début d'une section critique*/
+                int idRoomClient = tabClient[client].idRoom;
+                pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+                if (idRoomClient==idRoom){
+                    deleteMember(client,idRoomClient);
+                    addMember(client,0); /*On le renvoie dans le général*/
+                }
+                
+                rooms[idRoom].ban[client]=1;
+
+                /*MAJ NOM dans le fichier*/
+                updateRoom(0,0,1);
+
+                strcpy(info, "Client ban\n");
+                sending(tabClient[numClient].dSC, info); 
+
+                strcpy(info, "Vous avez été banni du salon ");
+                strcat(info,roomName);
+                strcat(info,"\n");
+                sending(tabClient[client].dSC, info); 
+            }
+        }
+    }
+
+    return;
+}
+
+void unbanClient(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client à ban*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        char *  roomName =  (char *) malloc(sizeof(char)*15);
+        roomName = strtok(NULL,"\0"); /*récupération du nom du salon dans lequel ban le client*/
+
+        if(roomName==NULL){
+            strcpy(info, "Saisissez le nom d'un salon.\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else {
+            int client = findClient(pseudo);
+            int idRoom = getRoomByName(roomName);
+            if(client==-1){
+                strcpy(info, "Aucun client trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(idRoom==-1){
+                strcpy(info, "Aucun salon trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]) { 
+                strcpy(info, "Vous n'avez pas les droits pour débannir le client\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else{ /*Un salon et un client ont été trouvés et le client à les droits*/
+                
+                rooms[idRoom].ban[client]=0;
+
+                /*MAJ NOM dans le fichier*/
+                updateRoom(0,0,1);
+
+                strcpy(info, "Client déban\n");
+                sending(tabClient[numClient].dSC, info); 
+
+                strcpy(info, "Vous ban à été levé pour le salon ");
+                strcat(info,roomName);
+                strcat(info,"\n");
+                sending(tabClient[client].dSC, info); 
+            }
+        }
+    }
+
+    return;
+}
+
+void giveRightRoom(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client pour lui donner les droits*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        char *  roomName =  (char *) malloc(sizeof(char)*15);
+        roomName = strtok(NULL,"\0"); /*récupération du nom du salon auquel lui donner les droits*/
+
+        if(roomName==NULL){
+            strcpy(info, "Saisissez le nom d'un salon.\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else {
+            int client = findClient(pseudo);
+            int idRoom = getRoomByName(roomName);
+            if(client==-1){
+                strcpy(info, "Aucun client trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(idRoom==-1){
+                strcpy(info, "Aucun salon trouvé.\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]) { 
+                strcpy(info, "Vous n'avez pas les droits pour donner des droits sur cette room\n");
+                sending(tabClient[numClient].dSC, info); 
+            }else{ /*Un salon et un client ont été trouvés et le client à les droits*/
+              
+                rooms[idRoom].admin[client]=1;
+                
+                /*MAJ NOM dans le fichier*/
+                updateRoom(0,1,0);
+
+                strcpy(info, "Droits transmits\n");
+                sending(tabClient[numClient].dSC, info); 
+
+                strcpy(info, "Vous avez été déclaré admin du salon ");
+                strcat(info,roomName);
+                strcat(info,"\n");
+                sending(tabClient[client].dSC, info); 
+            }
+        }
+    }
+
+    return;
+}
 /*Attention cette fonction est toujours appelée dans une section critique, ne pas mettre de mutex dedans*/
-void updateRoom(){
+void updateRoom(int room, int admin, int ban){
     char * line = (char *)malloc(sizeof(char)*200);
     
-    /*Suppression fichier*/
-    int ret = remove("./FunctionsServeur/room.txt");
-    if (ret == -1){
-        perror("erreur suppression updateRoom: \n");
-        exit(1);
-    }
-
-    /*Création du fichier*/
-    int fd = open("./FunctionsServeur/room.txt", O_CREAT | O_WRONLY, 0666);
-    if (fd == -1){
-        perror("erreur création updateRoom: \n");
-        exit(1);
-    }
-
-    int i;
-    for (i = 0; i < NB_ROOMS; i++){
-        printf("for %d",i);
-        char * id = malloc(sizeof(int));
-        char * create = malloc(sizeof(int));
-
-        /*ID*/
-        sprintf(id,"%d",rooms[i].id);
-        strcpy(line,id);
-        strcat(line,",");
-
-        /*NOM*/
-        strcat(line,rooms[i].name);
-        strcat(line,",");
-
-        /*DESCRIPTION*/
-        strcat(line,rooms[i].descr);
-        strcat(line,",");
-
-        /*CREATED*/
-        sprintf(create,"%d",rooms[i].created);
-        strcat(line, create);
-        strcat(line, "\n\0");
-        
-        int w = write(fd,line,strlen(line));
-        if(w == -1){
-            perror("erreur au write\n");
+    if(room){
+        /*Suppression fichier*/
+        int ret = remove("./FunctionsServeur/room.txt");
+        if (ret == -1){
+            perror("erreur suppression updateRoom: \n");
             exit(1);
         }
 
-        free(id);
-        free(create);
+        /*Création du fichier*/
+        int fd = open("./FunctionsServeur/room.txt", O_CREAT | O_WRONLY, 0666);
+        if (fd == -1){
+            perror("erreur création updateRoom: \n");
+            exit(1);
+        }
+
+        int i;
+        for (i = 0; i < NB_ROOMS; i++){
+            printf("for %d\n",i);
+            char * id = malloc(sizeof(int));
+            char * create = malloc(sizeof(int));
+
+            /*ID*/
+            sprintf(id,"%d",rooms[i].id);
+            strcpy(line,id);
+            strcat(line,",");
+
+            /*NOM*/
+            strcat(line,rooms[i].name);
+            strcat(line,",");
+
+            /*DESCRIPTION*/
+            strcat(line,rooms[i].descr);
+            strcat(line,",");
+
+            /*CREATED*/
+            sprintf(create,"%d",rooms[i].created);
+            strcat(line, create);
+            strcat(line, "\n\0");
+            
+            int w = write(fd,line,strlen(line));
+            if(w == -1){
+                perror("erreur au write\n");
+                exit(1);
+            }
+
+            free(id);
+            free(create);
+        }
+
+        close(fd);
     }
+
+    if(admin){
+        /*Mise à jour fichier admin*/
+
+        /*Suppression fichier*/
+        int ret = remove("./FunctionsServeur/adminRoom.txt");
+        if (ret == -1){
+            perror("erreur suppression adminRoom: \n");
+            exit(1);
+        }
+
+        int fd = open("./FunctionsServeur/adminRoom.txt", O_CREAT | O_WRONLY, 0666);
+        if (fd == -1){
+            perror("erreur création adminRoom: \n");
+            exit(1);
+        }
+        char * isAdmin = (char *)malloc(sizeof(char)*2);;
+        strcpy(isAdmin,"");
+        int i;
+        for (i = 0; i < NB_ROOMS; i++){
+            int j;
+            strcpy(line,"");
+            for (j = 0; j < MAX_CLIENT; j++){
+                sprintf(isAdmin,"%d",rooms[i].admin[j]);
+                strcat(line,isAdmin);
+                strcat(line,",");
+            }
+            strcat(line,"\n");
+            int w = write(fd,line,strlen(line));
+            if(w == -1){
+                perror("erreur au write\n");
+                exit(1);
+            }
+        }
+        close(fd);
+    }
+
+    if(ban){
+        /*Mise à jour fichier ban*/
+
+        /*Suppression fichier*/
+        int ret = remove("./FunctionsServeur/ban.txt");
+        if (ret == -1){
+            perror("erreur suppression ban: \n");
+            exit(1);
+        }
+
+        int fd = open("./FunctionsServeur/ban.txt", O_CREAT | O_WRONLY, 0666);
+        if (fd == -1){
+            perror("erreur création ban: \n");
+            exit(1);
+        }
+        char * isBan = (char *)malloc(sizeof(char)*2);;
+        strcpy(isBan,"");
+        int i;
+        for (i = 0; i < NB_ROOMS; i++){
+            int j;
+            strcpy(line,"");
+            for (j = 0; j < MAX_CLIENT; j++){
+                sprintf(isBan,"%d",rooms[i].admin[j]);
+                strcat(line,isBan);
+                strcat(line,",");
+            }
+            strcat(line,"\n");
+            int w = write(fd,line,strlen(line));
+            if(w == -1){
+                perror("erreur au write\n");
+                exit(1);
+            }
+        }
+        close(fd);
+    }
+    
     free(line);
+
+
     return;
 }
  
@@ -331,15 +728,30 @@ void removeRoom(int numClient, char * msg){
             strcpy(error, "Vous ne pouvez pas supprimer un salon occupé.\n");
             sending(tabClient[numClient].dSC, error);
 
+        }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]){ /*Seul l'admin du serveur ou de la room peut supprimer le salon*/
+        
+            strcpy(error, "Vous n'avez pas les droits pour supprimer ce salon.\n");
+            sending(tabClient[numClient].dSC, error);
+
         }else{ /*Le salon peut être supprimé*/
             
             pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
             rooms[idRoom].created=0;
             strcpy(rooms[idRoom].descr,"Default");
+            /*Réinitialisation des admins à false*/
+            int i;
+            for(i=0;i<MAX_CLIENT;i++){
+                rooms[idRoom].admin[i]=0;
+            }
+
+            /*Réinitialisation des ban à false*/
+            for(i=0;i<MAX_CLIENT;i++){
+                rooms[idRoom].ban[i]=0;
+            }
 
             /*MAJ NOM dans le fichier*/
-            updateRoom();
+            updateRoom(1,1,1);
 
             pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
             
@@ -400,14 +812,19 @@ void updateNameRoom(int numClient, char * msg){
                 strcpy(error, "Vous ne pouvez pas modifier le salon général.\n");
                 sending(tabClient[numClient].dSC, error);
 
-            }else{ /*On peut modifier le salon*/
+            }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]){ /*Seul l'admin du serveur ou de la room peut modifier le salon*/
+        
+                strcpy(error, "Vous n'avez pas les droits pour modifier ce salon.\n");
+                sending(tabClient[numClient].dSC, error);
+
+        }   else{ /*On peut modifier le salon*/
 
                 pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
                 strcpy(rooms[idRoom].name,newName);
             
                 /*MAJ NOM dans le fichier*/
-                updateRoom();
+                updateRoom(1,0,0);
 
                 pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
             }
@@ -451,6 +868,11 @@ void updateDescrRoom(int numClient, char * msg){
                 strcpy(error, "Vous ne pouvez pas modifier le salon général.\n");
                 sending(tabClient[numClient].dSC, error);
 
+            }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]){ /*Seul l'admin du serveur ou de la room peut modifier le salon*/
+        
+                strcpy(error, "Vous n'avez pas les droits pour modifier ce salon.\n");
+                sending(tabClient[numClient].dSC, error);
+
             }else{ /*On peut modifier le salon*/
 
                 pthread_mutex_lock(&lock); /*Début d'une section critique*/
@@ -458,7 +880,7 @@ void updateDescrRoom(int numClient, char * msg){
                 strcpy(rooms[idRoom].descr,newDescr);
             
                 /*MAJ NOM dans le fichier*/
-                updateRoom();
+                updateRoom(1,0,0);
 
                 pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
             }

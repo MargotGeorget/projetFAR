@@ -46,7 +46,12 @@ int main(int argc, char *argv[]) {
     int action = receivingInt(dS);
     switch(action) {
         case -1: 
-            printf("Impossible de vous incrire, nombre de compte maximum atteint");
+            printf("Impossible de vous incrire, nombre de compte maximum atteint\n");
+            exit(0);
+            break;
+        case -2: 
+            printf("Ce compte est déjà connecté au serveur sur un autre appareil\n");
+            exit(0);
             break;
         case 0:
             printf("Aucun compte client n'a été trouvé, inscrivez vous!\n");

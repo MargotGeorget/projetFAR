@@ -6,15 +6,20 @@ void receiving(int dS, char * rep, ssize_t size){
     if (recvR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au recv");
         exit(-1);
+    }else if( recvR == 0){
+        closingClient(dS);
     }
 }
 
 int receivingInt(long dS){
     /*Réception d'un entier de la socket 'dS' et retour de l'entier*/
     int number;
-    if(recv(dS, &number, sizeof(int), 0) == -1){ /*vérification de la valeur de retour*/
+    int recvR = recv(dS, &number, sizeof(int), 0);
+    if( recvR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au recv d'un int");
         exit(-1);
+    }else if( recvR == 0){
+        closingClient(dS);
     }
     return number;
 }
@@ -100,9 +105,9 @@ void sendingPrivate(int numClient, char * msg){
     pseudo = strtok(copyMsg," ");
     strcpy(pseudo,pseudo+1);
 
-    int dSC = tabClient[findClient(pseudo)].dSC;
+    int client = findClient(pseudo);
 
-    if (dSC==-1){ /*Aucun client n'a été trouvé*/
+    if (client==-1){ /*Aucun client n'a été trouvé*/
 
         char * error = (char *) malloc(sizeof(char)*100);
         error = "Le pseudo saisi n'existe pas!\n";
@@ -112,7 +117,7 @@ void sendingPrivate(int numClient, char * msg){
 
         free(error);
 
-    }else { /*Le client à été trouvé et nous avons récupéré sa socket*/
+    }else { /*Le client à été trouvé*/
 
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
@@ -121,7 +126,7 @@ void sendingPrivate(int numClient, char * msg){
     
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-        sending(dSC, msg);
+        sending(tabClient[client].dSC, msg);
         printf("Envoi du message à %s\n", pseudo);       
     }
     /*free(pseudo);

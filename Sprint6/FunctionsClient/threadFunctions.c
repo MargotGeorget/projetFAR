@@ -87,7 +87,7 @@ void * downloadFile_th(void * fileNameParam){
 void * sending_th(void * dSparam){
     int dS = (long)dSparam;
     while (!isEnd){
-        
+
         /*Saisie du message au clavier*/
         char * m = (char *) malloc(sizeof(char)*100);
         printf(">");
@@ -118,10 +118,12 @@ void * receiving_th(void * dSparam){
 
         char * r = (char *) malloc(sizeof(char)*300);
         receiving(dS, r, sizeof(char)*300);
+
+        isEnd = endOfCommunication(r);
         
         if(isDownloadFile(r)){
             downloadFile(dS);
-        }else{
+        }else if(!isEnd){
             printf(">%s\n",r);
         }
 

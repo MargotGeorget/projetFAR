@@ -75,8 +75,22 @@ int numCommande(char * msg){
         num = 16;
     }else if (strcmp(cmd, "/deleteAccount")==0){
         num = 17;
-    }else if (strcmp(&first, "/admin")==0){        
+    }else if (strcmp(cmd, "/admin")==0){        
         num = 18;
+    }else if (strcmp(cmd, "/move")==0){
+        num = 19;
+    }else if (strcmp(cmd, "/ban")==0){
+        num = 20;
+    }else if (strcmp(cmd, "/kick")==0){        
+        num = 21;
+    }else if (strcmp(cmd, "/unban")==0){        
+        num = 22;
+    }else if (strcmp(cmd, "/rightRoom")==0){
+        num = 23;
+    }else if (strcmp(cmd, "/rightServer")==0){        
+        num = 24;
+    }else if (strcmp(cmd, "/dfhgkj")==0){        
+        num = 25;
     }
     return num;
 }

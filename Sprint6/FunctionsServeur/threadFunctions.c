@@ -123,6 +123,7 @@ void * broadcast(void * clientParam){
                 break;
             case 12: /* --/end-- Quitter le serveur*/
                 isEnd = 1;
+                sending(tabClient[numClient].dSC,msgReceived);
                 break;
             case 13: /* --@all-- Envoyer le message à tous les clients*/
                 sendingAll(numClient,msgReceived);
@@ -137,11 +138,28 @@ void * broadcast(void * clientParam){
                 displayOneClient(numClient,msgReceived);
                 break;
             case 17: /* --/deleteAccount-- Supprimer son compte (déconnecte la personne automatiquement)*/
-                deleteAccount(numClient);
-                isEnd = 1;
+                isEnd = deleteAccount(numClient); /*Si le compte peut être supprimé, isEnd passe à true, le client est déconnecté*/
                 break;
             case 18: /*--/admin-- Afficher les clients admin*/
-                
+                displayAdmin(numClient);
+                break;
+            case 19: /* --/move pseudo nameRoom-- Déplacer le client demandé dans la room donnée*/
+                moveClient(numClient,msgReceived);
+                break;
+            case 20: /* --/ban pseudo-- Renvoie le client dans le salon général et l'empêche de revenir dans le salon dans lequel il était*/
+                banClient(numClient,msgReceived);
+                break;
+            case 21: /*--/kick pseudo-- Renvoie le client dans le salon général*/
+                kickClient(numClient,msgReceived);
+                break;
+            case 22: /*--/unban pseudo nameRoom-- Redonne les autorisations au client pour rejoindre le salon*/
+                unbanClient(numClient,msgReceived);
+                break;
+            case 23: /*--/rightRoom pseudo nameRoom-- Donne le rôle administrateur de la room au client */
+                giveRightRoom(numClient,msgReceived);
+                break;
+            case 24: /*--/rightServer pseudo nameRoom-- Donne le rôle administrateur du serveur au client*/
+                giveRightServer(numClient,msgReceived);
                 break;
             }
         }

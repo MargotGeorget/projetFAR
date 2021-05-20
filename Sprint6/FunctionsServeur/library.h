@@ -44,7 +44,9 @@ struct Room{
     int id;
     char * name;
     char * descr;
-    int members[MAX_CLIENT];
+    int members[MAX_CLIENT]; /*Booleen (0 ou 1) à l'indice i pour savoir si le client numéro i est présent dans le salon*/ 
+    int admin[MAX_CLIENT]; /*Booleen (0 ou 1) à l'indice i pour savoir si le client numéro i est admin du salon*/ 
+    int ban[MAX_CLIENT]; /*Booleen (0 ou 1) à l'indice i pour savoir si le client numéro i est ban du salon*/ 
     int created; /*Permet de savoir s'il faut afficher le salon au client, s'il est créé ou non*/
 };
 

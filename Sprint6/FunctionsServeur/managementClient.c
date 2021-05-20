@@ -25,7 +25,7 @@ int findClient(char * pseudo){
 
     while (i<MAX_CLIENT && client==-1){
         if (tabClient[i].created){
-            printf("%s === %s", pseudo, tabClient[i].pseudo);
+            printf("%s === %s\n", pseudo, tabClient[i].pseudo);
             if (strcmp(pseudo, tabClient[i].pseudo)==0){
                 client = i;
             }
@@ -67,6 +67,28 @@ void displayClient(int numClient){
     	
     	/*Si le client i est connecté*/
     	if(tabClient[i].connected){
+    		strcat(msg, "-- ");
+    		strcat(msg, tabClient[i].pseudo);
+    		strcat(msg, "\n");
+    	}
+    }
+    strcat(msg, "_______________________________________ \n");
+    sending(tabClient[numClient].dSC, msg);
+    free(msg);
+
+	return;
+}
+
+void displayAdmin(int numClient){
+
+	char * msg = (char *)malloc(sizeof(char)*12*MAX_CLIENT);
+	strcpy(msg, "_____ Liste des administrateurs du serveur _____ \n");
+    int i;
+
+    for(i = 0; i < MAX_CLIENT; i++){
+    	
+    	/*Si le client i est connecté*/
+    	if(tabClient[i].isAdmin){
     		strcat(msg, "-- ");
     		strcat(msg, tabClient[i].pseudo);
     		strcat(msg, "\n");
@@ -356,7 +378,7 @@ void connection(int dSC, int numClient){
     welcomeMsg(dSC);
 }
 
-void deleteAccount(int numClient){
+int deleteAccount(int numClient){
     char * error = (char *)malloc(sizeof(char)*60);
 
     if(tabClient[numClient].isAdmin){ /*L'admin ne peut pas supprimer son compte avant d'avoir légué son rôle à un autre client*/
@@ -364,9 +386,15 @@ void deleteAccount(int numClient){
         strcpy(error, "Vous êtes l'admin, léguez votre rôle avant de supprimer votre compte.\n");
         sending(tabClient[numClient].dSC, error);
 
+        return 0;
+
     }else{ /*Le compte peut être supprimé*/
         
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+        char * msg = (char *)malloc(sizeof(char)*60);
+        strcpy(msg,"/end");
+        sending(tabClient[numClient].dSC,msg);
 
         tabClient[numClient].created=0;
         strcpy(tabClient[numClient].descr,"Default");
@@ -375,7 +403,75 @@ void deleteAccount(int numClient){
         saveClients();
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+        return 1;
     }
+}
+
+int findClientBySocket(int dS){
+    int i = 0;
+    int client = -1;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    while (i<MAX_CLIENT && client==-1){
+        if (tabClient[i].connected){
+            if (dS == tabClient[i].dSC){
+                client = i;
+            }
+        }
+        i+=1;
+    }
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    return client;
+}
+
+void giveRightServer(int numClient, char * msg){
+    char * info = (char *)malloc(sizeof(char)*60);
+
+    char *  pseudo =  (char *) malloc(sizeof(char)*15);
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    pseudo = strtok(NULL," "); /*récupération du pseudo du client pour lui donner les droits*/
+
+    if(pseudo==NULL){
+        strcpy(info, "Saisissez le pseudo d'un client.\n");
+        sending(tabClient[numClient].dSC, info);       
+    }else{
+        int client = findClient(pseudo); 
+        if(client==-1){
+            strcpy(info, "Aucun client trouvé.\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else if(!tabClient[numClient].isAdmin) { 
+            strcpy(info, "Vous n'avez pas les droits pour donner les droits du server\n");
+            sending(tabClient[numClient].dSC, info); 
+        }else{ /*Un salon et un client ont été trouvés et le client à les droits*/
+            
+            tabClient[client].isAdmin=1;
+
+            strcpy(info, "Droits transmits\n");
+            sending(tabClient[numClient].dSC, info); 
+
+            strcpy(info, "Vous avez été déclaré admin du server.\n");
+
+            sending(tabClient[client].dSC, info); 
+        }
+    }
+
+    return;
+}
+
+void closingClient(int dS){
+    int numClient = findClientBySocket(dS);
+    deleteMember(numClient,tabClient[numClient].idRoom);
+    pthread_mutex_lock(&lock);
+    tabClient[numClient].connected=0;
+    tabThreadToKill[nbThreadToKill]=tabThread[numClient];
+    nbThreadToKill+=1;
+    tabThread[numClient] = ((void *)0);
+    close(tabClient[numClient].dSC);
+    pthread_mutex_unlock(&lock);
+    sem_post(&semNbClient);
 }
 
 void killThread(){

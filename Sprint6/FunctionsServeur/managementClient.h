@@ -16,7 +16,7 @@ int giveNumClient();
 /**
  * Recherche d'un client dans le tableau à partir de son pseudo
  * Paramètre : char * pseudo : pseudo du client que l'on cherche
- * Retour : un entier, correspondant à la socket du client trouvé
+ * Retour : un entier, correspondant au numéro du client trouvé
  *          -1 si le client n'existe pas 
  */
 int findClient(char * pseudo);
@@ -34,6 +34,8 @@ int isFreePseudo(char * pseudo);
  * */
 void displayClient(int numClient);
 
+void displayAdmin(int numClient);
+
 void displayOneClient(int numClient, char * msg);
 
 void initClients();
@@ -48,7 +50,11 @@ void createAccount(int dSC, char * pseudo, int numClient);
 
 void connection(int dSC, int numClient);
 
-void deleteAccount(int numClient);
+int deleteAccount(int numClient);
+
+void giveRightServer(int numClient, char * msg);
+
+void closingClient(int dS);
 
 /**
  * Terminaison des threads pour lesquels les clients se sont déconnectés

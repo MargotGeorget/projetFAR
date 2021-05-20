@@ -58,10 +58,23 @@ void deleteMember(int numClient, int idRoom);
  * */
 void joinRoom(int numClient, char * msg);
 
+void moveClient(int numClient, char * msg);
+
+void kickClient(int numClient, char * msg);
+
+void banClient(int numClient, char * msg);
+
+void unbanClient(int numClient, char * msg);
+
+void giveRightRoom(int numClient, char * msg);
+
 /**
- * Mise à jour du fichier qui sauvegarde les salons. 
+ * Mise à jour des fichiers qui sauvegardent les informations des salons. 
+ * Paramètres : int room : Booleen à 1(true) s'il faut mettre à jour le fichier room.txt
+ *              int admin : Booleen à 1(true) s'il faut mettre à jour le fichier adminRoom.txt
+ *              int ban : Booleen à 1(true) s'il faut mettre à jour le fichier ban.txt
  * */
-void updateRoom();
+void updateRoom(int room, int admin, int ban);
 
 /**
  * Renvoie un booléen signalant s'il y a des clients dans le salon de discussion dont le numéro est passé en paramètre. 
