@@ -34,8 +34,13 @@ void * uploadFile_th(void * fileNameParam){
         bzero(buffer, 1024);
     }
     printf("\n**Fichier reçu**\n");
+
     close(fp);
     close(dSCFile);
+
+    free(fileName);
+    free(pathToFile);
+
     return NULL;
 
 }
@@ -52,6 +57,7 @@ void * downloadFile_th(void * fpParam){
     /*Appel de la fonction envoyant le fichier*/
     sendFile(dSCFile,fp);
 
+    fclose(fp);
     close(dSCFile);
     return NULL;
 }

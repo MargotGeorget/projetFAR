@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
                 sending(dS,password);
                 availablePassword = receivingInt(dS);
                 if(!availablePassword){
-                    printf("Mot de passe incorrecte!\n");
+                    printf("Mot de passe incorrect!\n");
                 }
             }
             break;

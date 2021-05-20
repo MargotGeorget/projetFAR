@@ -1,3 +1,5 @@
 fichier.txt
 hoshi.mp3
+img2.jpg
+logo.png
 paris.mp3

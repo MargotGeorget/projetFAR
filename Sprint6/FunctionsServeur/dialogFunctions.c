@@ -99,23 +99,16 @@ void sendingPrivate(int numClient, char * msg){
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
     /*Récupération du pseudo présent au début du message*/
-    char * copyMsg = (char *) malloc(sizeof(char)*100);
-    strcpy(copyMsg, msg);
-    char * pseudo = (char *) malloc(sizeof(char)*13);
-    pseudo = strtok(copyMsg," ");
-    strcpy(pseudo,pseudo+1);
+    char * pseudo = (char *) malloc(sizeof(char)*100);
+    strcpy(pseudo, msg);
+    pseudo = strtok(pseudo," ");
+    strcpy(pseudo,pseudo+1); /*Pour enlever le @*/
 
     int client = findClient(pseudo);
 
     if (client==-1){ /*Aucun client n'a été trouvé*/
 
-        char * error = (char *) malloc(sizeof(char)*100);
-        error = "Le pseudo saisi n'existe pas!\n";
-        sending(mydSC, error);
-
-        printf("%s",error);
-
-        free(error);
+        sending(mydSC, "Le pseudo saisi n'existe pas!\n");
 
     }else { /*Le client à été trouvé*/
 
@@ -129,8 +122,7 @@ void sendingPrivate(int numClient, char * msg){
         sending(tabClient[client].dSC, msg);
         printf("Envoi du message à %s\n", pseudo);       
     }
-    /*free(pseudo);
-    free(copyMsg);*/
+    free(pseudo);
 
 }
 
@@ -216,7 +208,6 @@ void uploadFile(int dS){
             perror("error thread");
         }   
     }
-    /*ToDo: join*/
 }
 
 void downloadFile(int dS,char * msgReceived){
@@ -264,5 +255,4 @@ void downloadFile(int dS,char * msgReceived){
     }
     free(fileName);
     free(pathToFile);
-    /*ToDo: join pour close fichier après*/
 }

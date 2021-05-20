@@ -30,9 +30,9 @@ typedef struct Client Client;
 struct Client{
     int connected; /*Permet de savoir si le client est connecté ou non*/
     int id;
-    char * pseudo;
-    char * password;
-    char * descr;
+    char pseudo[15];
+    char password[12];
+    char descr[100];
     long dSC; /*socket du client*/
     int idRoom; /*id du salon dans lequel se trouve le client*/
     int created; /*Permet de savoir si un client occupe la place dans le tableau de client*/
