@@ -95,7 +95,7 @@ void * sending_th(void * dSparam){
         strcat(m,"\0");
 
         /*On vérifie si le client veut quitter la communication*/
-        /*isEnd = endOfCommunication(m);*/
+        isEnd = endOfCommunication(m);
         /*Envoi*/
         sending(dS, m);
 
@@ -120,7 +120,7 @@ void * receiving_th(void * dSparam){
 
         isEnd = endOfCommunication(r);
         serveurShutdown = isServeurShutdown(r);
-        
+
         if(isDownloadFile(r)){
             downloadFile(dS);
         }else if(!isEnd && !serveurShutdown){

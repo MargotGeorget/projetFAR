@@ -3,7 +3,7 @@
 void Ctrl_C_Handler(int sign) {
     sending(dS, "/end");
     shutdown(dS, 2);
-    printf("\n CTRL+C détecté : On arrête le programme et les sockets correctement \n");
+    printf("\n CTRL+C détecté : Déconnexion... \n");
     exit(EXIT_SUCCESS);
 }
 

@@ -2,4 +2,4 @@
 1,Marouan,marouan,Default,1,1
 2,Fantine,fan,Ma description,1,0
 3,Nathan,nathan,Default,1,0
-4,Default,Default,Default,0,0
+4,Margot,margot,Default,1,0

@@ -61,50 +61,60 @@ int main(int argc, char *argv[]) {
         sem_getvalue(&semNbClient, &valueSem);
         int nbClient = MAX_CLIENT-valueSem;
 
-        /*Envoi du nombre de client présent au nouveau client*/
-        sendingInt(dSC, nbClient);
-
-        /*Réception du pseudo*/
+        /*Connection*/
 
         char * pseudo = (char *) malloc(sizeof(char)*100);
-        int availablePseudo = 0;
-
-        do {
+        int connectionEnd = 0;
+        long numClient;
+        /*Tant que la connexion du client n'a pas été validée on redemande un pseudo pour se connecter*/
+        while(!connectionEnd){
+            int availablePseudo;
+            sending(dSC,"\n-- Votre pseudo (maximum 12 caractères): \n");
             receiving(dSC, pseudo, sizeof(char)*12);
-            pseudo = strtok(pseudo, "\n");
             availablePseudo = isAvailableName(pseudo);
-            sendingInt(dSC,availablePseudo);
 
-        } while(!availablePseudo);
+            /*Saisie du pseudo*/ 
+            while(!availablePseudo){
+                printf("Erreur dans la sasie du pseudo\n");
+                sending(dSC,"\nUn pseudo ne peut pas contenir d'espace!\nVotre pseudo (maximum 12 caractères): \n");
+                receiving(dSC, pseudo, sizeof(char)*12);
+                availablePseudo = isAvailableName(pseudo);
+            } 
 
-        int errorMaxClient = -1;
-        int errorClientConnected = -2;
-        int signUp = 0;
-        int signIn = 1; 
-        printf("pseudo: %s\n",pseudo);
-        long numClient = findClient(pseudo); 
-        printf("%ld\n",numClient);
-        if(numClient==-1){ /*Le client n'a pas de compte*/
-            /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
-            numClient = giveNumClient();
-            printf("numéro client : %ld\n",numClient);
-            if(numClient==-1){
-                sendingInt(dSC,errorMaxClient);
-            }else { /*Le client peut s'inscrire*/
-                sendingInt(dSC,signUp);
-                createAccount(dSC, pseudo, numClient);
-                printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
-            }
-        }else{/*Le client à un compte, il se connecte*/
-            if(tabClient[numClient].connected){
-                sendingInt(dSC,errorClientConnected);
-            }else {
-                sendingInt(dSC,signIn);
-                connection(dSC, numClient);
-                printf("Client %ld connecté\n", numClient);
+            printf("pseudo: %s\n",pseudo);
+            /*On regarde si un client est inscrit avec ce pseudo*/
+            numClient = findClient(pseudo); 
+            printf("%ld\n",numClient);
+
+            if(numClient==-1){ /*Le client n'a pas de compte*/
+                /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
+                numClient = giveNumClient();
+                printf("numéro client : %ld\n",numClient);
+                if(numClient==-1){
+                    sending(dSC,"\nImpossible de vous incrire, nombre de compte maximum atteint\n");
+                    printf("Aucun compte client trouvé, nombre de client maximum atteint\n");
+                    sending(dSC,"/end"); 
+                    connectionEnd = 1;
+                }else { /*Le client peut s'inscrire*/
+                
+                    printf("Aucun compte client trouvé, inscription...\n");
+                    connectionEnd = createAccount(dSC, pseudo, numClient);
+                    printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
+                }
+            }else{ /*Le client à un compte*/
+                if(tabClient[numClient].connected){ /*Le compte est déjà connecté sur un autre appareil*/
+                    sending(dSC,"Ce compte est déjà connecté au serveur sur un autre appareil\n");
+                    sending(dSC,"/end"); 
+                    numClient = -1;
+                    connectionEnd = 1;
+                }else { /*Le client peut se connecter sur ce compte*/
+                    printf("Compte client trouvé, connexion...\n");
+                    connectionEnd = connection(dSC, numClient);
+                    printf("Client %ld connecté\n", numClient);
+                }
             }
         }
-            free(pseudo);
+        free(pseudo);
         
         if(numClient!=-1){
 
@@ -117,6 +127,7 @@ int main(int argc, char *argv[]) {
             printf("Clients connectés : %d\n", nbClient);
             
         }else{
+            close(dSC);
             sem_post(&semNbClient);
         }
     }

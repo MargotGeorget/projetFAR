@@ -329,16 +329,22 @@ void updatePassword(int numClient, char * msg){
     }
 }
 
-void createAccount(int dSC, char * pseudo, int numClient){
+int createAccount(int dSC, char * pseudo, int numClient){
     printf("Création de compte pour le client %d\n",numClient);
 
     strcpy(tabClient[numClient].pseudo,pseudo);
 
     printf("-- Pseudo : %s\n",tabClient[numClient].pseudo);
 
+    sending(dSC,"Aucun compte client n'a été trouvé, inscrivez vous!\nEnregistrez votre mot de passe : \n");
+
     char * password = (char *) malloc(sizeof(char)*20);
     receiving(dSC, password, sizeof(char)*20);
-    password = strtok(password, "\n");
+
+    if(strcmp(password,"cancel")==0){
+        free(password);
+        return 0;
+    }
     strcpy(tabClient[numClient].password,password);
 
     printf("-- Password : %s\n",tabClient[numClient].password);
@@ -360,26 +366,32 @@ void createAccount(int dSC, char * pseudo, int numClient){
 
     free(password);
 
+    return 1;
 
     /*ToDo : envoyer un message de bienvenu expliquant les commandes pour modifier le profil*/
 
 }
 
-void connection(int dSC, int numClient){
+int connection(int dSC, int numClient){
+
+    sending(dSC,"\nUn compte client a été trouvé, connectez vous!\nSaissisez votre mot de passe : \n");
 
     char * password = (char *) malloc(sizeof(char)*20);
     receiving(dSC, password, sizeof(char)*20);
-    password = strtok(password, "\n");
 
     int availablePassword = strcmp(password,tabClient[numClient].password)==0;
-    sendingInt(dSC,availablePassword);
+    int cancel = strcmp(password,"cancel")==0;
 
-    while(!availablePassword){
-        printf("Mot de passe incorrecte!\n");
+    while(!availablePassword && !cancel){
+        printf("Mot de passe incorrect!\n");
+        sending(dSC,"Mot de passe incorrect!\nSaissisez votre mot de passe : \n");
         receiving(dSC, password, sizeof(char)*15);
-        password = strtok(password, "\n");
         availablePassword = strcmp(password,tabClient[numClient].password)==0;
-        sendingInt(dSC,availablePassword);
+        cancel = strcmp(password,"cancel")==0;
+    }
+    if(cancel){
+        free(password);
+        return 0;
     }
     /*Mot de passe correct*/
     
@@ -393,6 +405,7 @@ void connection(int dSC, int numClient){
     welcomeMsg(dSC);
 
     free(password);
+    return 1;
 }
 
 int nbAdmin(){

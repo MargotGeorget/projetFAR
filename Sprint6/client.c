@@ -3,7 +3,7 @@
 #include "./FunctionsClient/managementMessage.h"
 #include "./FunctionsClient/dialogFunctions.h"
 
-/*Compiler gcc -pthread -Wall -ansi -o client client.c*/
+/*Compiler gcc -pthsread -Wall -ansi -o client client.c*/
 /*Lancer avec ./client votre_ip votre_port*/
 int isEnd = 0;
 
@@ -22,60 +22,6 @@ int main(int argc, char *argv[]) {
 
 	/*Création de la socket*/
 	dS = createSocketClient(port, ip);
-
-    /*Reception du nombre de client*/
-    int nbClient;
-    nbClient = receivingInt(dS);
-        
-    /*Saisie du pseudo du client au clavier*/
-    int availablePseudo;
-    char * myPseudo = (char *) malloc(sizeof(char)*12);
-   
-    printf("Votre pseudo (maximum 12 caractères): ");
-    fgets(myPseudo, 12, stdin);
-    sending(dS,myPseudo); 
-    availablePseudo = receivingInt(dS); 
-   
-    while(!availablePseudo){
-        printf("Un pseudo ne peut pas contenir d'espace!\nVotre pseudo (maximum 12 caractères): ");
-        fgets(myPseudo, 12, stdin);
-        sending(dS,myPseudo);
-        availablePseudo = receivingInt(dS);
-    }
-    char * password = (char *) malloc(sizeof(char)*12);
-    int action = receivingInt(dS);
-    switch(action) {
-        case -1: 
-            printf("Impossible de vous incrire, nombre de compte maximum atteint\n");
-            exit(0);
-            break;
-        case -2: 
-            printf("Ce compte est déjà connecté au serveur sur un autre appareil\n");
-            exit(0);
-            break;
-        case 0:
-            printf("Aucun compte client n'a été trouvé, inscrivez vous!\n");
-            printf("Saissisez votre mot de passe : \n");
-            fgets(password, 12, stdin);
-            sending(dS,password);
-            break; 
-        case 1: 
-            printf("Un compte client a été trouvé, connectez vous!\n");
-            int availablePassword = 0;
-            while(!availablePassword){
-                printf("Saissisez votre mot de passe : \n");
-                fgets(password, 12, stdin);
-                sending(dS,password);
-                availablePassword = receivingInt(dS);
-                if(!availablePassword){
-                    printf("Mot de passe incorrect!\n");
-                }
-            }
-            break;
-    }
-
-
-    free(myPseudo);
 
     signal(SIGINT, Ctrl_C_Handler);
 
@@ -99,8 +45,9 @@ int main(int argc, char *argv[]) {
     }
 
     /*Attente de la fin des threads*/
-    pthread_join(thread_sending, NULL);
     pthread_join(thread_receiving, NULL);
+
+    pthread_cancel(thread_sending);
     
     /*Fin de la communication**/
     return 0;
