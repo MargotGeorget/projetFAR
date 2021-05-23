@@ -90,14 +90,12 @@ void * sending_th(void * dSparam){
 
         /*Saisie du message au clavier*/
         char * m = (char *) malloc(sizeof(char)*100);
-        printf(">");
         fgets(m, 100, stdin);
         strtok(m,"\n");
         strcat(m,"\0");
 
         /*On vérifie si le client veut quitter la communication*/
-        isEnd = endOfCommunication(m);
-        
+        /*isEnd = endOfCommunication(m);*/
         /*Envoi*/
         sending(dS, m);
 
@@ -114,17 +112,19 @@ void * sending_th(void * dSparam){
 /* -- Fonction pour le thread de reception -- */
 void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
+    int serveurShutdown;
     while(!isEnd){
 
-        char * r = (char *) malloc(sizeof(char)*300);
-        receiving(dS, r, sizeof(char)*300);
+        char * r = (char *) malloc(sizeof(char)*500);
+        receiving(dS, r, sizeof(char)*500);
 
         isEnd = endOfCommunication(r);
+        serveurShutdown = isServeurShutdown(r);
         
         if(isDownloadFile(r)){
             downloadFile(dS);
-        }else if(!isEnd){
-            printf(">%s\n",r);
+        }else if(!isEnd && !serveurShutdown){
+            printf("%s",r);
         }
 
         free(r);

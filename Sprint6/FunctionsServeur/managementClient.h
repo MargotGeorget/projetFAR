@@ -46,9 +46,13 @@ void updatePseudo(int numClient, char * msg);
 
 void updateDescr(int numClient, char * msg);
 
+void updatePassword(int numClient, char * msg);
+
 void createAccount(int dSC, char * pseudo, int numClient);
 
 void connection(int dSC, int numClient);
+
+int nbAdmin();
 
 int deleteAccount(int numClient);
 

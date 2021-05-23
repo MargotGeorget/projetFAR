@@ -8,6 +8,8 @@
 #include "managementClient.h"
 #include "threadFunctions.h"
 
+void Ctrl_C_Handler(int sign);
+
 /**
  * Receptionne un message d'une socket et test bon déroulement
  * Paramètres : int dS : la socket

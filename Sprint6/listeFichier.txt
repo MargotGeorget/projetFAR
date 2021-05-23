@@ -1,5 +1,9 @@
 fichier.txt
+fichierLong.txt
 hoshi.mp3
+img.JPG
 img2.jpg
 logo.png
+margot.txt
 paris.mp3
+upload

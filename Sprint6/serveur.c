@@ -38,7 +38,9 @@ int main(int argc, char *argv[]) {
     dSFile = createSocketServeur(atoi(arg1)+1);
 	
 	/*Création, nommage et passage en mode écoute de la socket pour la communication entre client*/
-	int dS = createSocketServeur(atoi(arg1));
+	dS = createSocketServeur(atoi(arg1));
+
+    signal(SIGINT, Ctrl_C_Handler);
 
     while(1){
         int dSC;

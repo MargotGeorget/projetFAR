@@ -6,6 +6,8 @@
 #include "library.h"
 #include "threadFunctions.h"
 
+void Ctrl_C_Handler(int sign);
+
 /*
  * Envoi d'un message à une socket et test bon déroulement
  * Paramètres : int dS : la socket

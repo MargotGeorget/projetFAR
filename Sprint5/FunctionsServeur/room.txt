@@ -1,4 +1,4 @@
 0,Général,Default,1
 1,Poudlard,Le salon des sorciers,1
-2,Salon12,Default,0
+2,Lol,Default,0
 3,DD,Default,0

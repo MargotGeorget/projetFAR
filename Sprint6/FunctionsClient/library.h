@@ -11,6 +11,7 @@
 #include <strings.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
 
 /*   Déclaration des variables :
  * - isEnd = booléen gérant la déconnexion d'un client
@@ -20,6 +21,7 @@
 extern int isEnd;
 int port;
 char * ip;
+long dS;
 
 
 #endif

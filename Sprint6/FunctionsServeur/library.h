@@ -22,6 +22,7 @@
  * */
 #define MAX_CLIENT 5
 #define NB_ROOMS 4 /*3 salons + 1 salon général*/
+#define SIZE_MSG sizeof(char)*500 
 
 /*
  * Définition d'une structure Client pour regrouper toutes les informations du client
@@ -32,7 +33,7 @@ struct Client{
     int id;
     char pseudo[15];
     char password[12];
-    char descr[100];
+    char descr[300];
     long dSC; /*socket du client*/
     int idRoom; /*id du salon dans lequel se trouve le client*/
     int created; /*Permet de savoir si un client occupe la place dans le tableau de client*/
@@ -70,6 +71,7 @@ int nbThreadToKill;
 extern pthread_mutex_t lock;
 
 long dSFile;
+int dS;
 char * arg1;
 
 #endif

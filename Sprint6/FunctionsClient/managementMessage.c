@@ -20,3 +20,11 @@ int isDownloadFile(char * msg){
     }
     return 0;
 }
+
+int isServeurShutdown(char * msg){
+    if (strcmp(msg, "/shutdown")==0){
+        printf("Le serveur à été fermé! Revenez plus tard\n");
+        return 1;
+    }
+    return 0;
+}

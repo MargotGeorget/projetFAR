@@ -59,7 +59,7 @@ int isFreePseudo(char * pseudo){
 
 void displayClient(int numClient){
 
-	char * msg = (char *)malloc(sizeof(char)*12*MAX_CLIENT);
+	char * msg = (char *)malloc(sizeof(char)*15*MAX_CLIENT);
 	strcpy(msg, "_____ Liste des clients connectés _____ \n");
     int i;
 
@@ -82,7 +82,7 @@ void displayClient(int numClient){
 
 void displayAdmin(int numClient){
 
-	char * msg = (char *)malloc(sizeof(char)*12*MAX_CLIENT);
+	char * msg = (char *)malloc(100+sizeof(char)*15*MAX_CLIENT);
 	strcpy(msg, "_____ Liste des administrateurs du serveur _____ \n");
     int i;
 
@@ -269,15 +269,16 @@ void updatePseudo(int numClient, char * msg){
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
+        sending(tabClient[numClient].dSC, "Votre pseudo a été mis à jour.\n");  
+
     }
 }
 
 void updateDescr(int numClient, char * msg){
 
     /*On récupère la nouvelle description*/
-    char *  newDescr =  (char *) malloc(sizeof(char)*300);
     strtok(msg," "); /*suppression de la commande dans le message*/
-    newDescr = strtok(NULL,"\0"); /*récupération du nouveau peusdo*/
+    char * newDescr = strtok(NULL,"\0"); /*récupération du nouveau peusdo*/
 
     if(newDescr==NULL){
         sending(tabClient[numClient].dSC, "Saisissez une nouvelle description.\n");       
@@ -291,6 +292,40 @@ void updateDescr(int numClient, char * msg){
         saveClients();
 
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+        sending(tabClient[numClient].dSC, "Votre description a été mise à jour.\n"); 
+    }
+}
+
+void updatePassword(int numClient, char * msg){
+
+    /*On récupère l'ancien password*/
+    strtok(msg," "); /*suppression de la commande dans le message*/
+    char * oldPassword = strtok(NULL," "); /*récupération du password*/
+
+    if(oldPassword==NULL){
+        sending(tabClient[numClient].dSC, "Saisissez votre ancien mot de passe.\n");       
+    }else{ /*On peut modifier le pseudo*/
+        char * newPassword = strtok(NULL,"\0"); /*récupération du nouveau password*/
+        printf(".%s.\n",oldPassword);
+        if(newPassword==NULL){
+            sending(tabClient[numClient].dSC, "Saisissez un nouveau mot de passe.\n");       
+        }if(strcmp(oldPassword,tabClient[numClient].password)!=0){
+            sending(tabClient[numClient].dSC, "Mot de passe incorrect\n");              
+        }else{
+
+            pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+            strcpy(tabClient[numClient].password,newPassword);
+    
+            /*MAJ dans le fichier*/
+            saveClients();
+
+            pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+            sending(tabClient[numClient].dSC, "Votre mot de passe a été mis à jour.\n");
+        }
+
     }
 }
 
@@ -301,8 +336,8 @@ void createAccount(int dSC, char * pseudo, int numClient){
 
     printf("-- Pseudo : %s\n",tabClient[numClient].pseudo);
 
-    char * password = (char *) malloc(sizeof(char)*100);
-    receiving(dSC, password, sizeof(char)*15);
+    char * password = (char *) malloc(sizeof(char)*20);
+    receiving(dSC, password, sizeof(char)*20);
     password = strtok(password, "\n");
     strcpy(tabClient[numClient].password,password);
 
@@ -331,12 +366,14 @@ void createAccount(int dSC, char * pseudo, int numClient){
 }
 
 void connection(int dSC, int numClient){
-    char * password = (char *) malloc(sizeof(char)*100);
-    receiving(dSC, password, sizeof(char)*15);
+
+    char * password = (char *) malloc(sizeof(char)*20);
+    receiving(dSC, password, sizeof(char)*20);
     password = strtok(password, "\n");
+
     int availablePassword = strcmp(password,tabClient[numClient].password)==0;
-    printf("%s == %s, %d\n",password, tabClient[numClient].password, availablePassword );
     sendingInt(dSC,availablePassword);
+
     while(!availablePassword){
         printf("Mot de passe incorrecte!\n");
         receiving(dSC, password, sizeof(char)*15);
@@ -358,32 +395,59 @@ void connection(int dSC, int numClient){
     free(password);
 }
 
+int nbAdmin(){
+    int i = 0;
+    int nb = 0;
+
+    pthread_mutex_lock(&lock); /*Début d'une section critique*/
+
+    for(i=0;i<MAX_CLIENT;i++){
+        if (tabClient[i].isAdmin){
+            nb+=1;
+        }
+    }
+
+    pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+    return nb;
+}
+
 int deleteAccount(int numClient){
 
-    if(tabClient[numClient].isAdmin){ /*L'admin ne peut pas supprimer son compte avant d'avoir légué son rôle à un autre client*/
+    if(tabClient[numClient].isAdmin && nbAdmin()==1){ /*L'admin ne peut pas supprimer son compte avant d'avoir légué son rôle à un autre client*/
 
-        sending(tabClient[numClient].dSC, "Vous êtes l'admin, léguez votre rôle avant de supprimer votre compte.\n");
+        sending(tabClient[numClient].dSC, "Vous êtes de seul administrateur du serveur, léguez votre rôle avant de supprimer votre compte.\n");
 
         return 0;
 
     }else{ /*Le compte peut être supprimé*/
-        
-        pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
-        char * msg = (char *)malloc(sizeof(char)*60);
-        strcpy(msg,"/end");
-        sending(tabClient[numClient].dSC,msg);
+        /*Message de confirmation*/
+        sending(tabClient[numClient].dSC, "Etes vous sur de vouloir supprimer votre compte? y/n \n");
+        char * rep = (char *)malloc(SIZE_MSG);
+        receiving(tabClient[numClient].dSC,rep,sizeof(char)*60);
 
-        tabClient[numClient].created=0;
-        strcpy(tabClient[numClient].descr,"Default");
+        if(strcmp(rep,"y")==0){
+            pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
-        /*MAJ dans le fichier*/
-        saveClients();
+            sending(tabClient[numClient].dSC,"/end");
 
-        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+            tabClient[numClient].created=0;
+            tabClient[numClient].isAdmin=0;
+            strcpy(tabClient[numClient].descr,"Default");
 
-        free(msg);
-        return 1;
+            /*MAJ dans le fichier*/
+            saveClients();
+
+            pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+            return 1;
+        }else{
+            sending(tabClient[numClient].dSC, "Votre compte n'a pas été supprimé.\n");
+            return 0;
+        }
+
+        free(rep);
+
     }
 }
 
@@ -426,10 +490,10 @@ void giveRightServer(int numClient, char * msg){
             /*MAJ dans le fichier*/
             saveClients();
 
-            sending(tabClient[numClient].dSC, "Droits transmits\n"); 
+            sending(tabClient[numClient].dSC, "Les droits du serveur ont été transmis au client.\n"); 
 
             if(tabClient[client].connected){
-                sending(tabClient[client].dSC, "Vous avez été déclaré admin du server.\n"); 
+                sending(tabClient[client].dSC, "Vous avez été déclaré administrateur du serveur.\n"); 
             }
         }
     }

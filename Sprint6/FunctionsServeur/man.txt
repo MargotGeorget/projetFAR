@@ -1,14 +1,31 @@
+_______________________Liste des commandes_______________________
+
 /man = afficher l'ensemble des commandes disponibles sur le serveur.
+
 /whoishere = afficher la liste des utilisateurs actuellement connectés au serveur.
+
 /pseudo [newPseudo] = changer son pseudo.
+
 /rooms = afficher l'ensemble des salons de discussions créés ainsi que leurs participants.
+
 /join [nameRoom] = rejoindre un salon de discussion dont le nom est passé en paramètre. 
+
 /create [nameRoom] = créer un salon de discussion dont le nom est passé en paramètre. 
+
 /remove [nameRoom] = supprimer un salon de discussion dont le nom est passé en paramètre. 
+
 /name [nameRoom] [newNameRoom] = changer le nom du salon.
+
 /descr [descRoom] [newDescRoom] = changer la description du salon.
+
 /upload = afficher la liste des fichiers disponibles à l'envoi et choisir un fichier à envoyer au serveur.
+
 /download = afficher la liste des fichiers disponibles au téléchargement et choisir un fichier à recevoir du serveur.
+
 /end = quitter le serveur.
+
 @all [message] = envoi du message à tous les clients connectés sur le serveur. 
+
 @pseudo [message] = envoi du message au client dont on a renseigné le pseudo.
+
+_________________________________________________________________

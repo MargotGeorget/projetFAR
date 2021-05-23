@@ -1,5 +1,12 @@
 #include "dialogFunctions.h"
 
+void Ctrl_C_Handler(int sign) {
+    sending(dS, "/end");
+    shutdown(dS, 2);
+    printf("\n CTRL+C détecté : On arrête le programme et les sockets correctement \n");
+    exit(EXIT_SUCCESS);
+}
+
 void sending(int dS, char * msg){
     /*msg[strcspn(msg, "\n")] = 0;*/
     int sendR = send(dS, msg, strlen(msg)+1, 0);

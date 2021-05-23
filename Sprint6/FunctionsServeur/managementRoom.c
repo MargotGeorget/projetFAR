@@ -34,7 +34,7 @@ void initRoom(){
         strcpy(rooms[i].name,strtok(NULL,","));
 
         /*DESCRIPTION*/
-        rooms[i].descr = (char *)malloc(sizeof(char)*100);
+        rooms[i].descr = (char *)malloc(sizeof(char)*300);
         strcpy(rooms[i].descr,strtok(NULL,","));
 
         /*CREATED*/
@@ -93,7 +93,7 @@ void initRoom(){
 
 void welcomeMsg(int dS){
     int i;
-    char * msg = (char *)malloc(sizeof(char)*300);
+    char * msg = (char *)malloc(sizeof(char)*(200+15*MAX_CLIENT));
     strcpy(msg,"\n___Bienvenue dans le salon général___\nVoici les membres présents : \n");
 
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
@@ -116,7 +116,7 @@ void welcomeMsg(int dS){
 void presentationRoom(int dS){
     int i;
     int j;
-    char * msg = (char *)malloc(sizeof(char)*400);
+    char * msg = (char *)malloc(sizeof(char)*(350+(2*20*MAX_CLIENT)));
     strcpy(msg,"\n______Liste des salons existants______\n");
 
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
@@ -140,7 +140,7 @@ void presentationRoom(int dS){
                 for(j=0;j<MAX_CLIENT;j++){
                     if(rooms[i].admin[j]){
                         strcat(msg,tabClient[j].pseudo);
-                        strcat(msg," ~");
+                        strcat(msg," ~ ");
                     }
                 }
                 strcat(msg,"~\n");
@@ -284,6 +284,8 @@ void joinRoom(int numClient, char * msg){
 
             deleteMember(numClient,idRoomClient);
             addMember(numClient,idRoom);
+
+            sending(tabClient[numClient].dSC, "Vous avez changé de salon.\n"); 
         }
     }
 
@@ -320,7 +322,7 @@ void moveClient(int numClient, char * msg){
                 deleteMember(client,idRoomClient);
                 addMember(client,idRoom);
 
-                sending(tabClient[numClient].dSC, "Client déplacé\n"); 
+                sending(tabClient[numClient].dSC, "Le client a été déplacé.\n"); 
 
                 sending(tabClient[client].dSC, "Vous avez été déplacé dans un autre salon.\n"); 
             }
@@ -344,7 +346,7 @@ void kickClient(int numClient, char * msg){
             sending(tabClient[numClient].dSC, "Aucun client trouvé.\n");  
         }else {
             int idRoomClient = tabClient[client].idRoom;
-            if(!rooms[idRoomClient].admin[numClient]) { 
+            if(!rooms[idRoomClient].admin[numClient] || !tabClient[numClient].isAdmin) { 
                 sending(tabClient[numClient].dSC, "Vous n'avez pas les droits pour exclure le client\n"); 
             }else{ /*Un salon et un client ont été trouvés et le client à la droit, on fait le déplacement*/
 
@@ -355,9 +357,9 @@ void kickClient(int numClient, char * msg){
                 deleteMember(client,idRoomClient);
                 addMember(client,0);
 
-                sending(tabClient[numClient].dSC, "Client déplacé\n"); 
+                sending(tabClient[numClient].dSC, "Le client a été exclu du salon.\n"); 
 
-                sending(tabClient[client].dSC, "Vous avez été déplacé dans un autre salon.\n"); 
+                sending(tabClient[client].dSC, "Vous avez été exclu du salon. Vous êtes retourné dans le salon général.\n"); 
             }
         }
     }
@@ -401,13 +403,14 @@ void banClient(int numClient, char * msg){
                 /*MAJ NOM dans le fichier*/
                 updateRoom(0,0,1);
 
-                sending(tabClient[numClient].dSC, "Client ban\n"); 
+                sending(tabClient[numClient].dSC, "Le client a été banni du salon\n"); 
 
                 char * info = (char *)malloc(sizeof(char)*60);
                 strcpy(info, "Vous avez été banni du salon ");
                 strcat(info,roomName);
                 strcat(info,"\n");
                 sending(tabClient[client].dSC, info); 
+                free(info);
             }
         }
     }
@@ -443,13 +446,14 @@ void unbanClient(int numClient, char * msg){
                 /*MAJ NOM dans le fichier*/
                 updateRoom(0,0,1);
 
-                sending(tabClient[numClient].dSC, "Client déban\n"); 
+                sending(tabClient[numClient].dSC, "Le client pourra de nouveau rejoindre le salon.\n"); 
                 
                 char * info = (char *)malloc(sizeof(char)*60);
-                strcpy(info, "Votre ban à été levé pour le salon ");
+                strcpy(info, "Vous pouvez à nouveau rejoindre le salon ");
                 strcat(info,roomName);
                 strcat(info,"\n");
                 sending(tabClient[client].dSC, info); 
+                free(info);
             }
         }
     }
@@ -485,13 +489,14 @@ void giveRightRoom(int numClient, char * msg){
                 /*MAJ NOM dans le fichier*/
                 updateRoom(0,1,0);
 
-                sending(tabClient[numClient].dSC, "Droits transmits\n"); 
+                sending(tabClient[numClient].dSC, "Les droits du salon ont été transmis au client.\n"); 
 
                 char * info = (char *)malloc(sizeof(char)*60);
-                strcpy(info, "Vous avez été déclaré admin du salon ");
+                strcpy(info, "Vous avez été déclaré administrateur du salon ");
                 strcat(info,roomName);
                 strcat(info,"\n");
                 sending(tabClient[client].dSC, info); 
+                free(info);
             }
         }
     }
@@ -630,7 +635,7 @@ void updateRoom(int room, int admin, int ban){
 int isOccupiedRoom(idRoom){
     int isO = 0;
     int i = 0;
-    while (i<MAX_CLIENT){
+    while (i<MAX_CLIENT && !isO){
         isO = rooms[idRoom].members[i];
         i++;
     }
@@ -686,6 +691,8 @@ void removeRoom(int numClient, char * msg){
             updateRoom(1,1,1);
 
             pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+            sending(tabClient[numClient].dSC, "Le salon a été supprimé.\n"); 
             
         }
     }
@@ -750,6 +757,8 @@ void updateNameRoom(int numClient, char * msg){
                 updateRoom(1,0,0);
 
                 pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+                sending(tabClient[numClient].dSC, "Le nom du salon a été mis à jour.\n"); 
             }
         }
     }
@@ -798,6 +807,8 @@ void updateDescrRoom(int numClient, char * msg){
                 updateRoom(1,0,0);
 
                 pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+
+                sending(tabClient[numClient].dSC, "La description du salon a été mise à jour.\n"); 
             }
         }
     }

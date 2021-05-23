@@ -1,13 +1,30 @@
 #include "dialogFunctions.h"
 
+void Ctrl_C_Handler(int sign) {
+    /*Sauvegarde des fichiers avant d'éteindre le serveur*/
+    saveClients();
+    updateRoom(1,1,1);
+    /*Envoi de message aux clients pour les prévenir de l'arrêt du serveur*/
+    int i; 
+    for(i = 0; i<MAX_CLIENT;i++){
+        if(tabClient[i].connected){
+            sending(tabClient[i].dSC,"/shutdown");
+            close(tabClient[i].dSC);
+        }
+    }
+    shutdown(dS, 2);
+    shutdown(dSFile, 2); /*On ferme aussi la connexion de la socket utilisée pour les fichiers*/
+
+    printf("\n CTRL+C détecté : On arrête le programme et les sockets correctement \n");
+    exit(EXIT_SUCCESS);
+}
+
 void receiving(int dS, char * rep, ssize_t size){
     /*Réception d'un message de taille 'size', de la socket 'dS' et stockage du message dans 'rep'*/
     int recvR = recv(dS, rep, size, 0);
     if (recvR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au recv");
         exit(-1);
-    }else if( recvR == 0){
-        closingClient(dS);
     }
 }
 
@@ -50,8 +67,8 @@ void sendingAll(int numClient, char * msg){
 
     printf("Je reçois le message du client avec le socket %d\n",dS);
 
-    addPseudoToMsg(msg, tabClient[numClient].pseudo);
-
+    /*addPseudoToMsg(msg, tabClient[numClient].pseudo);*/
+    printf("Pseudo ajouté au message, envoi du message...\n");
     int i;
     for (i = 0; i<MAX_CLIENT ; i++) {
         /*On envoie le message à tout les clients qui sont connectés (connected==1) 
@@ -99,7 +116,7 @@ void sendingPrivate(int numClient, char * msg){
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
     /*Récupération du pseudo présent au début du message*/
-    char * pseudo = (char *) malloc(sizeof(char)*100);
+    char * pseudo = (char *) malloc(SIZE_MSG);
     strcpy(pseudo, msg);
     pseudo = strtok(pseudo," ");
     strcpy(pseudo,pseudo+1); /*Pour enlever le @*/
@@ -115,7 +132,7 @@ void sendingPrivate(int numClient, char * msg){
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
         /*Ajout du pseudo de l'expéditeur devant le message à envoyer*/
-        addPseudoToMsg(msg, tabClient[numClient].pseudo);
+        /*addPseudoToMsg(msg, tabClient[numClient].pseudo);*/
     
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
@@ -191,8 +208,8 @@ void sendFile(int dS, FILE * fp){
 
 void uploadFile(int dS){
     /*Reception du nom du fichier à recevoir*/
-    char * fileName = (char *) malloc(sizeof(char)*30);
-    receiving(dS, fileName, sizeof(char)*30);
+    char * fileName = (char *) malloc(SIZE_MSG);
+    receiving(dS, fileName, SIZE_MSG);
 
     printf("\nNom du fichier à recevoir: %s \n", fileName);
 
@@ -225,8 +242,8 @@ void downloadFile(int dS,char * msgReceived){
     sendFile(dS,fp);
 
     /*Reception du nom du fichier à envoyer*/
-    char * fileName = (char *) malloc(sizeof(char)*30);
-    receiving(dS, fileName, sizeof(char)*30);
+    char * fileName = (char *) malloc(SIZE_MSG);
+    receiving(dS, fileName, SIZE_MSG);
     printf("\nNom du fichier à envoyer: %s \n", fileName);
 
 
@@ -253,6 +270,5 @@ void downloadFile(int dS,char * msgReceived){
             perror("error thread");
         }
     }
-    free(fileName);
     free(pathToFile);
 }

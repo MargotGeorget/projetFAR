@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     port = atoi(argv[2]); 
 
 	/*Création de la socket*/
-	long dS = createSocketClient(port, ip);
+	dS = createSocketClient(port, ip);
 
     /*Reception du nombre de client*/
     int nbClient;
@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
 
 
     free(myPseudo);
+
+    signal(SIGINT, Ctrl_C_Handler);
 
     /*_____________________ Communication _____________________*/
 

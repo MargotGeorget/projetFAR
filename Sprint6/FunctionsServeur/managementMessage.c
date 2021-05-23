@@ -1,10 +1,11 @@
 #include "managementMessage.h"
 
 void addPseudoToMsg(char * msg, char * pseudoSender){
-    char * msgToSend = (char *) malloc(sizeof(char)*150);
+    char * msgToSend = (char *) malloc(SIZE_MSG);
     strcpy(msgToSend, pseudoSender);
     strcat(msgToSend, " : ");
     strcat(msgToSend, msg);
+    strcat(msgToSend, "\n");
     strcpy(msg,msgToSend);
     free(msgToSend);
     return;
@@ -12,28 +13,27 @@ void addPseudoToMsg(char * msg, char * pseudoSender){
 
 void displayMan(int numClient){
 
-	char * line = (char *)malloc(sizeof(char)*100);
+	char * line = (char *)malloc(SIZE_MSG);
 
 	FILE * file = fopen("./FunctionsServeur/man.txt", "r");
 	if (file == NULL){
         perror("erreur displayMan: \n");
         exit(1);
     }
-
-    int i;
-    while (fgets(line, sizeof(char)*100, file) != NULL){
+    printf("Envoi du manuel en cours...\n");
+    while (fgets(line, SIZE_MSG, file) != NULL){
+        printf("La ligne : %s\n",line);
         sending(tabClient[numClient].dSC, line);
-        i++;
     }
 
     free(line);
-
+    fclose(file);
 	return;
 }
 
 int numCommande(char * msg){
     /*Récupération de la commande*/
-    char * msgCopy = (char *) malloc(sizeof(char)*300);
+    char * msgCopy = (char *) malloc(SIZE_MSG);
     strcpy(msgCopy,msg);
     char * cmd = strtok(msgCopy," ");
     char first = cmd[0];
@@ -88,7 +88,7 @@ int numCommande(char * msg){
         num = 23;
     }else if (strcmp(cmd, "/rightServer")==0){        
         num = 24;
-    }else if (strcmp(cmd, "/dfhgkj")==0){        
+    }else if (strcmp(cmd, "/password")==0){        
         num = 25;
     }
     free(msgCopy);
@@ -98,9 +98,8 @@ int numCommande(char * msg){
 int isAvailableName(char * name){
     int isA;
 
-    char * test = (char *)malloc(sizeof(char)*100); 
     strtok(name," ");
-    test = strtok(NULL," ");
+    char * test = strtok(NULL," ");
     printf("test :%s\n",test);
 
     if (test==NULL){

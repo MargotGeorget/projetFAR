@@ -24,4 +24,6 @@ int isUploadFile(char * msg);
 */
 int isDownloadFile(char * msg);
 
+int isServeurShutdown(char * msg);
+
 #endif

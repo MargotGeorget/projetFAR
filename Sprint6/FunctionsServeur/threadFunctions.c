@@ -18,7 +18,7 @@ void * uploadFile_th(void * fileNameParam){
     printf("Je reçois le fichier %s du client le socket %ld\n",fileName,dSFile);
 
     /*Création du fichier et du buffer pour recevoir les données*/
-    char buffer[1024];
+    char buffer[1024] = "";
     int fp = open(pathToFile, O_WRONLY |  O_CREAT, 0666);
     if(fp == -1){
         printf("erreur au open");
@@ -55,9 +55,8 @@ void * downloadFile_th(void * fpParam){
     printf("J'envoie le fichier au client avec le socket %ld\n",dSCFile);
     
     /*Appel de la fonction envoyant le fichier*/
-    sendFile(dSCFile,fp);
+    sendFile(dSCFile,fp); /*fp close dans sendFile*/
 
-    fclose(fp);
     close(dSCFile);
     return NULL;
 }
@@ -73,11 +72,10 @@ void * broadcast(void * clientParam){
 
     while(!isEnd){
         /*Réception du message*/
-        char * msgReceived = (char *) malloc(sizeof(char)*100);
-        receiving(dSC, msgReceived, sizeof(char)*100);
+        char * msgReceived = (char *) malloc(SIZE_MSG);
+        receiving(dSC, msgReceived, sizeof(char)*300);
         printf("\nMessage recu: %s \n", msgReceived);
 
-        char * msgInfo = (char *) malloc(sizeof(char)*100);;
         char first = msgReceived[0];
 
         if(strcmp(&first,"@")!=0 && strcmp(&first,"/")!=0){ /*On regarde si une commande est présente dans le message*/
@@ -91,16 +89,15 @@ void * broadcast(void * clientParam){
 
             switch(numCmd){
             case 0:        
-                strcpy(msgInfo,"Aucune commande reconnue\n"),
-                sending(dSC,msgInfo);
+                sending(dSC,"Aucune commande reconnue\n");
                 break;
             case 1: /* --/man-- Afficher la listes des commandes*/
-                /*displayMan(numClient); ToDo : corriger les erreurs*/
+                displayMan(numClient); 
                 break;
             case 2: /* --/whoishere-- Afficher la liste des clients connectés*/
                 displayClient(numClient);
                 break;
-            case 3:
+            case 3: /* --/pseudo newPseudo-- Changer le pseudo du client*/
                 updatePseudo(numClient,msgReceived);
                 break;
             case 4: /* --/rooms-- Présentation des salons (Nom, Description et clients membres)*/
@@ -152,7 +149,7 @@ void * broadcast(void * clientParam){
             case 19: /* --/move pseudo nameRoom-- Déplacer le client demandé dans la room donnée*/
                 moveClient(numClient,msgReceived);
                 break;
-            case 20: /* --/ban pseudo-- Renvoie le client dans le salon général et l'empêche de revenir dans le salon dans lequel il était*/
+            case 20: /* --/ban pseudo nameRoom-- Renvoie le client dans le salon général et l'empêche de revenir dans le salon dans lequel il était*/
                 banClient(numClient,msgReceived);
                 break;
             case 21: /*--/kick pseudo-- Renvoie le client dans le salon général*/
@@ -167,10 +164,12 @@ void * broadcast(void * clientParam){
             case 24: /*--/rightServer pseudo nameRoom-- Donne le rôle administrateur du serveur au client*/
                 giveRightServer(numClient,msgReceived);
                 break;
+            case 25: /*--/password oldPassword newPassword-- Changer le mot de passe du client*/
+                updatePassword(numClient,msgReceived);
+                break;
             }
         }
         free(msgReceived);
-        free(msgInfo);
     }
     /*Fermeture du socket client*/
     deleteMember(numClient,tabClient[numClient].idRoom);
