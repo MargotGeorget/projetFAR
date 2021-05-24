@@ -100,7 +100,6 @@ int isAvailableName(char * name){
 
     strtok(name," ");
     char * test = strtok(NULL," ");
-    printf("test :%s\n",test);
 
     if (test==NULL){
         isA = 1;

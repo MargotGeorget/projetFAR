@@ -3,3 +3,8 @@
 2,Fantine,fan,Ma description,1,0
 3,Nathan,nathan,Default,1,0
 4,Margot,margot,Default,1,0
+5,Lisa,barbouille,Default,1,0
+6,Thomas,thomas,Default,1,0
+7,Quentin,quentin,Default,1,0
+8,Default,Default,Default,0,0
+9,Default,Default,Default,0,0

@@ -25,7 +25,6 @@ int findClient(char * pseudo){
 
     while (i<MAX_CLIENT && client==-1){
         if (tabClient[i].created){
-            printf("%s === %s\n", pseudo, tabClient[i].pseudo);
             if (strcmp(pseudo, tabClient[i].pseudo)==0){
                 client = i;
             }
@@ -171,6 +170,29 @@ void initClients(){
         tabClient[i].isAdmin = atoi(strtok(NULL,","));
 
         i++;
+    }
+    while(i<MAX_CLIENT){
+        /*ID*/
+        tabClient[i].id = i;
+
+        /*PSEUDO*/
+        strcpy(tabClient[i].pseudo,"Default");
+
+        /*PASSWORD*/
+        strcpy(tabClient[i].password,"Default");
+
+        /*DESCRIPTION*/
+        strcpy(tabClient[i].descr,"Default");
+
+        /*CONNECTED*/
+        tabClient[i].connected = 0;
+
+        /*CREATED*/
+        tabClient[i].created = 0;
+
+        /*ISADMIN*/
+        tabClient[i].isAdmin = 0;
+
     }
 
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/

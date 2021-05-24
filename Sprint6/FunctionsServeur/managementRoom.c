@@ -387,9 +387,10 @@ void banClient(int numClient, char * msg){
             }else if(idRoom==-1){
                 sending(tabClient[numClient].dSC, "Aucun salon trouvé.\n"); 
             }else if(!tabClient[numClient].isAdmin && !rooms[idRoom].admin[numClient]) { 
-                sending(tabClient[numClient].dSC,  "Vous n'avez pas les droits pour bannir le client\n"); 
+                sending(tabClient[numClient].dSC,  "Vous n'avez pas les droits pour bannir le client.\n"); 
+            }else if(idRoom==0){
+                sending(tabClient[numClient].dSC,  "Vous ne pouvez pas banir un client du salon général.\n");            
             }else{ /*Un salon et un client ont été trouvés et le client à les droits*/
-
                 pthread_mutex_lock(&lock); /*Début d'une section critique*/
                 int idRoomClient = tabClient[client].idRoom;
                 pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
@@ -524,7 +525,6 @@ void updateRoom(int room, int admin, int ban){
 
         int i;
         for (i = 0; i < NB_ROOMS; i++){
-            printf("for %d\n",i);
             char id[2];
             char create[2];
 
@@ -613,7 +613,7 @@ void updateRoom(int room, int admin, int ban){
             int j;
             strcpy(line,"");
             for (j = 0; j < MAX_CLIENT; j++){
-                sprintf(isBan,"%d",rooms[i].admin[j]);
+                sprintf(isBan,"%d",rooms[i].ban[j]);
                 strcat(line,isBan);
                 strcat(line,",");
             }

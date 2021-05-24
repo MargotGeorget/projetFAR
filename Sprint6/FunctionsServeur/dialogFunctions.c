@@ -15,7 +15,7 @@ void Ctrl_C_Handler(int sign) {
     shutdown(dS, 2);
     shutdown(dSFile, 2); /*On ferme aussi la connexion de la socket utilisée pour les fichiers*/
 
-    printf("\n CTRL+C détecté : On arrête le programme et les sockets correctement \n");
+    printf("\n CTRL+C détecté : Arrêt du serveur \n");
     exit(EXIT_SUCCESS);
 }
 
