@@ -98,14 +98,36 @@ int connection(int dSC, int numClient);
  * */
 int nbAdmin();
 
+/**
+ * @brief Supprime le compte d'un client après confirmation de celui ci. 
+ * Condition pour la supression : ne pas être le seul administrateur du serveur
+ * @return 1 si les conditions sont respectées et que le compte à été supprimé, 0 sinon 
+ * */
 int deleteAccount(int numClient);
 
+/**
+ * @brief Recherche d'un client dans le tableau à partir de sa socket
+ * @param dS socket du client que l'on cherche
+ * @return un entier, correspondant au numéro du client trouvé
+ *         -1 si le client n'existe pas 
+ */
+int findClientBySocket(int dS);
+
+/**
+ * @brief Donne les droits de modification et de suppression d'un salon à un client 
+ * @param numClient numéro du client qui donne les droits
+ * @param msg message reçu contenant la commande /rightServer, le nom du client concerné et le nom du salon
+ * */
 void giveRightServer(int numClient, char * msg);
 
+/**
+ * @brief Déconnexion propre du client : quitte le salon actuel, réinitialise les variables nécessaires et ferme le socket 
+ * @param dS la socket du client 
+ * */
 void closingClient(int dS);
 
 /**
- * Terminaison des threads pour lesquels les clients se sont déconnectés
+ * @brief Terminaison des threads pour lesquels les clients se sont déconnectés
  */
 void killThread();
 

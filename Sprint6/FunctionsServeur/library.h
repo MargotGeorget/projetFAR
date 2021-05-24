@@ -20,7 +20,7 @@
  * MAX_CLIENT = nombre maximum de client accepté sur le serveur
  * NB_ROOMS = nombre maximum de salon de discussion 
  * */
-#define MAX_CLIENT 15 /*Attention si vous diminuez le nombre de client max des clients risquent de ne plus pouvoir se connecter*/
+#define MAX_CLIENT 15 /*Attention si vous diminuez le nombre de client max, des clients risquent de ne plus pouvoir se connecter*/
 #define NB_ROOMS 4 /*3 salons + 1 salon général*/
 #define SIZE_MSG sizeof(char)*500 
 
@@ -52,7 +52,7 @@ struct Room{
 };
 
 /*   Déclaration des variables :
- * - tabClient = tableau répertoriant les clients connectés
+ * - tabClient = tableau répertoriant les clients inscrits
  * - tabThread = tableau des threads associés au traitement de chaque client
  * - semNbClient = sémaphore qui gère le nombre de clients actuellement connectés
  * - tabThreadToKill = tableau recensant les threads à tuer (thread abandonnés lors de la déconnexion d'un client)

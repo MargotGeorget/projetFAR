@@ -4,6 +4,7 @@ void Ctrl_C_Handler(int sign) {
     /*Sauvegarde des fichiers avant d'éteindre le serveur*/
     saveClients();
     updateRoom(1,1,1);
+
     /*Envoi de message aux clients pour les prévenir de l'arrêt du serveur*/
     int i; 
     for(i = 0; i<MAX_CLIENT;i++){
@@ -12,6 +13,7 @@ void Ctrl_C_Handler(int sign) {
             close(tabClient[i].dSC);
         }
     }
+
     shutdown(dS, 2);
     shutdown(dSFile, 2); /*On ferme aussi la connexion de la socket utilisée pour les fichiers*/
 
@@ -63,9 +65,10 @@ void sendingAll(int numClient, char * msg){
 
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
-    int dS = tabClient[numClient].dSC;
+    int dS = tabClient[numClient].dSC; /*Récupération de la socket du client*/
 
     addPseudoToMsg(msg, tabClient[numClient].pseudo);
+    
     int i;
     for (i = 0; i<MAX_CLIENT ; i++) {
         /*On envoie le message à tout les clients qui sont connectés (connected==1) 
@@ -127,7 +130,7 @@ void sendingPrivate(int numClient, char * msg){
         pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
         /*Ajout du pseudo de l'expéditeur devant le message à envoyer*/
-        /*addPseudoToMsg(msg, tabClient[numClient].pseudo);*/
+        addPseudoToMsg(msg, tabClient[numClient].pseudo);
     
         pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
@@ -184,7 +187,7 @@ void sendFile(int dS, FILE * fp){
 
     /*tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
-     * envoyer le bloc lu */
+     * envoyer nombe de bytes lu et le bloc lu */
     while(nbBytes != 0){
         nbBytes = read(fd, data, 1023);
         data[1023]='\0';
@@ -241,7 +244,6 @@ void downloadFile(int dS,char * msgReceived){
     receiving(dS, fileName, SIZE_MSG);
     printf("\nNom du fichier à envoyer: %s \n", fileName);
 
-
     /*Création du chemin pour trouver le fichier*/
     char * pathToFile = (char *) malloc(sizeof(char)*130);
     strcpy(pathToFile,"FileServeur/");
@@ -249,11 +251,13 @@ void downloadFile(int dS,char * msgReceived){
 
     /*Ouverture et envoi du fichier*/
     fp = fopen(pathToFile,"r");
+
     if (fp== NULL) { /*Le fichier n'a pas été trouvé*/
         char * error = "error";
         printf("Erreur! Fichier inconnu\n"); 
         /*On informe le client de l'erreur*/
         sending(dS,error);
+        
     }else {
         /*Le fichier va être envoyé, on informe le client et on transmet au thread de reception le nom du fichier*/
         sending(dS,fileName);

@@ -17,6 +17,7 @@
  * - isEnd = booléen gérant la déconnexion d'un client
  * - port = numéro du port sur lequel on se trouve
  * - ip = adresse IP pour communiquer avec le serveur
+ * - ds = socket du client 
  * */
 extern int isEnd;
 int port;

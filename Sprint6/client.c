@@ -3,8 +3,6 @@
 #include "./FunctionsClient/managementMessage.h"
 #include "./FunctionsClient/dialogFunctions.h"
 
-/*Compiler gcc -pthsread -Wall -ansi -o client client.c*/
-/*Lancer avec ./client votre_ip votre_port*/
 int isEnd = 0;
 
 /*
@@ -17,17 +15,17 @@ int main(int argc, char *argv[]) {
         printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> ");
     }
 
+    /*Récupération des paramètres*/
     ip = argv[1]; 
     port = atoi(argv[2]); 
 
 	/*Création de la socket*/
 	dS = createSocketClient(port, ip);
 
+    /*Mise en place de l'écoute du ctrl C*/
     signal(SIGINT, Ctrl_C_Handler);
 
     /*_____________________ Communication _____________________*/
-
-    /*Echange des messages*/
 
     /*Création d'un thread d'envoi*/
     pthread_t thread_sending;
@@ -46,7 +44,6 @@ int main(int argc, char *argv[]) {
 
     /*Attente de la fin des threads*/
     pthread_join(thread_receiving, NULL);
-
     pthread_cancel(thread_sending);
     
     /*Fin de la communication**/

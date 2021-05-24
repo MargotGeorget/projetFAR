@@ -9,8 +9,6 @@ void * uploadFile_th(void * fpParam){
 
     FILE * fp = (FILE *)fpParam;
 
-    /*printf("J'envoi le fichier au serveur avec le socket %ld\n",dSFile);*/
-    
     /*Création du buffer pour l'envoi du fichier*/
     char data[1024] = "";
     int nbBytes = -1;
@@ -18,9 +16,9 @@ void * uploadFile_th(void * fpParam){
     /*descripteur de fichier à partir du FILE * */
     int fd = fileno(fp);
 
-    /*tant qu'on n'a pas atteint la fin du fichier
+    /* tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
-     * envoyer le bloc lu */
+     * envoyer le nombre de bytes lu puis le bloc lu */
     while(nbBytes != 0){
         nbBytes = read(fd, data, 1023);
         data[1023]='\0';
@@ -33,6 +31,7 @@ void * uploadFile_th(void * fpParam){
         }
         bzero(data, nbBytes);
     } 
+
     printf("\n** Fichier envoyé **\n");
     fclose(fp);
     close(dSFile);
@@ -52,31 +51,27 @@ void * downloadFile_th(void * fileNameParam){
     strcpy(pathToFile,"FileReceived/");
     strcat(pathToFile,fileName);
 
-    /*printf("Je reçois le fichier %s du serveur avec le socket %ld\n",fileName,dSFile);*/
-
     /*Création du fichier et du buffer pour recevoir les données*/
     char buffer[1024];
-    /*changement du fopen en open*/
     int fp = open(pathToFile, O_WRONLY |  O_CREAT, 0666);
     if(fp == -1){
         printf("erreur au open");
         exit(1);
     }
 
-    /*Booleen pour controler la fin de la reception du fichier*/
-    int nbBytes;
-    recv(dSFile, &nbBytes, sizeof(int), 0);
+    int nbBytes; /*Nombre de bytes à recevoir*/
+    nbBytes = receivingInt(dSFile);
 
     /*Reception*/
     while(nbBytes>0){
         recv(dSFile, buffer, 1024, 0);
         write(fp, buffer,nbBytes);
-        recv(dSFile, &nbBytes, sizeof(int), 0);
+        nbBytes = receivingInt(dSFile);
         bzero(buffer, 1024);
     }
     printf("\n** Fichier reçu **\n");
+    
     close(fp);
-
     close(dSFile);
     return NULL;
 
@@ -86,6 +81,7 @@ void * downloadFile_th(void * fileNameParam){
 /* -- Fonction pour le thread d'envoi -- */
 void * sending_th(void * dSparam){
     int dS = (long)dSparam;
+
     while (!isEnd){
 
         /*Saisie du message au clavier*/
@@ -96,15 +92,17 @@ void * sending_th(void * dSparam){
 
         /*On vérifie si le client veut quitter la communication*/
         isEnd = endOfCommunication(m);
+
         /*Envoi*/
         sending(dS, m);
 
-        if (isUploadFile(m)){
+        if (isUploadFile(m)){ /*On vérifie si le client veut envoyer un fichier*/
             uploadFile(dS);
         }
 
         free(m);
     }
+
     close(dS);
     return NULL;
 }
@@ -113,15 +111,18 @@ void * sending_th(void * dSparam){
 void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
     int serveurShutdown;
-    while(!isEnd){
 
+    while(!isEnd){
+        
+        /*Reception des messages*/
         char * r = (char *) malloc(sizeof(char)*500);
         receiving(dS, r, sizeof(char)*500);
 
+        /*Vérification des messages reçu*/
         isEnd = endOfCommunication(r);
         serveurShutdown = isServeurShutdown(r);
 
-        if(isDownloadFile(r)){
+        if(isDownloadFile(r)){ /*On vérifie si le client va recevoir un fichier*/
             downloadFile(dS);
         }else if(!isEnd && !serveurShutdown){
             printf("%s",r);
@@ -129,6 +130,7 @@ void * receiving_th(void * dSparam){
 
         free(r);
     }
+
     close(dS);
     return NULL;
 }

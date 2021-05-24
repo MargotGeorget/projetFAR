@@ -5,9 +5,6 @@
 #include "./FunctionsServeur/managementMessage.h"
 #include "./FunctionsServeur/managementRoom.h"
 
-/*Compiler gcc -pthread -Wall -ansi -o serveur serveur.c*/
-/*Lancer avec ./serveur votre_port */
-
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 /*
@@ -22,6 +19,7 @@ int main(int argc, char *argv[]) {
         printf("Erreur : Lancez avec ./serveur <votre_port> ");
     }
 
+    /*Récupération des paramètres*/
     arg1 = argv[1];
 
     /*Initialisation du tableau qui informe des threads à kill à false pour chaque indice*/
@@ -31,6 +29,7 @@ int main(int argc, char *argv[]) {
     }
     nbThreadToKill = 0;
 
+    /*Initialisation des salons et des clients*/
     initRoom();
     initClients();
 
@@ -40,6 +39,7 @@ int main(int argc, char *argv[]) {
 	/*Création, nommage et passage en mode écoute de la socket pour la communication entre client*/
 	dS = createSocketServeur(atoi(arg1));
 
+    /*Mise en place de l'écoute du ctrl C*/
     signal(SIGINT, Ctrl_C_Handler);
 
     while(1){
@@ -67,14 +67,15 @@ int main(int argc, char *argv[]) {
         char * pseudo = (char *) malloc(sizeof(char)*100);
         int connectionEnd = 0;
         long numClient;
+
         /*Tant que la connexion du client n'a pas été validée on redemande un pseudo pour se connecter*/
         while(!connectionEnd){
-            int availablePseudo;
+            int availablePseudo; /*Vérification de la validité du pseudo (pas d'espace)*/
             sending(dSC,"\n-- Votre pseudo (maximum 12 caractères): \n");
             receiving(dSC, pseudo, sizeof(char)*12);
             availablePseudo = isAvailableName(pseudo);
 
-            /*Saisie du pseudo*/ 
+            /*Nouvelle saisie du pseudo si pas valide */ 
             while(!availablePseudo){
                 printf("Erreur dans la sasie du pseudo\n");
                 sending(dSC,"\nUn pseudo ne peut pas contenir d'espace!\nVotre pseudo (maximum 12 caractères): \n");
@@ -83,23 +84,28 @@ int main(int argc, char *argv[]) {
             } 
 
             printf("-- Pseudo: %s\n",pseudo);
+
             /*On regarde si un client est inscrit avec ce pseudo*/
             numClient = findClient(pseudo); 
 
             if(numClient==-1){ /*Le client n'a pas de compte*/
+
                 /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
                 numClient = giveNumClient();
-                if(numClient==-1){
+
+                if(numClient==-1){ /*Aucun emplacement disponibles*/ 
                     sending(dSC,"\nImpossible de vous incrire, nombre de compte maximum atteint\n");
                     printf("\nAucun compte client trouvé, nombre de client maximum atteint\n");
                     sending(dSC,"/end"); 
                     connectionEnd = 1;
-                }else { /*Le client peut s'inscrire*/
+
+                }else { /*Emplacement disponible : Le client peut s'inscrire*/
                 
                     printf("\nAucun compte client trouvé, inscription...\n");
                     connectionEnd = createAccount(dSC, pseudo, numClient);
                     printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
                 }
+
             }else{ /*Le client à un compte*/
                 if(tabClient[numClient].connected){ /*Le compte est déjà connecté sur un autre appareil*/
                     sending(dSC,"Ce compte est déjà connecté au serveur sur un autre appareil\n");
@@ -107,6 +113,7 @@ int main(int argc, char *argv[]) {
                     sending(dSC,"/end"); 
                     numClient = -1;
                     connectionEnd = 1;
+
                 }else { /*Le client peut se connecter sur ce compte*/
                     printf("\nCompte client trouvé, connexion...\n");
                     connectionEnd = connection(dSC, numClient);
@@ -116,7 +123,7 @@ int main(int argc, char *argv[]) {
         }
         free(pseudo);
         
-        if(numClient!=-1){
+        if(numClient!=-1){ /*Le client est connecté*/
 
             /*_____________________ Communication _____________________*/
             int threadReturn = pthread_create(&tabThread[numClient],NULL,broadcast,(void *)numClient);
@@ -126,11 +133,13 @@ int main(int argc, char *argv[]) {
         
             printf("\nNombre de clients connectés : %d.\n", nbClient);
             
-        }else{
+        }else{ /*Le client n'a pas pu se connecter*/
+
             close(dSC);
             sem_post(&semNbClient);
         }
     }
+    
     sem_destroy(&semNbClient);
 	close(dS);
     return 0;

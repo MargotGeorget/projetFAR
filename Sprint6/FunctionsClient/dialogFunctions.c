@@ -8,7 +8,6 @@ void Ctrl_C_Handler(int sign) {
 }
 
 void sending(int dS, char * msg){
-    /*msg[strcspn(msg, "\n")] = 0;*/
     int sendR = send(dS, msg, strlen(msg)+1, 0);
     if (sendR == -1){ /*vérification de la valeur de retour*/
         perror("erreur au send");
@@ -104,31 +103,33 @@ void uploadFile(int dS){
     }
     free(pathToFile);
     free(fileName);
-    /*ToDo join pour close fp*/
 }
 
 void downloadFile(int dS){
     /*Reception et affichage d'un fichier contenant les noms de tout les fichiers pouvant être téléchargés*/ 
     printf("\n ----- Listes de fichiers disponibles au téléchargement ----- \n");
-    /*Booleen pour controler la fin de la reception du fichier*/
-    int nbBytes = receivingInt(dS);
+    
+    int nbBytes = receivingInt(dS); /*Nombre de bytes reçu*/
     char buffer[1024];
+
     /*Reception et affichage*/
     while(nbBytes>0){
         recv(dS, buffer, 1024, 0);
         printf("%s\n",buffer);
-        /*buffer[nbBytes-2]='\0';*/
         nbBytes = receivingInt(dS);
         bzero(buffer, 1024);
     }
+
     printf("\n --- Saisissez le nom d'un fichier à télécharger : \n");
     /*La saisie se fait coté sending (thread)*/
 
     char * fileName = (char *) malloc(sizeof(char)*100);
     receiving(dS,fileName,sizeof(char)*100);
+
     if(strcmp(fileName,"error")==0){ /*Le nom de fichier saisi est incorrecte*/
         printf("Nom de fichier saisit incorrect!\n");
     }else { /*Le nom de fichier saisi est correcte, on peut recevoir le fichier*/
+        
         /*Création du thread de reception de fichier*/
         pthread_t threadFile;
         int thread = pthread_create(&threadFile, NULL, downloadFile_th, (void *)fileName);

@@ -15,6 +15,7 @@ void displayMan(int numClient){
 
 	char * line = (char *)malloc(SIZE_MSG);
 
+    /*Ouverture du fichier*/
 	FILE * file = fopen("./FunctionsServeur/man.txt", "r");
 	if (file == NULL){
         perror("erreur displayMan: \n");
@@ -22,7 +23,7 @@ void displayMan(int numClient){
     }
     printf("Envoi du manuel en cours...\n");
     while (fgets(line, SIZE_MSG, file) != NULL){
-        printf("La ligne : %s\n",line);
+        printf(line);
         sending(tabClient[numClient].dSC, line);
     }
 
@@ -99,7 +100,7 @@ int isAvailableName(char * name){
     int isA;
 
     strtok(name," ");
-    char * test = strtok(NULL," ");
+    char * test = strtok(NULL," "); /*On regarde si il y a un truc après l'espace*/
 
     if (test==NULL){
         isA = 1;

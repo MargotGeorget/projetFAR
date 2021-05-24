@@ -3,27 +3,32 @@
 
 #include "library.h"
 
-/*
- * Vérifie si un client souhaite quitter la communication
- * Paramètres : char ** msg : message du client à vérifier
- * Retour : 1 (vrai) si le client veut quitter, 0 (faux) sinon
+/**
+ * @brief Vérifie si un client souhaite quitter la communication
+ * @param msg message du client à vérifier
+ * @return 1 (vrai) si le client veut quitter, 0 (faux) sinon
 */
 int endOfCommunication(char * msg);
 
-/*
- * Vérifie si un client souhaite envoyer un fichier (envoie /upload)
- * Paramètres : char ** msg : message du client à vérifier
- * Retour : 1 (vrai) si le client veut envoyer un fichier, 0 (faux) sinon
+/**
+ * @brief Vérifie si un client souhaite envoyer un fichier (envoie /upload)
+ * @param msg message du client à vérifier
+ * @return 1 (vrai) si le client veut envoyer un fichier, 0 (faux) sinon
 */
 int isUploadFile(char * msg);
 
-/*
- * Vérifie si un client souhaite recevoir un fichier (envoie /download)
- * Paramètres : char ** msg : message du client à vérifier
- * Retour : 1 (vrai) si le client veut recevoir un fichier, 0 (faux) sinon
+/**
+ * @brief Vérifie si un client souhaite recevoir un fichier (envoie /download)
+ * @param msg message du client à vérifier
+ * @return 1 (vrai) si le client veut recevoir un fichier, 0 (faux) sinon
 */
 int isDownloadFile(char * msg);
 
+/**
+ * @brief Vérifie si le serveur à été fermé
+ * @param msg message reçu à vérifier
+ * @return 1 (vrai) si le serveur est fermé, 0 (faux) sinon
+*/
 int isServeurShutdown(char * msg);
 
 #endif

@@ -6,52 +6,56 @@
 #include "library.h"
 #include "threadFunctions.h"
 
+/**
+ * @brief Fonction pour gérer le signal Ctrl C 
+ * @param sign le signal 
+ * */
 void Ctrl_C_Handler(int sign);
 
-/*
- * Envoi d'un message à une socket et test bon déroulement
- * Paramètres : int dS : la socket
- *              char * msg : message à envoyer
+/**
+ * @brief Envoi d'un message à une socket et test le bon déroulement
+ * @param dS la socket
+ * @param msg message à envoyer
  * */
 void sending(int dS, char * msg);
 
-/*
- * Envoi d'un entier à une socket et test bon déroulement
- * Paramètres : int dS : la socket
- *              int number : entier à envoyer
+/**
+ * @brief Envoi d'un entier à une socket et test bon déroulement
+ * @param dS la socket
+ * @param number entier à envoyer
  * */
 void sendingInt(int dS, int number);
 
-/*
- * Reception d'un message d'une socket et test bon déroulement
- * Paramètres : int dS : la socket
- *              char * rep : message à recevoir
- *              ssize_t size : taille maximum du message à recevoir
+/**
+ * @brief Reception d'un message d'une socket et test bon déroulement
+ * @param dS la socket
+ * @param rep la variable où stocker le message reçu
+ * @param size taille maximum du message à recevoir
  * */
 void receiving(int dS, char * rep, ssize_t size);
 
 
-/*
- * Création et demande de connexion d'une socket client à un serveur 
- * Paramètres : int port : port de la socket serveur
- *              char * ip : ip du serveur
- * Retour : la socket créée
+/**
+ * @brief Création et demande de connexion d'une socket client à un serveur 
+ * @param port port de la socket serveur
+ * @param ip ip du serveur
+ * @return la socket créée
  * */
 int createSocketClient(int port, char * ip);
 
-/*
- * Mise en place de l'envoi d'un fichier et création du thread nécessaire
- * Paramètres : int dS : la socket courante du client
+/**
+ * @brief Mise en place de l'envoi d'un fichier et création du thread nécessaire
+ * @param dS la socket courante du client
  * */
 void uploadFile(int dS);
 
-/*
- * Mise en place de la reception d'un fichier dans le thread de reception
+/**
+ * @brief Mise en place de la reception d'un fichier dans le thread de reception
  *          - reception des fichiers pouvant être téléchargés
  *          - affichage des fichiers au client
  *          - réception de la confirmation du serveur de l'existence du fichier
  *          - création du thread de réception
- * Paramètres : int dS : la socket courante du client
+ * @param dS la socket courante du client
  * */
 void downloadFile(int dS);
 
