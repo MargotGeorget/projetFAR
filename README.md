@@ -1,5 +1,7 @@
 # projetFAR
 
+Messagerie instantanée en langage C 
+
 ## Organisation des fichiers 
 
 /projetFAR/Sprint6/
@@ -40,6 +42,6 @@
       threadFunctions.h   //fichier header, fonctions de gestion des threads clients
       threadFunctions.c
 
-##Auteurs
+## Auteurs
 * **Margot Georget** 
 * **Ophélie Amarian** 
