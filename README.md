@@ -44,4 +44,4 @@ Messagerie instantanée en langage C
 
 ## Auteurs
 * **Margot Georget** 
-* **Ophélie Amarian** 
+* **Ophélie Amarine** 
