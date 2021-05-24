@@ -37,40 +37,40 @@ Pour connecter plusieurs clients, ouvrez simplement de nouveaux terminaux de com
 ### Liste des commandes 
 
 #### Commandes générales 
-- /man = afficher l'ensemble des commandes disponibles sur le serveur
-- /admin = afficher la liste des clients administrateurs du serveur
-- /end = quitter le serveur
+- /man = *afficher l'ensemble des commandes disponibles sur le serveur*
+- /admin = *afficher la liste des clients administrateurs du serveur*
+- /end = *quitter le serveur*
 
 #### Commandes relatives aux fichiers
-- /upload = afficher la liste des fichiers disponibles à l'envoi et choisir un fichier à envoyer au serveur.
-- /download = afficher la liste des fichiers disponibles au téléchargement et choisir un fichier à recevoir du serveur.
+- /upload = *afficher la liste des fichiers disponibles à l'envoi et choisir un fichier à envoyer au serveur*
+- /download = *afficher la liste des fichiers disponibles au téléchargement et choisir un fichier à recevoir du serveur*
 
 #### Commandes relatives aux clients 
-- /whoishere = afficher la liste des utilisateurs actuellement connectés au serveur.
-- /pseudo [newPseudo] = changer son pseudo.
-- @all [message] = envoi du message à tous les clients connectés sur le serveur. 
-- @pseudo [message] = envoi du message au client dont on a renseigné le pseudo.
-- /profil [pseudo] = afficher le profil d'un client (pseudo, rôle et description)
-- /deleteAccount = supprimer son compte
-- /password [oldPassword] [newPassword] = changer le mot de passe du client
+- /whoishere = *afficher la liste des utilisateurs actuellement connectés au serveur*
+- /pseudo [newPseudo] = *changer son pseudo*
+- @all [message] = *envoi du message à tous les clients connectés sur le serveur* 
+- @pseudo [message] = *envoi du message au client dont on a renseigné le pseudo*
+- /profil [pseudo] = *afficher le profil d'un client (pseudo, rôle et description)*
+- /deleteAccount = *supprimer son compte*
+- /password [oldPassword] [newPassword] = *changer le mot de passe du client*
 
 #### Commandes relatives aux salons
-- /rooms = afficher l'ensemble des salons de discussions créés ainsi que leurs participants.
-- /join [nameRoom] = rejoindre un salon de discussion dont le nom est passé en paramètre. 
-- /create [nameRoom] = créer un salon de discussion dont le nom est passé en paramètre. 
-- /remove [nameRoom] = supprimer un salon de discussion dont le nom est passé en paramètre. 
-- /name [nameRoom] [newNameRoom] = changer le nom du salon.
-- /descrRoom [descRoom] [newDescRoom] = changer la description du salon.
+- /rooms = *afficher l'ensemble des salons de discussions créés ainsi que leurs participants*
+- /join [nameRoom] = *rejoindre un salon de discussion dont le nom est passé en paramètre*
+- /create [nameRoom] = *créer un salon de discussion dont le nom est passé en paramètre* 
+- /remove [nameRoom] = *supprimer un salon de discussion dont le nom est passé en paramètre* 
+- /name [nameRoom] [newNameRoom] = *changer le nom du salon*
+- /descrRoom [descRoom] [newDescRoom] = *changer la description du salon*
 
 #### Commandes administrateur serveur et salon 
 
-- /ban [pseudo] [nameRoom] = renvoyer le client dans le salon général et l'empêcher de revenir dans le salon dans lequel il était
-- /unban [pseudo] [nameRoom] = redonner les autorisations au client pour rejoindre le salon
-- /rightRoom [pseudo] [nameRoom] = donner le rôle administrateur d'un salon à un client
+- /ban [pseudo] [nameRoom] = *renvoyer le client dans le salon général et l'empêcher de revenir dans le salon dans lequel il était*
+- /unban [pseudo] [nameRoom] = *redonner les autorisations au client pour rejoindre le salon*
+- /rightRoom [pseudo] [nameRoom] = *donner le rôle administrateur d'un salon à un client*
 
 #### Commandes adminintrateurs serveur uniquement
-- /move [pseudo] [nameRoom] = déplacer le client demandé dans la room donnée
-- /rightServer [pseudo] [nameRoom] = donner le rôle administrateur du serveur au client
+- /move [pseudo] [nameRoom] = *déplacer le client demandé dans la room donnée*
+- /rightServer [pseudo] [nameRoom] = *donner le rôle administrateur du serveur au client*
 
 ## Organisation des fichiers 
 
