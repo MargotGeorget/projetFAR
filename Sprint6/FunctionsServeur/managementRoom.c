@@ -223,7 +223,6 @@ int getRoomByName(char * roomName){
 }
 
 void addMember(int numClient, int idRoom){
-    printf("addMember\n");
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
     /*Ajout de l'id du salon au client*/

@@ -193,6 +193,8 @@ void initClients(){
         /*ISADMIN*/
         tabClient[i].isAdmin = 0;
 
+        i++;
+
     }
 
     pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
@@ -258,7 +260,7 @@ void saveClients(){
             exit(1);
         }
     }
-    printf("-- Fichier clients mis à jour --\n");
+    printf("\n-- Fichier clients mis à jour --\n");
     free(line);
     return;
 }
@@ -352,11 +354,8 @@ void updatePassword(int numClient, char * msg){
 }
 
 int createAccount(int dSC, char * pseudo, int numClient){
-    printf("Création de compte pour le client %d\n",numClient);
 
     strcpy(tabClient[numClient].pseudo,pseudo);
-
-    printf("-- Pseudo : %s\n",tabClient[numClient].pseudo);
 
     sending(dSC,"Aucun compte client n'a été trouvé, inscrivez vous!\nEnregistrez votre mot de passe : \n");
 
@@ -377,8 +376,6 @@ int createAccount(int dSC, char * pseudo, int numClient){
     tabClient[numClient].dSC = dSC;
     /*A la création du compte le client est connecté et va rejoindre le salon général*/
     tabClient[numClient].connected = 1;
-
-    printf("Compte créé\n");
 
     saveClients();
 
@@ -416,7 +413,7 @@ int connection(int dSC, int numClient){
         return 0;
     }
     /*Mot de passe correct*/
-    
+    printf("Mot de passe correct!\n");
     /*On enregistre la socket du client*/
     tabClient[numClient].connected = 1;
     tabClient[numClient].dSC = dSC;

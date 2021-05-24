@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
         dSC = acceptConnection(dS);
 
     /*On gère l'arrivée du client avant de créer son thread*/
+        printf("\nArrivée d'un client, connexion en cours...\n");
 
         /*Récupération du nombre de client connectés*/
         int valueSem;
@@ -81,36 +82,35 @@ int main(int argc, char *argv[]) {
                 availablePseudo = isAvailableName(pseudo);
             } 
 
-            printf("pseudo: %s\n",pseudo);
+            printf("-- Pseudo: %s\n",pseudo);
             /*On regarde si un client est inscrit avec ce pseudo*/
             numClient = findClient(pseudo); 
-            printf("%ld\n",numClient);
 
             if(numClient==-1){ /*Le client n'a pas de compte*/
                 /*Affectation du numéro au client en fonction des emplacements dans le tableau de Clients*/
                 numClient = giveNumClient();
-                printf("numéro client : %ld\n",numClient);
                 if(numClient==-1){
                     sending(dSC,"\nImpossible de vous incrire, nombre de compte maximum atteint\n");
-                    printf("Aucun compte client trouvé, nombre de client maximum atteint\n");
+                    printf("\nAucun compte client trouvé, nombre de client maximum atteint\n");
                     sending(dSC,"/end"); 
                     connectionEnd = 1;
                 }else { /*Le client peut s'inscrire*/
                 
-                    printf("Aucun compte client trouvé, inscription...\n");
+                    printf("\nAucun compte client trouvé, inscription...\n");
                     connectionEnd = createAccount(dSC, pseudo, numClient);
                     printf("Compte client créé : Numéro - %ld, pseudo - %s\n", numClient,pseudo);
                 }
             }else{ /*Le client à un compte*/
                 if(tabClient[numClient].connected){ /*Le compte est déjà connecté sur un autre appareil*/
                     sending(dSC,"Ce compte est déjà connecté au serveur sur un autre appareil\n");
+                    printf("\nCompte client déjà connecté sur une autre machine.\n");
                     sending(dSC,"/end"); 
                     numClient = -1;
                     connectionEnd = 1;
                 }else { /*Le client peut se connecter sur ce compte*/
-                    printf("Compte client trouvé, connexion...\n");
+                    printf("\nCompte client trouvé, connexion...\n");
                     connectionEnd = connection(dSC, numClient);
-                    printf("Client %ld connecté\n", numClient);
+                    printf("\nClient %ld connecté\n", numClient);
                 }
             }
         }
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
                 perror("erreur thread create");
             }
         
-            printf("Clients connectés : %d\n", nbClient);
+            printf("\nNombre de clients connectés : %d.\n", nbClient);
             
         }else{
             close(dSC);

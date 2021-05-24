@@ -65,10 +65,7 @@ void sendingAll(int numClient, char * msg){
 
     int dS = tabClient[numClient].dSC;
 
-    printf("Je reçois le message du client avec le socket %d\n",dS);
-
-    /*addPseudoToMsg(msg, tabClient[numClient].pseudo);*/
-    printf("Pseudo ajouté au message, envoi du message...\n");
+    addPseudoToMsg(msg, tabClient[numClient].pseudo);
     int i;
     for (i = 0; i<MAX_CLIENT ; i++) {
         /*On envoie le message à tout les clients qui sont connectés (connected==1) 
@@ -87,8 +84,6 @@ void sendingRoom(int numClient, char * msg){
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
     int dS = tabClient[numClient].dSC;
-
-    printf("Je reçois le message du client avec le socket %d\n",dS);
 
     addPseudoToMsg(msg, tabClient[numClient].pseudo);
 
