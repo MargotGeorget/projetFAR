@@ -16,7 +16,7 @@ _______________________Liste des commandes_______________________
 
 /name [nameRoom] [newNameRoom] = changer le nom du salon.
 
-/descr [descRoom] [newDescRoom] = changer la description du salon.
+/descrRoom [descRoom] [newDescRoom] = changer la description du salon.
 
 /upload = afficher la liste des fichiers disponibles à l'envoi et choisir un fichier à envoyer au serveur.
 
@@ -28,4 +28,19 @@ _______________________Liste des commandes_______________________
 
 @pseudo [message] = envoi du message au client dont on a renseigné le pseudo.
 
+/profil [pseudo] = afficher le profil d'un client (pseudo, rôle et description)
+
+/deleteAccount = supprimer son compte
+
+/admin = afficher la liste des clients administrateurs du serveur
+
+/move [pseudo] [nameRoom] = déplacer le client demandé dans la room donnée
+
+/ban [pseudo] [nameRoom] = renvoyer le client dans le salon général et l'empêcher de revenir dans le salon dans lequel il était
+
+/unban [pseudo] [nameRoom] = redonner les autorisations au client pour rejoindre le salon
+
+/rightServer [pseudo] [nameRoom] = donner le rôle administrateur du serveur au client
+
+/password [oldPassword] [newPassword] = changer le mot de passe du client
 _________________________________________________________________
