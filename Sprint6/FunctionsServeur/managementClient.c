@@ -281,26 +281,31 @@ void updatePseudo(int numClient, char * msg){
     
     }else{ /*On peut modifier le pseudo*/
 
-        /*On informe les autres clients*/
-        char * info = (char *)malloc(sizeof(char)*60);
-        strcpy(info,"** est désormais ");
-        strcat(info,newPseudo);
-        strcat(info," **");
+        int client = findClient(newPseudo);
+        if(client!=-1){ /*Un client à été trouvé donc le pseudo est déjà pris*/
+            sending(tabClient[numClient].dSC, "Ce pseudo est déjà utilisé.\n\n"); 
         
-        sendingRoom(numClient,info);
+        }else{
+            /*On informe les autres clients*/
+            char * info = (char *)malloc(sizeof(char)*60);
+            strcpy(info,"** est désormais ");
+            strcat(info,newPseudo);
+            strcat(info," **");
+            
+            sendingRoom(numClient,info);
 
-        /*Modification*/
-        pthread_mutex_lock(&lock); /*Début d'une section critique*/
+            /*Modification*/
+            pthread_mutex_lock(&lock); /*Début d'une section critique*/
 
-        strcpy(tabClient[numClient].pseudo,newPseudo);
-    
-        /*MAJ dans le fichier*/
-        saveClients();
+            strcpy(tabClient[numClient].pseudo,newPseudo);
+        
+            /*MAJ dans le fichier*/
+            saveClients();
 
-        pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
+            pthread_mutex_unlock(&lock); /*Fin d'une section critique*/
 
-        sending(tabClient[numClient].dSC, "Votre pseudo a été mis à jour.\n\n");  
-
+            sending(tabClient[numClient].dSC, "Votre pseudo a été mis à jour.\n\n");  
+        }
     }
 }
 
@@ -480,6 +485,12 @@ int deleteAccount(int numClient){
             tabClient[numClient].created=0;
             tabClient[numClient].isAdmin=0;
             strcpy(tabClient[numClient].descr,"Default");
+            int i;
+            /*On réinitialise les informations concernant les salons*/
+            for(i=0;i<NB_ROOMS;i++){
+                rooms[i].admin[numClient]=0;
+                rooms[i].ban[numClient]=0;
+            }
 
             /*MAJ dans le fichier*/
             saveClients();

@@ -24,6 +24,7 @@ void displayMan(int numClient){
     printf("Envoi du manuel en cours...\n");
     while (fgets(line, SIZE_MSG, file) != NULL){
         printf("%s",line);
+        sleep(0.1);
         sending(tabClient[numClient].dSC, line);
     }
 

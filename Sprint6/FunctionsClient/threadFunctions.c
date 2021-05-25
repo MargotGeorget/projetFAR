@@ -19,7 +19,9 @@ void * uploadFile_th(void * fpParam){
     /* tant qu'on n'a pas atteint la fin du fichier
      * faire un read (retourne 0 si on est en fin de fichier)
      * envoyer le nombre de bytes lu puis le bloc lu */
+    int i = 0;
     while(nbBytes != 0){
+        printf("Client %d",i);
         nbBytes = read(fd, data, 1023);
         data[1023]='\0';
         sendingInt(dSFile, nbBytes);
@@ -30,6 +32,7 @@ void * uploadFile_th(void * fpParam){
             }
         }
         bzero(data, nbBytes);
+        i++;
     } 
 
     printf("\n** Fichier envoyé **\n");

@@ -1,4 +1,5 @@
 0,Général,Default,1
 1,Poudlard,Le salon des sorciers,1
 2,Le_Bobar,La meilleure coloc pour toujours,1
-3,StaffNathan,Default,0
+3,Default,Default,0
+4,Default,Default,0

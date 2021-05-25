@@ -1,15 +1,15 @@
-0,Georgette,margot,Une jolie description doit être un peu plus longue pour les test,1,1
-1,Marouan,marouan,Default,1,1
-2,Fantine,fan,Ma description,1,0
-3,Nathan,nathan,Default,1,0
-4,Margot,margot,Default,1,0
-5,Lisa,barbouille,Default,1,0
-6,Thomas,thomas,Default,1,0
-7,Quentin,quentin,Default,1,0
-8,Troubadour,troubadour,StaffNathan Nathan va finir en pls miskin,1,0
-9,Celine,celine,Default,1,0
-10,Julie,julie,Default,1,0
-11,Ophélie,ophelie,Default,1,0
-12,Ophalie,ophelie,Default,1,0
-13,Natasha,natasha,Default,1,0
-14,t,Default,Default,0,0
+0,Margot,margot,Default,1,1
+1,Ophélie,ophelie,Default,1,1
+2,Marouan,marouan,Default,1,0
+3,Default,Default,Default,0,0
+4,Default,Default,Default,0,0
+5,Default,Default,Default,0,0
+6,Default,Default,Default,0,0
+7,Default,Default,Default,0,0
+8,Default,Default,Default,0,0
+9,Default,Default,Default,0,0
+10,Default,Default,Default,0,0
+11,Default,Default,Default,0,0
+12,Default,Default,Default,0,0
+13,Default,Default,Default,0,0
+14,Default,Default,Default,0,0

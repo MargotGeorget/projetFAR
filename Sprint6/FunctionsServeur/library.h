@@ -21,7 +21,7 @@
  * NB_ROOMS = nombre maximum de salon de discussion 
  * */
 #define MAX_CLIENT 15 /*Attention si vous diminuez le nombre de client max, des clients risquent de ne plus pouvoir se connecter*/
-#define NB_ROOMS 4 /*3 salons + 1 salon général*/
+#define NB_ROOMS 5 /*4 salons + 1 salon général*/
 #define SIZE_MSG sizeof(char)*500 
 
 /*

@@ -12,7 +12,8 @@ int main(int argc, char *argv[]) {
 
     /*Verification des paramètres*/
     if(argc<3){
-        printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> ");
+        printf("Erreur : Lancez avec ./client <votre_ip> <votre_port> \n");
+        exit(0);
     }
 
     /*Récupération des paramètres*/

@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
 
     /*Verification des paramètres*/
     if(argc<2){
-        printf("Erreur : Lancez avec ./serveur <votre_port> ");
+        printf("Erreur : Lancez avec ./serveur <votre_port> \n");
+        exit(0);
     }
 
     /*Récupération des paramètres*/

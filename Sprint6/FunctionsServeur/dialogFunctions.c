@@ -204,6 +204,7 @@ void sendFile(int dS, FILE * fp){
             }
         }
         bzero(data, nbBytes);
+        sleep(0.1);
     } 
     printf("\n** Fichier envoyé **\n");
     fclose(fp);
