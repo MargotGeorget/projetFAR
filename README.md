@@ -1,7 +1,7 @@
 # projetFAR
 
-**Messagerie instantanée en langage C**
-## Description générale de l’application
+## Messagerie instantanée en langage C
+** Description générale de l’application **
 
 L'objectif de ce projet est de créer une messagerie instantanée à partir de thread et de socket en langage C. 
 
@@ -71,7 +71,7 @@ La liste des commandes permettant d’utiliser toutes ces fonctionnalités est d
 - Connaitre les bases des threads et des sockets en C
 
 ### Installation 
-Il vous faudra dabord cloner le projet à partir de GitHub, commande à exécuter sur votre terminal : `git clone https://github.com/MargotGeorget/projetFAR/`
+Il vous faudra dabord cloner le projet à partir de GitHub, commande à exécuter sur votre terminal : `git clone https://github.com/MargotGeorget/projetFAR/`.
 Ensuite vous aurez accés à l'ensemble des répertoires et fichiers. 
 
 ### Compilation 
