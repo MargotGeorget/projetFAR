@@ -23,7 +23,7 @@ void displayMan(int numClient){
     }
     printf("Envoi du manuel en cours...\n");
     while (fgets(line, SIZE_MSG, file) != NULL){
-        printf(line);
+        printf("%s",line);
         sending(tabClient[numClient].dSC, line);
     }
 

@@ -125,8 +125,10 @@ void sendingPrivate(int numClient, char * msg){
     int client = findClient(pseudo);
 
     if (client==-1){ /*Aucun client n'a été trouvé*/
-
         sending(mydSC, "Le pseudo saisi n'existe pas!\n");
+
+    }else if(!tabClient[client].connected){ /*Si le client n'est pas connecté*/
+        sending(mydSC, "Le client n'est pas connecté!\n");
 
     }else { /*Le client à été trouvé*/
 

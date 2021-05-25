@@ -43,4 +43,6 @@ _______________________Liste des commandes_______________________
 /rightServer [pseudo] [nameRoom] = donner le rôle administrateur du serveur au client
 
 /password [oldPassword] [newPassword] = changer le mot de passe du client
+
+/shutdown = éteindre le serveur
 _________________________________________________________________

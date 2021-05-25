@@ -563,7 +563,7 @@ void closingClient(int dS){
     /*On tue les threads du client*/
     tabThreadToKill[nbThreadToKill]=tabThread[numClient];
     nbThreadToKill+=1;
-    tabThread[numClient] = ((void *)0);
+    tabThread[numClient] = ((pthread_t)0);
 
     /*Fermeture de la socket*/
     close(tabClient[numClient].dSC);
@@ -578,7 +578,7 @@ void killThread(){
     pthread_mutex_lock(&lock); /*Début d'une section critique*/
     
     for (i=0;i<MAX_CLIENT*2;i++){
-        if(tabThreadToKill[i]!=((void *)0)){
+        if(tabThreadToKill[i]!=((pthread_t)0)){
             pthread_join(tabThreadToKill[i],NULL);
         }
     }

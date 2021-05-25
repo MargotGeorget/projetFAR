@@ -185,7 +185,7 @@ void * broadcast(void * clientParam){
     tabClient[numClient].connected=0;
     tabThreadToKill[nbThreadToKill]=tabThread[numClient];
     nbThreadToKill+=1;
-    tabThread[numClient] = ((void *)0);
+    tabThread[numClient] = ((pthread_t)0);
     close(tabClient[numClient].dSC);
     pthread_mutex_unlock(&lock);
     sem_post(&semNbClient);
