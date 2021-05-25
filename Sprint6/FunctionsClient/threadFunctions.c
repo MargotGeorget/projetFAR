@@ -24,6 +24,7 @@ void * uploadFile_th(void * fpParam){
         printf("Client %d",i);
         nbBytes = read(fd, data, 1023);
         data[1023]='\0';
+        sleep(0.3);
         sendingInt(dSFile, nbBytes);
         if(nbBytes != 0){
             if (send(dSFile, data, sizeof(data), 0) == -1) {
