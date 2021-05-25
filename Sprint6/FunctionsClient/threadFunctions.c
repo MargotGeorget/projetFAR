@@ -112,7 +112,7 @@ void * receiving_th(void * dSparam){
     int dS = (long)dSparam;
     int serveurShutdown;
 
-    while(!isEnd){
+    while(!isEnd && !serveurShutdown){
         
         /*Reception des messages*/
         char * r = (char *) malloc(sizeof(char)*500);

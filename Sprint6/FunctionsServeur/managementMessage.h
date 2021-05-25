@@ -23,7 +23,7 @@ void displayMan(int numClient);
 /**
  * @brief Découpe le message réçu et retourne le numéro de commande associé 
  * @param msg message reçu, commençant pas / ou @
- * @return l'entier compris entre 0 et 25, correspondant au numéro de la commande, 
+ * @return l'entier compris entre 0 et 26, correspondant au numéro de la commande, 
  *         si aucune commande n'a été reconnue retourne 0 
  * */
 int numCommande(char * msg);

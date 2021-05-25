@@ -167,6 +167,14 @@ void * broadcast(void * clientParam){
             case 25: /*--/password oldPassword newPassword-- Changer le mot de passe du client*/
                 updatePassword(numClient,msgReceived);
                 break;
+            case 26: /*--/shutdown-- Arreter le serveur*/
+                isEnd = canShutdown(numClient);
+                if(isEnd){
+                    closeServeur();
+                    printf("\n /shutdown reçu : Arrêt du serveur \n");
+                    exit(EXIT_SUCCESS);
+                };
+                break;
             }
         }
         free(msgReceived);

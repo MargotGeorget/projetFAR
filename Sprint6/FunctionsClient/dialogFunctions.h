@@ -34,6 +34,13 @@ void sendingInt(int dS, int number);
  * */
 void receiving(int dS, char * rep, ssize_t size);
 
+/**
+ * @brief Reception d'un entier d'une socket et test le bon déroulement
+ * @param dS la socket
+ * @return l'entier reçu
+ * */
+int receivingInt(long dS);
+
 
 /**
  * @brief Création et demande de connexion d'une socket client à un serveur 

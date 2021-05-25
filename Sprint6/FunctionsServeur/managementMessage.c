@@ -91,6 +91,8 @@ int numCommande(char * msg){
         num = 24;
     }else if (strcmp(cmd, "/password")==0){        
         num = 25;
+    }else if (strcmp(cmd, "/shutdown")==0){        
+        num = 26;
     }
     free(msgCopy);
     return num;

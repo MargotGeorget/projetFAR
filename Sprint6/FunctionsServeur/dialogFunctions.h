@@ -15,6 +15,11 @@
 void Ctrl_C_Handler(int sign);
 
 /**
+ * @brief Fonction pour déconnecter le serveur
+ * */
+void closeServeur();
+
+/**
  * @brief Receptionne un message d'une socket et test le bon déroulement
  * @param dS la socket
  * @param msg la variable où stocker le message reçu
@@ -109,5 +114,12 @@ void uploadFile(int dS);
  *                      de reception du client qu'un ficheir va être envoyé)
  * */
 void downloadFile(int dS,char * msgReceived);
+
+/**
+ * @brief Autorise le client à arrêter le serveur 
+ * @param numClient le numéro du client qui souhaite arêter le serveur 
+ * @return un booleen 1(true) si le client est administrateur et peut arrêter le serveur, 0(false) sinon 
+ * */
+int canShutdown(int numClient);
 
 #endif

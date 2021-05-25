@@ -1,6 +1,12 @@
 #include "dialogFunctions.h"
 
 void Ctrl_C_Handler(int sign) {
+    closeServeur();
+    printf("\n CTRL+C détecté : Arrêt du serveur \n");
+    exit(EXIT_SUCCESS);
+}
+
+void closeServeur(){
     /*Sauvegarde des fichiers avant d'éteindre le serveur*/
     saveClients();
     updateRoom(1,1,1);
@@ -16,9 +22,6 @@ void Ctrl_C_Handler(int sign) {
 
     shutdown(dS, 2);
     shutdown(dSFile, 2); /*On ferme aussi la connexion de la socket utilisée pour les fichiers*/
-
-    printf("\n CTRL+C détecté : Arrêt du serveur \n");
-    exit(EXIT_SUCCESS);
 }
 
 void receiving(int dS, char * rep, ssize_t size){
@@ -270,4 +273,13 @@ void downloadFile(int dS,char * msgReceived){
         }
     }
     free(pathToFile);
+}
+
+int canShutdown(int numClient){
+    if(tabClient[numClient].isAdmin){
+        return 1;
+    }else{
+        sending(tabClient[numClient].dSC,"Vous n'avez pas les droits pour fermer le serveur.\n\n");
+        return 0;
+    }
 }
