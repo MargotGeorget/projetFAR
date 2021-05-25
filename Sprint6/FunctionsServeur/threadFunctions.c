@@ -27,15 +27,13 @@ void * uploadFile_th(void * fileNameParam){
     int nbBytes = receivingInt(dSCFile);
 
     /*Reception*/
-    int i = 0;
     while(nbBytes>0){
-        printf("Serveur %d",i);
         recv(dSCFile, buffer, 1024, 0);
         write(fp, buffer,nbBytes);
         sleep(0.3);
         nbBytes = receivingInt(dSCFile);
         bzero(buffer, 1024);
-        i++;
+        printf("%d",nbBytes);
     }
     printf("\n**Fichier reçu**\n");
 
@@ -97,7 +95,8 @@ void * broadcast(void * clientParam){
                 sending(dSC,"Aucune commande reconnue\n");
                 break;
             case 1: /* --/man-- Afficher la listes des commandes*/
-                displayMan(numClient); 
+                /*displayMan(numClient); */
+                /*Gérer côté client*/
                 break;
             case 2: /* --/whoishere-- Afficher la liste des clients connectés*/
                 displayClient(numClient);

@@ -1,0 +1,48 @@
+_______________________Liste des commandes_______________________
+
+/man = afficher l'ensemble des commandes disponibles sur le serveur.
+
+/whoishere = afficher la liste des utilisateurs actuellement connectés au serveur.
+
+/pseudo [newPseudo] = changer son pseudo.
+
+/rooms = afficher l'ensemble des salons de discussions créés ainsi que leurs participants.
+
+/join [nameRoom] = rejoindre un salon de discussion dont le nom est passé en paramètre. 
+
+/create [nameRoom] = créer un salon de discussion dont le nom est passé en paramètre. 
+
+/remove [nameRoom] = supprimer un salon de discussion dont le nom est passé en paramètre. 
+
+/name [nameRoom] [newNameRoom] = changer le nom du salon.
+
+/descrRoom [descRoom] [newDescRoom] = changer la description du salon.
+
+/upload = afficher la liste des fichiers disponibles à l'envoi et choisir un fichier à envoyer au serveur.
+
+/download = afficher la liste des fichiers disponibles au téléchargement et choisir un fichier à recevoir du serveur.
+
+/end = quitter le serveur.
+
+@all [message] = envoi du message à tous les clients connectés sur le serveur. 
+
+@pseudo [message] = envoi du message au client dont on a renseigné le pseudo.
+
+/profil [pseudo] = afficher le profil d'un client (pseudo, rôle et description)
+
+/deleteAccount = supprimer son compte
+
+/admin = afficher la liste des clients administrateurs du serveur
+
+/move [pseudo] [nameRoom] = déplacer le client demandé dans la room donnée
+
+/ban [pseudo] [nameRoom] = renvoyer le client dans le salon général et l'empêcher de revenir dans le salon dans lequel il était
+
+/unban [pseudo] [nameRoom] = redonner les autorisations au client pour rejoindre le salon
+
+/rightServer [pseudo] [nameRoom] = donner le rôle administrateur du serveur au client
+
+/password [oldPassword] [newPassword] = changer le mot de passe du client
+
+/shutdown = éteindre le serveur
+_________________________________________________________________

@@ -31,4 +31,16 @@ int isDownloadFile(char * msg);
 */
 int isServeurShutdown(char * msg);
 
+/**
+ * @brief Vérifie si le client veut voir le manuel
+ * @param msg message reçu à vérifier
+ * @return 1 (vrai) si la commande est /man, 0 (faux) sinon
+*/
+int isMan(char * msg);
+
+/**
+ * @brief affiche le man.txt au client
+ */
+void displayMan();
+
 #endif

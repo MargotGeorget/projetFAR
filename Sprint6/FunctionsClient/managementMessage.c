@@ -28,3 +28,23 @@ int isServeurShutdown(char * msg){
     }
     return 0;
 }
+
+int isMan(char * msg){
+    if (strcmp(msg, "/man")==0){
+        return 1;
+    }
+    return 0;
+}
+
+void displayMan(){
+    FILE* file;
+    char line[1024];
+
+    file = fopen("./FunctionsClient/man.txt", "r");
+
+    while (fgets(line, 1024, file) != NULL) {
+        printf("%s", line);
+    }
+
+    fclose(file);
+}

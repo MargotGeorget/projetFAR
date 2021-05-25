@@ -1,7 +1,7 @@
 0,Margot,margot,Default,1,1
 1,Ophélie,ophelie,Default,1,1
 2,Marouan,marouan,Default,1,0
-3,/end,,Default,1,0
+3,Default,Default,Default,0,0
 4,Default,Default,Default,0,0
 5,Default,Default,Default,0,0
 6,Default,Default,Default,0,0

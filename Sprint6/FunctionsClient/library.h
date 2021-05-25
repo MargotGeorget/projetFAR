@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <signal.h>
+#include <dirent.h>
 
 /*   Déclaration des variables :
  * - isEnd = booléen gérant la déconnexion d'un client

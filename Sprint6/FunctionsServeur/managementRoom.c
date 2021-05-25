@@ -576,7 +576,7 @@ void giveRightRoom(int numClient, char * msg){
                 char * info = (char *)malloc(sizeof(char)*60);
                 strcpy(info, "Vous avez été déclaré administrateur du salon ");
                 strcat(info,roomName);
-                strcat(info,"\n");
+                strcat(info,".\n\n");
                 sending(tabClient[client].dSC, info); 
                 free(info);
             }
