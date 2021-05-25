@@ -126,8 +126,7 @@ Pour connecter plusieurs clients, ouvrez simplement de nouveaux terminaux de com
 ### Commandes adminintrateurs serveur uniquement
 - /move [pseudo] [nameRoom] = *déplacer le client demandé dans la room donnée*
 - /rightServer [pseudo] [nameRoom] = *donner le rôle administrateur du serveur au client*
-
-
+- /shutdown = *éteindre le serveur*
 
 ## Auteurs
 * **Margot Georget** @MargotGeorget
