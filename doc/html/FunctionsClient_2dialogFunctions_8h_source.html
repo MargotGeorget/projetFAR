@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMARINE - GEORGET - Projet FAR:  Fichier source de /mnt/c/Users/OPHELIESANSMICROSOFT/Documents/POSTBAC/Polytech/IG3/Semestre 6/Projet FAR/projetFAR/Sprint6/FunctionsClient/dialogFunctions.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">AMARINE - GEORGET - Projet FAR
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Recherche');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_a205e11a7435a65be099cd8ad04204a6.html">Sprint6</a></li><li class="navelem"><a class="el" href="dir_a9e40e570935b147b9c962ca61af30f7.html">FunctionsClient</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">dialogFunctions.h</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="FunctionsClient_2dialogFunctions_8h.html">Aller à la documentation de ce fichier.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef DIALOGFUNCTIONS_H_</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define DIALOGFUNCTIONS_H_</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">/* ----- FICHIER RECENSANT LES FONCTIONS DE DIALOGUE CÔTE CLIENT ----- */</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="FunctionsClient_2library_8h.html">library.h</a>&quot;</span></div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="FunctionsClient_2threadFunctions_8h.html">threadFunctions.h</a>&quot;</span></div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#a84b4b8f8d0cb2c2b6cfa576e20597fba">Ctrl_C_Handler</a>(<span class="keywordtype">int</span> sign);</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#a9984baa85f69ab1c6ad69a5abcbac91f">sending</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#a0cfb22b2738f9a4834f2c3d654736fb8">sendingInt</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>, <span class="keywordtype">int</span> number);</div><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#a96241abf745692bda55db9924a3ff659">receiving</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>, <span class="keywordtype">char</span> * rep, ssize_t size);</div><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div><div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#ac5e80452c6e1084d3ffe8ffcaeaf06a7">receivingInt</a>(<span class="keywordtype">long</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>);</div><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div><div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div><div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#ac06c03e2e4e736a7531561b9b049dfd2">createSocketClient</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a63c89c04d1feae07ca35558055155ffb">port</a>, <span class="keywordtype">char</span> * <a class="code" href="FunctionsClient_2library_8h.html#afbc356cd0e25d1dbbece7c10fd025fa6">ip</a>);</div><div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div><div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#ab8b69bb729299ff068378e5d1825201b">uploadFile</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>);</div><div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div><div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">void</span> <a class="code" href="FunctionsClient_2dialogFunctions_8h.html#ac2efd3b34c47e0468417bc5432a7606c">downloadFile</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>);</div><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif</span></div><div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_a84b4b8f8d0cb2c2b6cfa576e20597fba"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#a84b4b8f8d0cb2c2b6cfa576e20597fba">Ctrl_C_Handler</a></div><div class="ttdeci">void Ctrl_C_Handler(int sign)</div><div class="ttdoc">Fonction pour gérer le signal Ctrl C. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:3</div></div>
+<div class="ttc" id="FunctionsClient_2threadFunctions_8h_html"><div class="ttname"><a href="FunctionsClient_2threadFunctions_8h.html">threadFunctions.h</a></div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_a0cfb22b2738f9a4834f2c3d654736fb8"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#a0cfb22b2738f9a4834f2c3d654736fb8">sendingInt</a></div><div class="ttdeci">void sendingInt(int dS, int number)</div><div class="ttdoc">Envoi d&amp;#39;un entier à une socket et test bon déroulement. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:18</div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_ac5e80452c6e1084d3ffe8ffcaeaf06a7"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#ac5e80452c6e1084d3ffe8ffcaeaf06a7">receivingInt</a></div><div class="ttdeci">int receivingInt(long dS)</div><div class="ttdoc">Reception d&amp;#39;un entier d&amp;#39;une socket et test le bon déroulement. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:35</div></div>
+<div class="ttc" id="FunctionsClient_2library_8h_html_afbc356cd0e25d1dbbece7c10fd025fa6"><div class="ttname"><a href="FunctionsClient_2library_8h.html#afbc356cd0e25d1dbbece7c10fd025fa6">ip</a></div><div class="ttdeci">char * ip</div><div class="ttdef"><b>Definition:</b> library.h:24</div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_ac2efd3b34c47e0468417bc5432a7606c"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#ac2efd3b34c47e0468417bc5432a7606c">downloadFile</a></div><div class="ttdeci">void downloadFile(int dS)</div><div class="ttdoc">Mise en place de la reception d&amp;#39;un fichier dans le thread de reception. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:108</div></div>
+<div class="ttc" id="FunctionsClient_2library_8h_html_a59ff672d989bfa389f24a4d6b4e29927"><div class="ttname"><a href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a></div><div class="ttdeci">long dS</div><div class="ttdef"><b>Definition:</b> library.h:25</div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_ac06c03e2e4e736a7531561b9b049dfd2"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#ac06c03e2e4e736a7531561b9b049dfd2">createSocketClient</a></div><div class="ttdeci">int createSocketClient(int port, char *ip)</div><div class="ttdoc">Création et demande de connexion d&amp;#39;une socket client à un serveur. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:44</div></div>
+<div class="ttc" id="FunctionsClient_2library_8h_html"><div class="ttname"><a href="FunctionsClient_2library_8h.html">library.h</a></div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_a96241abf745692bda55db9924a3ff659"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#a96241abf745692bda55db9924a3ff659">receiving</a></div><div class="ttdeci">void receiving(int dS, char *rep, ssize_t size)</div><div class="ttdoc">Reception d&amp;#39;un message d&amp;#39;une socket et test bon déroulement. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:26</div></div>
+<div class="ttc" id="FunctionsClient_2library_8h_html_a63c89c04d1feae07ca35558055155ffb"><div class="ttname"><a href="FunctionsClient_2library_8h.html#a63c89c04d1feae07ca35558055155ffb">port</a></div><div class="ttdeci">int port</div><div class="ttdef"><b>Definition:</b> library.h:23</div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_a9984baa85f69ab1c6ad69a5abcbac91f"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#a9984baa85f69ab1c6ad69a5abcbac91f">sending</a></div><div class="ttdeci">void sending(int dS, char *msg)</div><div class="ttdoc">Envoi d&amp;#39;un message à une socket et test le bon déroulement. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:10</div></div>
+<div class="ttc" id="FunctionsClient_2dialogFunctions_8h_html_ab8b69bb729299ff068378e5d1825201b"><div class="ttname"><a href="FunctionsClient_2dialogFunctions_8h.html#ab8b69bb729299ff068378e5d1825201b">uploadFile</a></div><div class="ttdeci">void uploadFile(int dS)</div><div class="ttdoc">Mise en place de l&amp;#39;envoi d&amp;#39;un fichier et création du thread nécessaire. </div><div class="ttdef"><b>Definition:</b> dialogFunctions.c:64</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>

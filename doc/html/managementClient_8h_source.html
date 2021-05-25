@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMARINE - GEORGET - Projet FAR:  Fichier source de /mnt/c/Users/OPHELIESANSMICROSOFT/Documents/POSTBAC/Polytech/IG3/Semestre 6/Projet FAR/projetFAR/Sprint6/FunctionsServeur/managementClient.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">AMARINE - GEORGET - Projet FAR
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Recherche');
+  $(document).ready(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_a205e11a7435a65be099cd8ad04204a6.html">Sprint6</a></li><li class="navelem"><a class="el" href="dir_2375953b2e6379ce2fb8ba8854bb781a.html">FunctionsServeur</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">managementClient.h</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="managementClient_8h.html">Aller à la documentation de ce fichier.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef MANAGEMENTCLIENT_H_</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define MANAGEMENTCLIENT_H_</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">/* ----- FICHIER DE GESTION DES CLIENTS ----- */</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="FunctionsServeur_2library_8h.html">library.h</a>&quot;</span></div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="FunctionsServeur_2dialogFunctions_8h.html">dialogFunctions.h</a>&quot;</span></div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a0508ffc17c285316f9141ebbe657c9d7">giveNumClient</a>();</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a9454ccaf53e0e139636aeb6d2f375ad5">findClient</a>(<span class="keywordtype">char</span> * pseudo);</div><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#aad49b3374d8e8453f2ef755e6cc648a6">displayClient</a>(<span class="keywordtype">int</span> numClient);</div><div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a45585a6dab490fe9995a33e3bb14281a">displayAdmin</a>(<span class="keywordtype">int</span> numClient);</div><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div><div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a02651f4699d5296f9ea31803e7e02f76">displayOneClient</a>(<span class="keywordtype">int</span> numClient, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div><div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a6eebb4765029764abe0486199b3f27f3">initClients</a>();</div><div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#af378e7e7d616e329d11e5de6d27f1dee">saveClients</a>();</div><div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div><div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a23614c6c695f6947d8391b4184d1d8b2">updatePseudo</a>(<span class="keywordtype">int</span> numClient, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div><div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#aa04024a7e5e78d2c1930a625bac4da34">updateDescr</a>(<span class="keywordtype">int</span> numClient, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div><div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a09efb458b3084511b8fced55ee1650de">updatePassword</a>(<span class="keywordtype">int</span> numClient, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div><div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a982e5a0dc2836d9f70b20928f5fad355">createAccount</a>(<span class="keywordtype">int</span> dSC, <span class="keywordtype">char</span> * pseudo, <span class="keywordtype">int</span> numClient);</div><div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div><div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a43913dd867b8fc23e8353ef6876dc38c">connection</a>(<span class="keywordtype">int</span> dSC, <span class="keywordtype">int</span> numClient);</div><div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div><div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#ae60dc60354f1019569fc8045f872c3bc">nbAdmin</a>();</div><div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div><div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a39216ff792a7f5e2fc553ba341bdb654">deleteAccount</a>(<span class="keywordtype">int</span> numClient);</div><div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div><div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keywordtype">int</span> <a class="code" href="managementClient_8h.html#a03bd776c992ff8fa7a502e1ac85c3153">findClientBySocket</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>);</div><div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div><div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#ad1683328ee509eb95e509c6afa597ebb">giveRightServer</a>(<span class="keywordtype">int</span> numClient, <span class="keywordtype">char</span> * msg);</div><div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div><div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#ade0d20a7806daebcd440202a1b470bb0">closingClient</a>(<span class="keywordtype">int</span> <a class="code" href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a>);</div><div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div><div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="keywordtype">void</span> <a class="code" href="managementClient_8h.html#a191a00567cbc0b6d302d03c8de0b3f84">killThread</a>();</div><div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div><div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#endif</span></div><div class="ttc" id="managementClient_8h_html_a03bd776c992ff8fa7a502e1ac85c3153"><div class="ttname"><a href="managementClient_8h.html#a03bd776c992ff8fa7a502e1ac85c3153">findClientBySocket</a></div><div class="ttdeci">int findClientBySocket(int dS)</div><div class="ttdoc">Recherche d&amp;#39;un client dans le tableau à partir de sa socket. </div><div class="ttdef"><b>Definition:</b> managementClient.c:512</div></div>
+<div class="ttc" id="managementClient_8h_html_a45585a6dab490fe9995a33e3bb14281a"><div class="ttname"><a href="managementClient_8h.html#a45585a6dab490fe9995a33e3bb14281a">displayAdmin</a></div><div class="ttdeci">void displayAdmin(int numClient)</div><div class="ttdoc">Envoie tout les pseudos des administrateurs du serveur au client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:62</div></div>
+<div class="ttc" id="managementClient_8h_html_aa04024a7e5e78d2c1930a625bac4da34"><div class="ttname"><a href="managementClient_8h.html#aa04024a7e5e78d2c1930a625bac4da34">updateDescr</a></div><div class="ttdeci">void updateDescr(int numClient, char *msg)</div><div class="ttdoc">Modifie la description du client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:312</div></div>
+<div class="ttc" id="managementClient_8h_html_aad49b3374d8e8453f2ef755e6cc648a6"><div class="ttname"><a href="managementClient_8h.html#aad49b3374d8e8453f2ef755e6cc648a6">displayClient</a></div><div class="ttdeci">void displayClient(int numClient)</div><div class="ttdoc">Envoie tout les pseudos des clients connectés sur le serveur au client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:39</div></div>
+<div class="ttc" id="managementClient_8h_html_ade0d20a7806daebcd440202a1b470bb0"><div class="ttname"><a href="managementClient_8h.html#ade0d20a7806daebcd440202a1b470bb0">closingClient</a></div><div class="ttdeci">void closingClient(int dS)</div><div class="ttdoc">Déconnexion propre du client : quitte le salon actuel, réinitialise les variables nécessaires et ferm...</div><div class="ttdef"><b>Definition:</b> managementClient.c:565</div></div>
+<div class="ttc" id="managementClient_8h_html_af378e7e7d616e329d11e5de6d27f1dee"><div class="ttname"><a href="managementClient_8h.html#af378e7e7d616e329d11e5de6d27f1dee">saveClients</a></div><div class="ttdeci">void saveClients()</div><div class="ttdoc">Sauvegarde des comptes et informations des clients inscrits sur le serveur dans le fichier clients...</div><div class="ttdef"><b>Definition:</b> managementClient.c:206</div></div>
+<div class="ttc" id="managementClient_8h_html_a191a00567cbc0b6d302d03c8de0b3f84"><div class="ttname"><a href="managementClient_8h.html#a191a00567cbc0b6d302d03c8de0b3f84">killThread</a></div><div class="ttdeci">void killThread()</div><div class="ttdoc">Terminaison des threads pour lesquels les clients se sont déconnectés. </div><div class="ttdef"><b>Definition:</b> managementClient.c:586</div></div>
+<div class="ttc" id="managementClient_8h_html_a0508ffc17c285316f9141ebbe657c9d7"><div class="ttname"><a href="managementClient_8h.html#a0508ffc17c285316f9141ebbe657c9d7">giveNumClient</a></div><div class="ttdeci">int giveNumClient()</div><div class="ttdoc">Gestion des indices du tableau de clients pour trouver un emplacement disponible. ...</div><div class="ttdef"><b>Definition:</b> managementClient.c:3</div></div>
+<div class="ttc" id="managementClient_8h_html_ad1683328ee509eb95e509c6afa597ebb"><div class="ttname"><a href="managementClient_8h.html#ad1683328ee509eb95e509c6afa597ebb">giveRightServer</a></div><div class="ttdeci">void giveRightServer(int numClient, char *msg)</div><div class="ttdoc">Donne les droits de modification et de suppression d&amp;#39;un salon à un client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:531</div></div>
+<div class="ttc" id="FunctionsClient_2library_8h_html_a59ff672d989bfa389f24a4d6b4e29927"><div class="ttname"><a href="FunctionsClient_2library_8h.html#a59ff672d989bfa389f24a4d6b4e29927">dS</a></div><div class="ttdeci">long dS</div><div class="ttdef"><b>Definition:</b> library.h:25</div></div>
+<div class="ttc" id="managementClient_8h_html_a982e5a0dc2836d9f70b20928f5fad355"><div class="ttname"><a href="managementClient_8h.html#a982e5a0dc2836d9f70b20928f5fad355">createAccount</a></div><div class="ttdeci">int createAccount(int dSC, char *pseudo, int numClient)</div><div class="ttdoc">Créer un compte client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:372</div></div>
+<div class="ttc" id="managementClient_8h_html_a23614c6c695f6947d8391b4184d1d8b2"><div class="ttname"><a href="managementClient_8h.html#a23614c6c695f6947d8391b4184d1d8b2">updatePseudo</a></div><div class="ttdeci">void updatePseudo(int numClient, char *msg)</div><div class="ttdoc">Modifie le pseudo du client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:270</div></div>
+<div class="ttc" id="managementClient_8h_html_a43913dd867b8fc23e8353ef6876dc38c"><div class="ttname"><a href="managementClient_8h.html#a43913dd867b8fc23e8353ef6876dc38c">connection</a></div><div class="ttdeci">int connection(int dSC, int numClient)</div><div class="ttdoc">Permet à un client de se connecter. </div><div class="ttdef"><b>Definition:</b> managementClient.c:408</div></div>
+<div class="ttc" id="FunctionsServeur_2dialogFunctions_8h_html"><div class="ttname"><a href="FunctionsServeur_2dialogFunctions_8h.html">dialogFunctions.h</a></div></div>
+<div class="ttc" id="managementClient_8h_html_ae60dc60354f1019569fc8045f872c3bc"><div class="ttname"><a href="managementClient_8h.html#ae60dc60354f1019569fc8045f872c3bc">nbAdmin</a></div><div class="ttdeci">int nbAdmin()</div><div class="ttdoc">Donne le nombre d&amp;#39;administrateurs du serveur. </div><div class="ttdef"><b>Definition:</b> managementClient.c:448</div></div>
+<div class="ttc" id="FunctionsServeur_2library_8h_html"><div class="ttname"><a href="FunctionsServeur_2library_8h.html">library.h</a></div></div>
+<div class="ttc" id="managementClient_8h_html_a02651f4699d5296f9ea31803e7e02f76"><div class="ttname"><a href="managementClient_8h.html#a02651f4699d5296f9ea31803e7e02f76">displayOneClient</a></div><div class="ttdeci">void displayOneClient(int numClient, char *msg)</div><div class="ttdoc">Envoie le profil d&amp;#39;un autre client au client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:84</div></div>
+<div class="ttc" id="managementClient_8h_html_a6eebb4765029764abe0486199b3f27f3"><div class="ttname"><a href="managementClient_8h.html#a6eebb4765029764abe0486199b3f27f3">initClients</a></div><div class="ttdeci">void initClients()</div><div class="ttdoc">Initialisation du tableau des clients à partir du fichier clients.txt qui sauvegarde les comptes et i...</div><div class="ttdef"><b>Definition:</b> managementClient.c:133</div></div>
+<div class="ttc" id="managementClient_8h_html_a39216ff792a7f5e2fc553ba341bdb654"><div class="ttname"><a href="managementClient_8h.html#a39216ff792a7f5e2fc553ba341bdb654">deleteAccount</a></div><div class="ttdeci">int deleteAccount(int numClient)</div><div class="ttdoc">Supprime le compte d&amp;#39;un client après confirmation de celui ci. Condition pour la supression : ne pas ...</div><div class="ttdef"><b>Definition:</b> managementClient.c:465</div></div>
+<div class="ttc" id="managementClient_8h_html_a9454ccaf53e0e139636aeb6d2f375ad5"><div class="ttname"><a href="managementClient_8h.html#a9454ccaf53e0e139636aeb6d2f375ad5">findClient</a></div><div class="ttdeci">int findClient(char *pseudo)</div><div class="ttdoc">Recherche d&amp;#39;un client dans le tableau à partir de son pseudo. </div><div class="ttdef"><b>Definition:</b> managementClient.c:20</div></div>
+<div class="ttc" id="managementClient_8h_html_a09efb458b3084511b8fced55ee1650de"><div class="ttname"><a href="managementClient_8h.html#a09efb458b3084511b8fced55ee1650de">updatePassword</a></div><div class="ttdeci">void updatePassword(int numClient, char *msg)</div><div class="ttdoc">Modifie le mot de passe du client. </div><div class="ttdef"><b>Definition:</b> managementClient.c:336</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>
