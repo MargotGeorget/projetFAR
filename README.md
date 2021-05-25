@@ -1,7 +1,7 @@
 # projetFAR
 
 ## Messagerie instantanée en langage C
-** Description générale de l’application **
+### Description générale de l’application 
 
 L'objectif de ce projet est de créer une messagerie instantanée à partir de thread et de socket en langage C. 
 
