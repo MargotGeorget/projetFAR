@@ -35,8 +35,6 @@ void * uploadFile_th(void * fileNameParam){
         bzero(buffer, 1024);
         printf("%d",nbBytes);
     }
-    printf("\n**Fichier reçu**\n");
-
     close(fp);
     sleep(5);
     close(dSCFile);
